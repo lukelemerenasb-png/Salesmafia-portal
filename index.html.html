@@ -496,7 +496,7 @@ html { height: -webkit-fill-available; }
     <div class="lg-stats">
       <div><div class="lg-stat-n">$184k</div><div class="lg-stat-l">Team MTD</div></div>
       <div><div class="lg-stat-n">47</div><div class="lg-stat-l">Issued Policies</div></div>
-      <div><div class="lg-stat-n">3</div><div class="lg-stat-l">Manager Levels</div></div>
+      <div><div class="lg-stat-n">2</div><div class="lg-stat-l">Managers</div></div>
       <div><div class="lg-stat-n">8</div><div class="lg-stat-l">Active Agents</div></div>
     </div>
   </div>
@@ -508,13 +508,13 @@ html { height: -webkit-fill-available; }
         <div class="demo-lbl">— Select a demo user —</div>
         <div class="demo-row">
           <div class="demo-chip sp" onclick="ql('luke')" ontouchend="ql('luke')">👑 Luke H. · Sr. Partner</div>
-          <div class="demo-chip mgr" onclick="ql('david')" ontouchend="ql('david')">📊 David M. · Manager</div>
-          <div class="demo-chip mgr" onclick="ql('sarah')" ontouchend="ql('sarah')">📊 Sarah R. · Manager</div>
-          <div class="demo-chip" onclick="ql('ashton')" ontouchend="ql('ashton')">Ashton L.</div>
-          <div class="demo-chip" onclick="ql('nathan')" ontouchend="ql('nathan')">Nathan G.</div>
+          <div class="demo-chip mgr" onclick="ql('nathan')" ontouchend="ql('nathan')">📊 Nathan G. · Manager</div>
+          <div class="demo-chip mgr" onclick="ql('ashton')" ontouchend="ql('ashton')">📊 Ashton L. · Manager</div>
+          <div class="demo-chip" onclick="ql('dalton')" ontouchend="ql('dalton')">Dalton</div>
           <div class="demo-chip" onclick="ql('joseph')" ontouchend="ql('joseph')">Joseph H.</div>
-          <div class="demo-chip" onclick="ql('marcus')" ontouchend="ql('marcus')">Marcus D.</div>
-          <div class="demo-chip" onclick="ql('kayla')" ontouchend="ql('kayla')">Kayla D.</div>
+          <div class="demo-chip" onclick="ql('asher')" ontouchend="ql('asher')">Asher J.</div>
+          <div class="demo-chip" onclick="ql('paul')" ontouchend="ql('paul')">Paul H.</div>
+          <div class="demo-chip" onclick="ql('darryl')" ontouchend="ql('darryl')">Darryl T.</div>
         </div>
       </div>
       <div class="fg"><label class="fl">Email</label><input class="fi" id="lg-em" type="email" placeholder="agent@nasb.com"></div>
@@ -832,89 +832,106 @@ ALTER PUBLICATION supabase_realtime ADD TABLE requirements;
 ══════════════════════════════════════════ */
 const DB = {
   agents: {
-    luke:   { id:'luke',   name:'Luke H.',    initials:'LH', role:'Senior Partner', tier:'senior_partner', managerId:null,  goalTarget:200000, goalCurrent:184320, color:'gold' },
-    david:  { id:'david',  name:'David M.',   initials:'DM', role:'Manager',        tier:'manager',        managerId:'luke', goalTarget:80000,  goalCurrent:72100,  color:'blue' },
-    sarah:  { id:'sarah',  name:'Sarah R.',   initials:'SR', role:'Manager',        tier:'manager',        managerId:'luke', goalTarget:60000,  goalCurrent:48200,  color:'purple' },
-    ashton: { id:'ashton', name:'Ashton L.',  initials:'AL', role:'Field Agent',    tier:'agent',          managerId:'david', goalTarget:44000, goalCurrent:41200,  color:'green' },
-    nathan: { id:'nathan', name:'Nathan G.',  initials:'NG', role:'Field Agent',    tier:'agent',          managerId:'david', goalTarget:44000, goalCurrent:36800,  color:'blue' },
-    joseph: { id:'joseph', name:'Joseph H.',  initials:'JH', role:'Field Agent',    tier:'agent',          managerId:'sarah', goalTarget:44000, goalCurrent:28100,  color:'orange' },
-    marcus: { id:'marcus', name:'Marcus D.',  initials:'MD', role:'Onboarding',     tier:'agent',          managerId:'sarah', goalTarget:20000, goalCurrent:18400,  color:'purple' },
-    kayla:  { id:'kayla',  name:'Kayla D.',   initials:'KD', role:'Onboarding',     tier:'agent',          managerId:'sarah', goalTarget:20000, goalCurrent:14900,  color:'red' },
+    luke:   { id:'luke',   name:'Luke H.',    initials:'LH', role:'Senior Partner', tier:'senior_partner', managerId:null,    goalTarget:300000, goalCurrent:184320, color:'gold' },
+    nathan: { id:'nathan', name:'Nathan G.',  initials:'NG', role:'Manager',        tier:'manager',        managerId:'luke',  goalTarget:120000, goalCurrent:98400,  color:'blue' },
+    ashton: { id:'ashton', name:'Ashton L.',  initials:'AL', role:'Manager',        tier:'manager',        managerId:'luke',  goalTarget:100000, goalCurrent:72100,  color:'green' },
+    dalton: { id:'dalton', name:'Dalton',     initials:'DA', role:'Field Agent',    tier:'agent',          managerId:'luke',  goalTarget:44000,  goalCurrent:31200,  color:'orange' },
+    joseph: { id:'joseph', name:'Joseph H.',  initials:'JH', role:'Field Agent',    tier:'agent',          managerId:'nathan', goalTarget:44000, goalCurrent:28100,  color:'purple' },
+    asher:  { id:'asher',  name:'Asher J.',   initials:'AJ', role:'Field Agent',    tier:'agent',          managerId:'nathan', goalTarget:44000, goalCurrent:22400,  color:'blue' },
+    paul:   { id:'paul',   name:'Paul H.',    initials:'PH', role:'Field Agent',    tier:'agent',          managerId:'nathan', goalTarget:44000, goalCurrent:18900,  color:'red' },
+    darryl: { id:'darryl', name:'Darryl T.',  initials:'DT', role:'Field Agent',    tier:'agent',          managerId:'ashton', goalTarget:44000, goalCurrent:26800,  color:'orange' },
   },
   policies: {
-    ashton: [
-      {id:'a1',client:'Robert J.',carrier:'Transamerica',product:'GUL 15',ap:4200,submitted:'Jun 28',status:'issued'},
-      {id:'a2',client:'Martha K.',carrier:'Transamerica',product:'Trendsetter LB',ap:3100,submitted:'Jun 22',status:'issued'},
-      {id:'a3',client:'David L.',carrier:'AIG/Corebridge',product:'AG ROP',ap:5400,submitted:'Jun 30',status:'pending'},
-      {id:'a4',client:'Barbara S.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2600,submitted:'Jun 29',status:'requirements'},
-      {id:'a5',client:'Thomas R.',carrier:'Transamerica',product:'GUL 20',ap:6800,submitted:'Jun 18',status:'issued'},
+    luke: [
+      {id:'l1',client:'Robert J.',carrier:'Transamerica',product:'GUL 15',ap:4200,submitted:'Jun 28',status:'issued'},
+      {id:'l2',client:'Martha K.',carrier:'Transamerica',product:'Trendsetter LB',ap:5600,submitted:'Jun 25',status:'issued'},
     ],
     nathan: [
       {id:'n1',client:'Martha D.',carrier:'Transamerica',product:'Trendsetter LB',ap:5600,submitted:'Jun 25',status:'issued'},
       {id:'n2',client:'James W.',carrier:'AIG/Corebridge',product:'AG ROP',ap:3800,submitted:'Jun 30',status:'pending'},
       {id:'n3',client:'Linda C.',carrier:'Transamerica',product:'GUL 15',ap:4200,submitted:'Jun 28',status:'requirements'},
       {id:'n4',client:'Frank O.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2100,submitted:'Jun 12',status:'lapse'},
-      {id:'n5',client:'Sandra P.',carrier:'Transamerica',product:'GUL 10',ap:3400,submitted:'Jun 20',status:'requirements'},
+      {id:'n5',client:'Sandra P.',carrier:'Transamerica',product:'GUL 10',ap:3400,submitted:'Jun 20',status:'issued'},
+    ],
+    ashton: [
+      {id:'a1',client:'Robert J.',carrier:'Transamerica',product:'GUL 15',ap:4200,submitted:'Jun 28',status:'issued'},
+      {id:'a2',client:'Thomas R.',carrier:'Transamerica',product:'GUL 20',ap:6800,submitted:'Jun 18',status:'issued'},
+      {id:'a3',client:'David L.',carrier:'AIG/Corebridge',product:'AG ROP',ap:5400,submitted:'Jun 30',status:'pending'},
+      {id:'a4',client:'Barbara S.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2600,submitted:'Jun 29',status:'requirements'},
+    ],
+    dalton: [
+      {id:'da1',client:'Carol M.',carrier:'Transamerica',product:'GUL 15',ap:3800,submitted:'Jun 27',status:'issued'},
+      {id:'da2',client:'Steven P.',carrier:'AIG/Corebridge',product:'AG ROP',ap:2900,submitted:'Jun 29',status:'pending'},
+      {id:'da3',client:'Betty H.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2100,submitted:'Jun 30',status:'submitted'},
     ],
     joseph: [
       {id:'j1',client:'Patricia M.',carrier:'Transamerica',product:'GUL 15',ap:3900,submitted:'Jun 26',status:'issued'},
       {id:'j2',client:'William T.',carrier:'AIG/Corebridge',product:'AG ROP',ap:4800,submitted:'Jun 29',status:'pending'},
       {id:'j3',client:'Nancy F.',carrier:'Mutual of Omaha',product:'Living Promise',ap:3200,submitted:'Jun 14',status:'lapse'},
       {id:'j4',client:'George B.',carrier:'Transamerica',product:'Trendsetter',ap:2800,submitted:'Jun 21',status:'requirements'},
-      {id:'j5',client:'Dorothy K.',carrier:'Transamerica',product:'GUL 10',ap:4100,submitted:'Jun 17',status:'requirements'},
     ],
-    marcus: [
-      {id:'m1',client:'Raymond S.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2400,submitted:'Jul 1',status:'submitted'},
-      {id:'m2',client:'Alice T.',carrier:'Transamerica',product:'Trendsetter LB',ap:3400,submitted:'Jun 28',status:'pending'},
-      {id:'m3',client:'Shirley W.',carrier:'Transamerica',product:'GUL 15',ap:4200,submitted:'Jun 20',status:'issued'},
-      {id:'m4',client:'Harold B.',carrier:'AIG/Corebridge',product:'AG ROP',ap:2400,submitted:'Jun 22',status:'requirements'},
+    asher: [
+      {id:'as1',client:'Dorothy K.',carrier:'Transamerica',product:'GUL 10',ap:4100,submitted:'Jun 26',status:'issued'},
+      {id:'as2',client:'Raymond S.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2400,submitted:'Jul 1',status:'submitted'},
+      {id:'as3',client:'Alice T.',carrier:'Transamerica',product:'Trendsetter LB',ap:3400,submitted:'Jun 28',status:'pending'},
     ],
-    kayla: [
-      {id:'k1',client:'Mildred R.',carrier:'Transamerica',product:'GUL 10',ap:3200,submitted:'Jun 27',status:'issued'},
-      {id:'k2',client:'Eugene P.',carrier:'AIG/Corebridge',product:'AG ROP',ap:2900,submitted:'Jun 29',status:'pending'},
-      {id:'k3',client:'Vivian C.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2100,submitted:'Jun 24',status:'requirements'},
+    paul: [
+      {id:'p1',client:'Shirley W.',carrier:'Transamerica',product:'GUL 15',ap:3200,submitted:'Jun 24',status:'issued'},
+      {id:'p2',client:'Harold B.',carrier:'AIG/Corebridge',product:'AG ROP',ap:2400,submitted:'Jun 22',status:'requirements'},
+      {id:'p3',client:'Mildred R.',carrier:'Transamerica',product:'GUL 10',ap:3200,submitted:'Jun 27',status:'pending'},
+    ],
+    darryl: [
+      {id:'dr1',client:'Eugene P.',carrier:'AIG/Corebridge',product:'AG ROP',ap:2900,submitted:'Jun 29',status:'issued'},
+      {id:'dr2',client:'Vivian C.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2100,submitted:'Jun 24',status:'requirements'},
+      {id:'dr3',client:'Frank T.',carrier:'Transamerica',product:'Trendsetter LB',ap:3800,submitted:'Jun 30',status:'pending'},
     ],
   },
   requirements: {
-    ashton:[{id:'ar1',icon:'🪪',cls:'ri-orange',title:'Photo ID Required',client:'Barbara S. — Mutual of Omaha $2,600 AP',desc:'Client ID was blurry on upload. Need clear copy of state-issued photo ID front and back.',due:'⚠️ Due Jul 4 — 2 days',dueCls:'due-u',docCls:'ri-blue'}],
+    luke:[],
     nathan:[
-      {id:'nr1',icon:'📋',cls:'ri-red',title:'Replacement Notice Signature',client:'Sandra P. — Transamerica $3,400 AP',desc:'Policy replaces existing coverage. TL-8840 form requires wet signature from client.',due:'⚠️ Due Jul 5 — 3 days',dueCls:'due-u',docCls:'ri-orange'},
-      {id:'nr2',icon:'🏥',cls:'ri-orange',title:'Medical Records — Diabetes History',client:'Linda C. — Transamerica $4,200 AP',desc:'Underwriter flagged diabetes history. Medical records from past 5 years required.',due:'⏱ Due Jul 12',dueCls:'due-s',docCls:'ri-red'},
+      {id:'nr1',icon:'📋',cls:'ri-red',title:'Replacement Notice Signature',client:'Linda C. — Transamerica $4,200 AP',desc:'Policy replaces existing coverage. TL-8840 form requires wet signature from client.',due:'⚠️ Due Jul 5 — 3 days',dueCls:'due-u',docCls:'ri-orange'},
+      {id:'nr2',icon:'🏥',cls:'ri-orange',title:'Medical Records Required',client:'Linda C. — Transamerica $4,200 AP',desc:'Underwriter flagged health history. Medical records from past 5 years required from primary care.',due:'⏱ Due Jul 12',dueCls:'due-s',docCls:'ri-red'},
     ],
+    ashton:[
+      {id:'ar1',icon:'🪪',cls:'ri-orange',title:'Photo ID Required',client:'Barbara S. — Mutual of Omaha $2,600 AP',desc:'Client ID was blurry on upload. Need clear copy of state-issued photo ID front and back.',due:'⚠️ Due Jul 4 — 2 days',dueCls:'due-u',docCls:'ri-blue'},
+    ],
+    dalton:[],
     joseph:[
       {id:'jr1',icon:'✍️',cls:'ri-orange',title:'E-Signature Pending',client:'William T. — AIG/Corebridge $4,800 AP',desc:'DocuSign sent 3 days ago, not completed. Call client to complete while on phone.',due:'⚠️ Due Jul 4 — 2 days',dueCls:'due-u',docCls:'ri-green'},
       {id:'jr2',icon:'📋',cls:'ri-blue',title:'Height/Weight Form',client:'George B. — Transamerica $2,800 AP',desc:'Carrier needs weight history form completed.',due:'⏱ Due Jul 9',dueCls:'due-s',docCls:'ri-orange'},
-      {id:'jr3',icon:'🏥',cls:'ri-red',title:'APS — Cardiologist',client:'Dorothy K. — Transamerica $4,100 AP',desc:'Underwriter requests APS from cardiologist. Client had stent placed 2019.',due:'📅 Due Jul 15',dueCls:'due-o',docCls:'ri-red'},
     ],
-    marcus:[{id:'mr1',icon:'📋',cls:'ri-orange',title:'Beneficiary Clarification',client:'Harold B. — AIG/Corebridge $2,400 AP',desc:'Beneficiary designation incomplete — relationship field missing.',due:'⏱ Due Jul 7',dueCls:'due-s',docCls:'ri-blue'}],
-    kayla:[{id:'kr1',icon:'✍️',cls:'ri-orange',title:'Client E-Sig Pending',client:'Vivian C. — Mutual of Omaha $2,100 AP',desc:'DocuSign not yet completed. Follow up required.',due:'⏱ Due Jul 8',dueCls:'due-s',docCls:'ri-green'}],
-    luke:[
-      {id:'lr1',icon:'📋',cls:'ri-red',title:'APS Required — Helen R.',client:'Helen R. — Mutual of Omaha $2,900 AP (Nathan G. team)',desc:'Attending Physician Statement needed for cardiac history.',due:'⚠️ Due Jul 5',dueCls:'due-u',docCls:'ri-orange'},
+    asher:[],
+    paul:[
+      {id:'pr1',icon:'📋',cls:'ri-orange',title:'Beneficiary Form Incomplete',client:'Harold B. — AIG/Corebridge $2,400 AP',desc:'Beneficiary designation missing relationship field. Resubmit corrected form.',due:'⏱ Due Jul 7',dueCls:'due-s',docCls:'ri-blue'},
     ],
-    david:[],
-    sarah:[],
+    darryl:[
+      {id:'dtr1',icon:'✍️',cls:'ri-orange',title:'Client E-Sig Pending',client:'Vivian C. — Mutual of Omaha $2,100 AP',desc:'DocuSign not yet completed by client. Follow up call required.',due:'⏱ Due Jul 8',dueCls:'due-s',docCls:'ri-green'},
+    ],
   },
   commissions: {
-    ashton:{ total:'$18,540', adv:'$12,000', net:'$6,540',
+    luke:{ total:'$82,400', adv:'$24,000', net:'$58,400',
+      rows:[{carrier:'Transamerica',client:'Robert J.',product:'GUL 15',earned:'$1,890',adv:'$1,500',net:'$390',date:'Jun 30'},{carrier:'Transamerica',client:'Martha K.',product:'Trendsetter LB',earned:'$2,520',adv:'$2,000',net:'$520',date:'Jun 28'}]},
+    nathan:{ total:'$44,280', adv:'$16,000', net:'$28,280',
+      rows:[{carrier:'Transamerica',client:'Martha D.',product:'Trendsetter LB',earned:'$2,520',adv:'$2,000',net:'$520',date:'Jun 29'},{carrier:'Transamerica',client:'Sandra P.',product:'GUL 10',earned:'$1,530',adv:'$1,000',net:'$530',date:'Jun 26'}]},
+    ashton:{ total:'$32,445', adv:'$14,000', net:'$18,445',
       rows:[{carrier:'Transamerica',client:'Robert J.',product:'GUL 15',earned:'$1,890',adv:'$1,500',net:'$390',date:'Jun 30'},{carrier:'Transamerica',client:'Thomas R.',product:'GUL 20',earned:'$3,060',adv:'$2,500',net:'$560',date:'Jun 24'}]},
-    nathan:{ total:'$16,560', adv:'$10,000', net:'$6,560',
-      rows:[{carrier:'Transamerica',client:'Martha D.',product:'Trendsetter LB',earned:'$2,520',adv:'$2,000',net:'$520',date:'Jun 29'}]},
+    dalton:{ total:'$14,040', adv:'$8,000', net:'$6,040',
+      rows:[{carrier:'Transamerica',client:'Carol M.',product:'GUL 15',earned:'$1,710',adv:'$1,200',net:'$510',date:'Jun 28'}]},
     joseph:{ total:'$12,645', adv:'$8,000', net:'$4,645',
       rows:[{carrier:'Transamerica',client:'Patricia M.',product:'GUL 15',earned:'$1,755',adv:'$1,200',net:'$555',date:'Jun 28'}]},
-    marcus:{ total:'$8,280', adv:'$6,000', net:'$2,280',
-      rows:[{carrier:'Transamerica',client:'Shirley W.',product:'GUL 15',earned:'$1,890',adv:'$1,500',net:'$390',date:'Jun 24'}]},
-    kayla:{ total:'$6,705', adv:'$5,000', net:'$1,705',
-      rows:[{carrier:'Transamerica',client:'Mildred R.',product:'GUL 10',earned:'$1,440',adv:'$1,000',net:'$440',date:'Jun 28'}]},
-    luke:{ total:'$73,400', adv:'$22,000', net:'$51,400',
-      rows:[{carrier:'Transamerica',client:'Team Total',product:'Various',earned:'$73,400',adv:'$22,000',net:'$51,400',date:'Jun 30'}]},
-    david:{ total:'$35,100', adv:'$15,000', net:'$20,100', rows:[] },
-    sarah:{ total:'$27,630', adv:'$12,000', net:'$15,630', rows:[] },
+    asher:{ total:'$10,080', adv:'$6,000', net:'$4,080',
+      rows:[{carrier:'Transamerica',client:'Dorothy K.',product:'GUL 10',earned:'$1,845',adv:'$1,500',net:'$345',date:'Jun 27'}]},
+    paul:{ total:'$8,505', adv:'$5,000', net:'$3,505',
+      rows:[{carrier:'Transamerica',client:'Shirley W.',product:'GUL 15',earned:'$1,440',adv:'$1,000',net:'$440',date:'Jun 25'}]},
+    darryl:{ total:'$12,060', adv:'$7,000', net:'$5,060',
+      rows:[{carrier:'AIG/Corebridge',client:'Eugene P.',product:'AG ROP',earned:'$1,305',adv:'$1,000',net:'$305',date:'Jun 30'}]},
   },
   recruits:[
     {name:'Tyler Wells',source:'Referral — Nathan G.',stage:'Licensing',by:'Nathan G.',last:'Jun 30'},
     {name:'Jordan Smith',source:'Career Fair',stage:'Interview',by:'Luke H.',last:'Jul 1'},
-    {name:'Brittany Moore',source:'Facebook Ad',stage:'Contracting',by:'David M.',last:'Jun 28'},
-    {name:'Kevin Park',source:'Referral — Ashton L.',stage:'First Field Day',by:'Ashton L.',last:'Jul 1'},
+    {name:'Brittany Moore',source:'Facebook Ad',stage:'Contracting',by:'Ashton L.',last:'Jun 28'},
+    {name:'Kevin Park',source:'Referral — Darryl T.',stage:'First Field Day',by:'Darryl T.',last:'Jul 1'},
+    {name:'Marcus Davis',source:'Referral — Joseph H.',stage:'Licensing',by:'Joseph H.',last:'Jul 2'},
   ],
 };
 
@@ -1147,12 +1164,16 @@ function loadOrg() {
   let html='<div class="org-chart">';
   // Level 0 — Senior Partners (or just this manager)
   if(CU.tier==='senior_partner') {
-    const sps=Object.values(DB.agents).filter(a=>a.tier==='senior_partner');
-    html+=orgLevel('Senior Partner',sps,4);
-    const mgrs=Object.values(DB.agents).filter(a=>a.tier==='manager');
-    html+=orgLevel('Managers',mgrs,4);
-    const agents=Object.values(DB.agents).filter(a=>a.tier==='agent');
-    html+=orgLevel('Field Agents',agents,4);
+    html+=orgLevel('Senior Partner — You',[CU],1);
+    const myDirectMgrs=getDirects(CU.id).map(id=>DB.agents[id]).filter(a=>a.tier==='manager');
+    html+=orgLevel('Your Managers',myDirectMgrs,3);
+    const myDirectAgents=getDirects(CU.id).map(id=>DB.agents[id]).filter(a=>a.tier==='agent');
+    if(myDirectAgents.length) html+=orgLevel('Your Direct Agents',myDirectAgents,4);
+    // Show each manager's downline
+    myDirectMgrs.forEach(mgr=>{
+      const sub=getDirects(mgr.id).map(id=>DB.agents[id]);
+      if(sub.length) html+=orgLevel(mgr.name+\`'s Team (\${sub.length} agents)\`,sub,4);
+    });
   } else if(CU.tier==='manager') {
     html+=orgLevel('You — Manager',[CU],1);
     const directs=getDirects(CU.id).map(id=>DB.agents[id]);
