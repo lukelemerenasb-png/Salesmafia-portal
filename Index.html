@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>SalesMafia Command — NASB Production Portal</title>
+
+
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:    #07101F;
+  --navy2:   #0B1526;
+  --slate:   #131F35;
+  --slate2:  #1A2A42;
+  --slate3:  #223250;
+  --slate4:  #2A3D60;
+  --gold:    #C9A84C;
+  --gold-lt: #E2C46A;
+  --gold-dk: #6E5520;
+  --red:     #E53935;
+  --green:   #27AE60;
+  --green-lt:#2ECC71;
+  --blue:    #2980B9;
+  --blue-lt: #4A90E2;
+  --orange:  #E67E22;
+  --purple:  #8E44AD;
+  --white:   #ECF0FF;
+  --muted:   #5D7499;
+  --muted2:  #3D5070;
+  --border:  rgba(201,168,76,0.12);
+  --border2: rgba(255,255,255,0.055);
+  --shadow:  0 8px 32px rgba(0,0,0,0.5);
+  --mono: 'Courier New', Courier, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --r: 10px;
+}
+html,body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; font-size: 14px; }
+* { -webkit-font-smoothing: antialiased; }
+.hidden { display: none !important; }
+.mono { font-family: 'Courier New', Courier, monospace; }
+
+/* ═══════════════════════════════════════════
+   SUPABASE LAYER — config banner
+═══════════════════════════════════════════ */
+#db-banner {
+  background: linear-gradient(90deg, rgba(41,128,185,0.15), rgba(41,128,185,0.05));
+  border-bottom: 1px solid rgba(74,144,226,0.25);
+  padding: 8px 20px;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; color: var(--blue-lt);
+}
+#db-banner.connected { background: linear-gradient(90deg,rgba(39,174,96,.12),transparent); border-color: rgba(46,204,113,.2); color: var(--green-lt); }
+.db-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
+.db-config-btn {
+  margin-left: auto; padding: 3px 12px; border-radius: 5px;
+  background: rgba(74,144,226,.15); border: 1px solid rgba(74,144,226,.25);
+  color: var(--blue-lt); font-size: 10px; font-weight: 700; cursor: pointer;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif; letter-spacing: .05em; transition: all .15s;
+}
+.db-config-btn:hover { background: rgba(74,144,226,.25); }
+
+/* ═══════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════ */
+#login-screen {
+  min-height: 100vh; display: flex; background: var(--navy); position: relative; overflow: hidden;
+}
+.lg-bg { position:absolute;inset:0;pointer-events:none;
+  background: radial-gradient(ellipse 55% 60% at 75% 45%, rgba(201,168,76,0.06) 0%,transparent 70%),
+              radial-gradient(ellipse 35% 50% at 15% 75%, rgba(41,128,185,0.04) 0%,transparent 60%);
+}
+.lg-grid { position:absolute;inset:0;pointer-events:none;
+  background-image: linear-gradient(rgba(201,168,76,.03) 1px,transparent 1px),
+                    linear-gradient(90deg,rgba(201,168,76,.03) 1px,transparent 1px);
+  background-size: 44px 44px;
+}
+.lg-left {
+  width: 58%; display: flex; flex-direction: column;
+  justify-content: center; padding: 80px;
+  position: relative; z-index: 1;
+}
+.lg-wordmark { display:flex;align-items:center;gap:14px;margin-bottom:60px; }
+.lg-mark {
+  width: 46px;height:46px;border-radius:10px;
+  background: linear-gradient(135deg,var(--gold),var(--gold-dk));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:18px;color:var(--navy);letter-spacing:-.02em;
+}
+.lg-brand { font-size:17px;font-weight:800;color:var(--white); }
+.lg-brand em { color:var(--gold);font-style:normal; }
+.lg-brand small { display:block;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:2px; }
+.lg-headline { font-size:52px;font-weight:900;line-height:1.02;letter-spacing:-.04em;margin-bottom:18px; }
+.lg-headline em { color:var(--gold);font-style:normal; }
+.lg-sub { font-size:14px;color:var(--muted);line-height:1.7;max-width:400px;margin-bottom:48px; }
+.lg-stats { display:flex;gap:36px; }
+.lg-stat-n { font-family:'Courier New',monospace;font-size:30px;color:var(--gold); }
+.lg-stat-l { font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:2px; }
+
+.lg-right { width:42%;display:flex;align-items:center;justify-content:center;padding:60px 60px 60px 30px;position:relative;z-index:1; }
+.lg-card { background:var(--slate);border:1px solid var(--border);border-radius:16px;padding:36px;width:100%;max-width:400px;box-shadow:var(--shadow); }
+.lg-card-t { font-size:19px;font-weight:800;margin-bottom:3px; }
+.lg-card-s { font-size:11px;color:var(--muted);margin-bottom:28px; }
+
+.demo-box { background:var(--navy2);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:22px; }
+.demo-lbl { font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-dk);margin-bottom:8px; }
+.demo-row { display:flex;flex-wrap:wrap;gap:5px; }
+.demo-chip {
+  padding:5px 11px;border-radius:6px;font-size:11px;font-weight:600;
+  cursor:pointer;transition:all .13s;border:1px solid var(--border2);
+  background:var(--slate2);color:var(--white);
+}
+.demo-chip:hover,.demo-chip.sel { background:var(--gold);color:var(--navy);border-color:var(--gold); }
+.demo-chip.mgr { border-color:var(--gold);color:var(--gold); }
+.demo-chip.sp { border-color:var(--purple);color:#C39BD3; }
+
+.fg { margin-bottom:15px; }
+.fl { display:block;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:5px; }
+.fi { width:100%;background:var(--navy2);border:1px solid var(--border2);border-radius:7px;padding:10px 13px;font-size:13px;color:var(--white);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;outline:none;transition:border-color .13s; }
+.fi:focus { border-color:var(--gold); }
+.fi::placeholder { color:var(--muted2); }
+
+.btn-login { width:100%;background:linear-gradient(135deg,var(--gold),var(--gold-dk));border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:700;color:var(--navy);cursor:pointer;margin-top:6px;transition:opacity .13s;letter-spacing:.02em; }
+.btn-login:hover { opacity:.9; }
+.login-err { font-size:11px;color:var(--red);text-align:center;margin-top:8px;min-height:16px; }
+
+/* ═══════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════ */
+#app { display:none;flex-direction:column;min-height:100vh; }
+
+/* TOPBAR */
+.topbar {
+  height:52px;background:var(--slate);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;position:sticky;top:34px;z-index:200;flex-shrink:0;
+}
+.tb-l { display:flex;align-items:center;gap:12px; }
+.tb-mark { width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--gold),var(--gold-dk));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:var(--navy); }
+.tb-brand { font-size:13px;font-weight:800; }
+.tb-brand em { color:var(--gold);font-style:normal; }
+.tb-sep { width:1px;height:18px;background:var(--border2); }
+.tb-ctx { font-size:11px;color:var(--muted);font-weight:500; }
+.tb-r { display:flex;align-items:center;gap:12px; }
+.live-pill { display:flex;align-items:center;gap:5px;background:rgba(39,174,96,.09);border:1px solid rgba(39,174,96,.18);border-radius:20px;padding:3px 9px;font-family:'Courier New',monospace;font-size:10px;color:var(--green-lt);letter-spacing:.07em; }
+.notif-btn { position:relative;width:30px;height:30px;border-radius:7px;background:var(--slate2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer; }
+.notif-n { position:absolute;top:-3px;right:-3px;width:14px;height:14px;border-radius:50%;background:var(--red);font-size:8px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;border:2px solid var(--slate); }
+.tb-user { display:flex;align-items:center;gap:8px;cursor:pointer; }
+.tb-av { width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dk));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:var(--navy); }
+.tb-un { font-size:12px;font-weight:700; }
+.tb-ur { font-size:9px;color:var(--gold);letter-spacing:.07em;text-transform:uppercase; }
+.btn-out { padding:4px 11px;border-radius:6px;background:transparent;border:1px solid var(--border2);font-size:10px;color:var(--muted);cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;transition:all .13s; }
+.btn-out:hover { border-color:var(--red);color:var(--red); }
+
+/* BODY */
+.app-body { display:flex;flex:1; }
+
+/* SIDEBAR */
+.sidebar {
+  width:204px;flex-shrink:0;background:var(--slate);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;padding:14px 0;
+  position:sticky;top:86px;height:calc(100vh - 86px);overflow-y:auto;
+}
+.ns { font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-dk);padding:12px 16px 4px; }
+.nl {
+  display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12px;font-weight:500;
+  color:var(--muted);cursor:pointer;transition:all .12s;border-left:2px solid transparent;user-select:none;
+}
+.nl:hover { color:var(--white);background:rgba(255,255,255,.025); }
+.nl.active { color:var(--gold);border-left-color:var(--gold);background:rgba(201,168,76,.06); }
+.ni { font-size:13px;width:17px;text-align:center; }
+.nc { margin-left:auto;min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;padding:0 4px; }
+.nc-r { background:var(--red);color:#fff; }
+.nc-g { background:var(--gold);color:var(--navy); }
+.nc-b { background:var(--blue);color:#fff; }
+
+.sb-goal { margin:14px 12px;background:var(--navy2);border:1px solid var(--border);border-radius:8px;padding:12px; }
+.sb-gl { font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-dk);margin-bottom:5px; }
+.sb-gbar { height:5px;background:var(--slate3);border-radius:3px;overflow:hidden;margin:5px 0; }
+.sb-gfill { height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold-lt));transition:width .7s ease; }
+.sb-gnums { display:flex;justify-content:space-between; }
+.sb-gcur { font-family:'Courier New',monospace;font-size:13px;color:var(--gold); }
+.sb-gtgt { font-family:'Courier New',monospace;font-size:10px;color:var(--muted); }
+
+/* MAIN */
+.main { flex:1;padding:24px 28px;overflow-y:auto;min-width:0; }
+
+/* PAGE HEADER */
+.ph { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px; }
+.ph-l {} 
+.ph-ey { font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:4px; }
+.ph-t { font-size:21px;font-weight:900;letter-spacing:-.02em; }
+.ph-s { font-size:11px;color:var(--muted);margin-top:3px;font-family:'Courier New',monospace; }
+.ph-r { display:flex;gap:7px;align-items:center; }
+.btn-s { padding:7px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;transition:all .13s;border:none; }
+.btn-gh { background:var(--slate2);color:var(--muted);border:1px solid var(--border2); }
+.btn-gh:hover { color:var(--white); }
+.btn-pr { background:linear-gradient(135deg,var(--gold),var(--gold-dk));color:var(--navy); }
+.btn-pr:hover { opacity:.9; }
+.period-tabs { display:flex;gap:3px;background:var(--slate2);padding:3px;border-radius:8px; }
+.pt { padding:4px 12px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .13s; }
+.pt.active { background:var(--gold);color:var(--navy); }
+
+/* KPI GRID */
+.kpi-grid { display:grid;gap:12px;margin-bottom:20px; }
+.kpi-grid-5 { grid-template-columns:repeat(5,1fr); }
+.kpi-grid-4 { grid-template-columns:repeat(4,1fr); }
+.kpi-grid-3 { grid-template-columns:repeat(3,1fr); }
+.kpi-card {
+  background:var(--slate);border:1px solid var(--border2);border-radius:var(--r);
+  padding:16px;position:relative;overflow:hidden;cursor:pointer;transition:all .15s;
+}
+.kpi-card:hover { border-color:var(--border);transform:translateY(-1px); }
+.kpi-card::before { content:'';position:absolute;top:0;left:0;right:0;height:2px; }
+.kc-gold::before { background:linear-gradient(90deg,var(--gold),transparent); }
+.kc-green::before { background:linear-gradient(90deg,var(--green-lt),transparent); }
+.kc-blue::before { background:linear-gradient(90deg,var(--blue-lt),transparent); }
+.kc-orange::before { background:linear-gradient(90deg,var(--orange),transparent); }
+.kc-red::before { background:linear-gradient(90deg,var(--red),transparent); }
+.kc-purple::before { background:linear-gradient(90deg,var(--purple),transparent); }
+.kpi-bg-icon { position:absolute;right:12px;top:10px;font-size:18px;opacity:.13; }
+.kpi-lbl { font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px; }
+.kpi-v { font-family:'Courier New',monospace;font-size:22px;font-weight:500;line-height:1; }
+.kpi-v.gold { color:var(--gold); }
+.kpi-v.green { color:var(--green-lt); }
+.kpi-v.blue { color:var(--blue-lt); }
+.kpi-v.orange { color:var(--orange); }
+.kpi-v.red { color:var(--red); }
+.kpi-v.purple { color:var(--purple); }
+.kpi-v.white { color:var(--white); }
+.kpi-note { font-size:10px;color:var(--muted);margin-top:5px;font-family:'Courier New',monospace; }
+.kpi-delta { font-size:10px;margin-top:4px;font-family:'Courier New',monospace; }
+.kpi-delta.up { color:var(--green-lt); }
+.kpi-delta.dn { color:var(--red); }
+
+/* PANEL */
+.panel { background:var(--slate);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:18px; }
+.panel-hd { display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border2); }
+.panel-t { font-size:13px;font-weight:700; }
+.panel-s { font-size:10px;color:var(--muted);margin-top:2px; }
+.panel-a { font-size:10px;font-weight:700;color:var(--gold);cursor:pointer;padding:3px 9px;background:rgba(201,168,76,.08);border-radius:5px; }
+
+/* TABLES */
+.tbl { width:100%;border-collapse:collapse; }
+.tbl th { font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gold-dk);padding:9px 16px;text-align:left;border-bottom:1px solid var(--border2);background:var(--navy2); }
+.tbl td { padding:11px 16px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.035);vertical-align:middle; }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:rgba(255,255,255,.018); }
+
+/* STATUS PILLS */
+.sp { display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase; }
+.sp::before { content:'';width:5px;height:5px;border-radius:50%;background:currentColor; }
+.sp-issued { background:rgba(39,174,96,.14);color:var(--green-lt); }
+.sp-pending { background:rgba(41,128,185,.14);color:var(--blue-lt); }
+.sp-submitted { background:rgba(201,168,76,.14);color:var(--gold); }
+.sp-requirements { background:rgba(230,126,34,.14);color:var(--orange); }
+.sp-lapse { background:rgba(229,57,53,.14);color:var(--red); }
+.sp-approved { background:rgba(39,174,96,.09);color:var(--green); }
+
+/* ACTION BUTTONS */
+.ab { display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:5px;font-size:9px;font-weight:800;cursor:pointer;border:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;text-transform:uppercase;letter-spacing:.05em;transition:all .12s; }
+.ab-v { background:var(--slate2);color:var(--white); }
+.ab-v:hover { background:var(--slate3); }
+.ab-a { background:rgba(230,126,34,.13);color:var(--orange);border:1px solid rgba(230,126,34,.25); }
+.ab-a:hover { background:rgba(230,126,34,.22); }
+.ab-d { background:rgba(41,128,185,.13);color:var(--blue-lt);border:1px solid rgba(41,128,185,.22); }
+.ab-d:hover { background:rgba(41,128,185,.22); }
+.ab-g { background:rgba(39,174,96,.12);color:var(--green-lt);border:1px solid rgba(39,174,96,.2); }
+.ab-g:hover { background:rgba(39,174,96,.2); }
+
+/* REQUIREMENTS */
+.req-item { display:flex;align-items:flex-start;gap:12px;padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.035);cursor:pointer;transition:background .12s; }
+.req-item:last-child { border-bottom:none; }
+.req-item:hover { background:rgba(255,255,255,.018); }
+.req-ic { width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0; }
+.ri-orange { background:rgba(230,126,34,.14); }
+.ri-red { background:rgba(229,57,53,.14); }
+.ri-blue { background:rgba(41,128,185,.14); }
+.ri-green { background:rgba(39,174,96,.14); }
+.req-b { flex:1; }
+.req-t { font-size:12px;font-weight:700; }
+.req-c { font-size:10px;color:var(--muted);margin-top:2px; }
+.req-d { font-size:10px;margin-top:4px;line-height:1.5;color:var(--muted); }
+.req-due { font-family:'Courier New',monospace;font-size:10px;margin-top:5px; }
+.due-u { color:var(--red); }
+.due-s { color:var(--orange); }
+.due-o { color:var(--muted); }
+
+/* ACTIVITY */
+.act-item { display:flex;align-items:center;gap:10px;padding:9px 18px;border-bottom:1px solid rgba(255,255,255,.03); }
+.act-item:last-child { border-bottom:none; }
+.act-dot { width:7px;height:7px;border-radius:50%;flex-shrink:0; }
+.act-txt { font-size:11px;color:var(--muted);flex:1;line-height:1.5; }
+.act-txt strong { color:var(--white); }
+.act-tm { font-family:'Courier New',monospace;font-size:9px;color:var(--gold-dk);white-space:nowrap; }
+
+/* COMMISSION ROWS */
+.comm-row { display:grid;grid-template-columns:1fr 90px 80px 80px 70px;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,.03); }
+.comm-row:last-child { border-bottom:none; }
+.comm-row:hover { background:rgba(255,255,255,.018); }
+
+/* MODAL */
+.modal-ov { display:none;position:fixed;inset:0;z-index:500;background:rgba(4,8,18,.88);backdrop-filter:blur(6px);align-items:center;justify-content:center; }
+.modal-ov.open { display:flex; }
+.modal-box { background:var(--slate);border:1px solid var(--border);border-radius:14px;width:90%;max-width:660px;max-height:88vh;overflow-y:auto;padding:28px;box-shadow:var(--shadow);position:relative; }
+.modal-x { position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:var(--slate2);border:none;cursor:pointer;color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .12s; }
+.modal-x:hover { background:var(--red);color:#fff; }
+.modal-ey { font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:5px; }
+.modal-t { font-size:18px;font-weight:800;margin-bottom:3px; }
+.modal-s { font-size:12px;color:var(--muted);margin-bottom:20px; }
+.modal-sec { font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-dk);margin:18px 0 8px; }
+.info-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.info-it {}
+.info-k { font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px; }
+.info-v { font-family:'Courier New',monospace;font-size:12px;font-weight:500; }
+.info-v.gold { color:var(--gold); }
+.info-v.green { color:var(--green-lt); }
+.info-v.orange { color:var(--orange); }
+.info-v.red { color:var(--red); }
+
+/* TIMELINE */
+.tl { display:flex;flex-direction:column;gap:0; }
+.tl-it { display:flex;gap:10px;padding:7px 0;position:relative; }
+.tl-it:not(:last-child)::after { content:'';position:absolute;left:7px;top:22px;bottom:-7px;width:2px;background:var(--border2); }
+.tl-dot { width:16px;height:16px;border-radius:50%;flex-shrink:0;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;margin-top:2px;background:var(--navy2); }
+.tl-done { background:var(--green-lt);border-color:var(--green-lt);color:var(--navy); }
+.tl-active { border-color:var(--gold);color:var(--gold); }
+.tl-future { border-color:var(--slate3);color:var(--slate3); }
+.tl-txt { font-size:12px; }
+.tl-txt span { color:var(--muted);font-size:10px;font-family:'Courier New',monospace;display:block;margin-top:1px; }
+
+/* DOC ACTIONS */
+.doc-action { display:flex;align-items:center;gap:10px;background:var(--navy2);border:1px solid var(--border2);border-radius:8px;padding:11px 13px;margin-bottom:7px; }
+.doc-ic { font-size:20px; }
+.doc-inf { flex:1; }
+.doc-n { font-size:12px;font-weight:600; }
+.doc-d { font-size:10px;color:var(--muted);margin-top:2px; }
+.doc-btn { padding:5px 13px;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;border:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em;transition:opacity .12s; }
+.doc-btn:hover { opacity:.85; }
+.db-dl { background:var(--blue-lt);color:#fff; }
+.db-up { background:var(--gold);color:var(--navy); }
+.db-sg { background:var(--green-lt);color:var(--navy); }
+.db-cl { background:var(--orange);color:#fff; }
+.db-vw { background:var(--slate3);color:var(--white); }
+
+/* ── MANAGER HIERARCHY ── */
+.org-chart { padding:20px; }
+.org-level { margin-bottom:28px; }
+.org-level-label { font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-dk);margin-bottom:12px;display:flex;align-items:center;gap:8px; }
+.org-level-label::after { content:'';flex:1;height:1px;background:var(--border2); }
+.org-nodes { display:grid;gap:10px; }
+.org-nodes-1 { grid-template-columns:1fr; }
+.org-nodes-2 { grid-template-columns:repeat(2,1fr); }
+.org-nodes-3 { grid-template-columns:repeat(3,1fr); }
+.org-nodes-4 { grid-template-columns:repeat(4,1fr); }
+
+.org-node {
+  background:var(--slate2);border:1px solid var(--border2);border-radius:10px;padding:16px;
+  cursor:pointer;transition:all .15s;position:relative;overflow:hidden;
+}
+.org-node:hover { border-color:var(--border);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.3); }
+.org-node::before { content:'';position:absolute;top:0;left:0;right:0;height:2px; }
+.on-gold::before { background:var(--gold); }
+.on-blue::before { background:var(--blue-lt); }
+.on-green::before { background:var(--green-lt); }
+.on-purple::before { background:var(--purple); }
+.on-orange::before { background:var(--orange); }
+.on-red::before { background:var(--red); }
+
+.on-top { display:flex;align-items:center;gap:10px;margin-bottom:12px; }
+.on-av { width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:var(--navy);flex-shrink:0; }
+.on-av-gold { background:linear-gradient(135deg,var(--gold),var(--gold-dk)); }
+.on-av-blue { background:linear-gradient(135deg,var(--blue-lt),var(--blue)); }
+.on-av-green { background:linear-gradient(135deg,var(--green-lt),var(--green)); }
+.on-av-purple { background:linear-gradient(135deg,#C39BD3,var(--purple));color:#fff; }
+.on-av-orange { background:linear-gradient(135deg,#F0A500,var(--orange)); }
+.on-av-red { background:linear-gradient(135deg,#FF6B6B,var(--red));color:#fff; }
+.on-name { font-size:13px;font-weight:700; }
+.on-role { font-size:9px;color:var(--gold);letter-spacing:.07em;text-transform:uppercase;margin-top:1px; }
+.on-stats { display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px; }
+.on-stat { background:var(--navy2);border-radius:5px;padding:6px 8px; }
+.on-stat-v { font-family:'Courier New',monospace;font-size:12px;font-weight:500; }
+.on-stat-l { font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:1px; }
+.on-bar-wrap { height:4px;background:var(--slate3);border-radius:2px;overflow:hidden;margin-bottom:4px; }
+.on-bar { height:100%;border-radius:2px;transition:width .6s ease; }
+.on-goal-pct { font-family:'Courier New',monospace;font-size:9px;color:var(--muted); }
+.on-actions { display:flex;gap:5px;margin-top:10px; }
+
+/* DOWNLINE TREE */
+.dl-tree { padding:18px; }
+.dl-level { padding-left:20px;border-left:2px solid var(--border2);margin-left:18px;margin-top:8px; }
+.dl-node { display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .12s; }
+.dl-node:hover { background:rgba(255,255,255,.025); }
+.dl-n-av { width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:9px;color:var(--navy);flex-shrink:0; }
+.dl-n-info { flex:1; }
+.dl-n-name { font-size:12px;font-weight:600; }
+.dl-n-role { font-size:9px;color:var(--muted); }
+.dl-n-stats { display:flex;gap:14px; }
+.dl-n-stat { font-family:'Courier New',monospace;font-size:11px; }
+
+/* ANALYTICS CHARTS */
+.chart-wrap { padding:16px;position:relative; }
+.chart-canvas { width:100%!important; }
+.two-col { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
+.three-col { display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px; }
+
+/* AGENT DRILL-DOWN */
+.drill-header { background:linear-gradient(135deg,var(--slate2),var(--slate3));border-radius:10px;padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:16px; }
+.drill-av { width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;flex-shrink:0; }
+.drill-info {}
+.drill-name { font-size:18px;font-weight:800; }
+.drill-meta { font-size:11px;color:var(--muted);margin-top:2px; }
+.drill-stats { display:flex;gap:20px;margin-left:auto; }
+.drill-stat { text-align:right; }
+.drill-stat-v { font-family:'Courier New',monospace;font-size:16px;font-weight:500; }
+.drill-stat-l { font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em; }
+
+/* CARRIER BARS */
+.carrier-row { display:flex;align-items:center;gap:10px;padding:9px 18px;border-bottom:1px solid rgba(255,255,255,.03); }
+.carrier-row:last-child { border-bottom:none; }
+.c-name { font-size:11px;font-weight:600;width:110px; }
+.c-bar-w { flex:1;height:6px;background:var(--slate3);border-radius:3px;overflow:hidden; }
+.c-bar { height:100%;border-radius:3px; }
+.c-amt { font-family:'Courier New',monospace;font-size:11px;width:56px;text-align:right; }
+.c-pct { font-family:'Courier New',monospace;font-size:10px;color:var(--muted);width:30px;text-align:right; }
+
+/* TAGS */
+.tag { display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:var(--slate2);color:var(--muted); }
+.tag-carrier { background:var(--slate3);color:var(--muted2); color:rgba(150,180,220,.7); }
+
+/* TOAST */
+.toast { position:fixed;bottom:22px;right:22px;z-index:999;background:var(--slate);border:1px solid var(--border);border-radius:9px;padding:11px 16px;font-size:12px;box-shadow:var(--shadow);display:flex;align-items:center;gap:9px;transform:translateY(70px);opacity:0;transition:all .28s ease;pointer-events:none; }
+.toast.show { transform:translateY(0);opacity:1; }
+
+/* SUPABASE CONFIG MODAL */
+.sb-cfg { background:var(--slate);border:1px solid rgba(74,144,226,.3);border-radius:12px;padding:24px;margin:0 auto 24px;max-width:560px; }
+.sb-cfg-t { font-size:14px;font-weight:700;margin-bottom:4px; }
+.sb-cfg-s { font-size:11px;color:var(--muted);margin-bottom:18px;line-height:1.5; }
+.sb-code { background:var(--navy2);border:1px solid var(--border2);border-radius:7px;padding:14px;font-family:'Courier New',monospace;font-size:11px;color:#7EC8E3;line-height:1.8;margin-bottom:14px;overflow-x:auto; }
+.sb-code em { color:var(--gold); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:4px;height:4px; }
+::-webkit-scrollbar-track { background:var(--navy); }
+::-webkit-scrollbar-thumb { background:var(--slate3);border-radius:2px; }
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .kpi-grid-5,.kpi-grid-4{grid-template-columns:repeat(2,1fr)}
+  .two-col,.three-col{grid-template-columns:1fr}
+  .lg-left{display:none}
+  .lg-right{width:100%}
+  .org-nodes-3,.org-nodes-4{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ── MOBILE TOUCH FIXES ── */
+* { -webkit-tap-highlight-color: transparent; }
+button, .demo-chip, .nl, .kpi-card, .req-item, .org-node, .act-item {
+  touch-action: manipulation;
+  cursor: pointer;
+}
+#login-screen {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+#app {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+html { height: -webkit-fill-available; }
+</style>
+</head>
+<body>
+
+<!-- ═══ DB BANNER ═══ -->
+<div id="db-banner">
+  <div class="db-dot"></div>
+  <span id="db-status-text">Demo mode — connect Supabase to enable live data sync</span>
+  <button class="db-config-btn" onclick="openSupabaseConfig()">⚙ Connect Database</button>
+</div>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login-screen">
+  <div class="lg-bg"></div><div class="lg-grid"></div>
+  <div class="lg-left">
+    <div class="lg-wordmark">
+      <div class="lg-mark">SM</div>
+      <div class="lg-brand"><em>Sales</em>Mafia<small>North American Senior Benefits · Production Portal</small></div>
+    </div>
+    <div class="lg-headline">Every policy.<br>Every dollar.<br><em>Every agent.</em></div>
+    <div class="lg-sub">Full production visibility from Senior Partner down to new agent — submit to issue, requirements to commissions, manager hierarchy to downline analytics.</div>
+    <div class="lg-stats">
+      <div><div class="lg-stat-n">$184k</div><div class="lg-stat-l">Team MTD</div></div>
+      <div><div class="lg-stat-n">47</div><div class="lg-stat-l">Issued Policies</div></div>
+      <div><div class="lg-stat-n">2</div><div class="lg-stat-l">Managers</div></div>
+      <div><div class="lg-stat-n">8</div><div class="lg-stat-l">Active Agents</div></div>
+    </div>
+  </div>
+  <div class="lg-right">
+    <div class="lg-card">
+      <div class="lg-card-t">Sign In</div>
+      <div class="lg-card-s">NASB agent credentials · Select demo below</div>
+      <div class="demo-box">
+        <div class="demo-lbl">— Select a demo user —</div>
+        <div class="demo-row">
+          <div class="demo-chip sp" onclick="ql('luke')" ontouchend="ql('luke')">👑 Luke H. · Sr. Partner</div>
+          <div class="demo-chip mgr" onclick="ql('nathan')" ontouchend="ql('nathan')">📊 Nathan G. · Manager</div>
+          <div class="demo-chip mgr" onclick="ql('ashton')" ontouchend="ql('ashton')">📊 Ashton L. · Manager</div>
+          <div class="demo-chip" onclick="ql('dalton')" ontouchend="ql('dalton')">Dalton</div>
+          <div class="demo-chip" onclick="ql('joseph')" ontouchend="ql('joseph')">Joseph H.</div>
+          <div class="demo-chip" onclick="ql('asher')" ontouchend="ql('asher')">Asher J.</div>
+          <div class="demo-chip" onclick="ql('paul')" ontouchend="ql('paul')">Paul H.</div>
+          <div class="demo-chip" onclick="ql('darryl')" ontouchend="ql('darryl')">Darryl T.</div>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="lg-em" type="email" placeholder="agent@nasb.com"></div>
+      <div class="fg"><label class="fl">Password</label><input class="fi" id="lg-pw" type="password" placeholder="••••••••"></div>
+      <button class="btn-login" type="button" onclick="doLogin()" ontouchend="event.preventDefault();doLogin()">Sign In →</button>
+      <div class="login-err" id="lg-err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="tb-l">
+      <div class="tb-mark">SM</div>
+      <div class="tb-brand"><em>Sales</em>Mafia</div>
+      <div class="tb-sep"></div>
+      <div class="tb-ctx" id="tb-ctx">Portal</div>
+    </div>
+    <div class="tb-r">
+      <div class="live-pill"><div class="db-dot"></div> <span id="tb-live-txt">DEMO</span></div>
+      <div class="notif-btn" onclick="toast('🔔 3 new alerts — check requirements')">🔔<div class="notif-n" id="notif-n">3</div></div>
+      <div class="tb-user">
+        <div>
+          <div class="tb-un" id="tb-un">—</div>
+          <div class="tb-ur" id="tb-ur">—</div>
+        </div>
+        <div class="tb-av" id="tb-av">—</div>
+      </div>
+      <button class="btn-out" onclick="logout()">Sign Out</button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <div class="ns">My Production</div>
+      <div class="nl active" onclick="sv('dashboard',this)"><span class="ni">⚡</span>Dashboard</div>
+      <div class="nl" onclick="sv('pipeline',this)"><span class="ni">🔄</span>My Pipeline<span class="nc nc-b" id="nc-pipe">—</span></div>
+      <div class="nl" onclick="sv('requirements',this)"><span class="ni">📋</span>Requirements<span class="nc nc-r" id="nc-req">—</span></div>
+      <div class="nl" onclick="sv('commissions',this)"><span class="ni">💰</span>Commissions</div>
+      <div class="ns">Resources</div>
+      <div class="nl" onclick="sv('documents',this)"><span class="ni">📁</span>Forms & Docs</div>
+      <div class="nl" onclick="toast('🌐 Opening NASBNation...')"><span class="ni">🌐</span>Back Office</div>
+      <!-- Manager nav — injected -->
+      <div id="mgr-nav" class="hidden">
+        <div class="ns">Manager</div>
+        <div class="nl" onclick="sv('org',this)"><span class="ni">🏛️</span>Org Hierarchy</div>
+        <div class="nl" onclick="sv('downline',this)"><span class="ni">👥</span>My Downline</div>
+        <div class="nl" onclick="sv('analytics',this)"><span class="ni">📊</span>Team Analytics</div>
+        <div class="nl" onclick="sv('recruiting',this)"><span class="ni">🎯</span>Recruiting</div>
+      </div>
+      <!-- Senior partner nav -->
+      <div id="sp-nav" class="hidden">
+        <div class="ns">Senior Partner</div>
+        <div class="nl" onclick="sv('org',this)"><span class="ni">🏛️</span>Full Org Chart</div>
+        <div class="nl" onclick="sv('analytics',this)"><span class="ni">📊</span>All Analytics</div>
+        <div class="nl" onclick="sv('goals',this)"><span class="ni">🎯</span>Set Goals</div>
+        <div class="nl" onclick="sv('recruiting',this)"><span class="ni">➕</span>Recruiting</div>
+      </div>
+      <div class="sb-goal">
+        <div class="sb-gl">MTD Goal</div>
+        <div class="sb-gbar"><div class="sb-gfill" id="sb-gfill" style="width:0%"></div></div>
+        <div class="sb-gnums">
+          <div class="sb-gcur" id="sb-gcur">$0</div>
+          <div class="sb-gtgt" id="sb-gtgt">/ $0</div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main" id="main-content">
+
+      <!-- ── DASHBOARD ── -->
+      <div id="v-dashboard">
+        <div class="ph">
+          <div class="ph-l">
+            <div class="ph-ey">SalesMafia · NASB</div>
+            <div class="ph-t" id="dash-title">Dashboard</div>
+            <div class="ph-s" id="dash-sub">Month-to-Date</div>
+          </div>
+          <div class="ph-r">
+            <div class="period-tabs">
+              <div class="pt" onclick="setPeriod('WTD',this)">WTD</div>
+              <div class="pt active" onclick="setPeriod('MTD',this)">MTD</div>
+              <div class="pt" onclick="setPeriod('QTD',this)">QTD</div>
+              <div class="pt" onclick="setPeriod('YTD',this)">YTD</div>
+            </div>
+            <button class="btn-s btn-pr" onclick="toast('📝 New app wizard launching...')">+ New App</button>
+          </div>
+        </div>
+        <div class="kpi-grid kpi-grid-5" id="dash-kpis"></div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-hd"><div><div class="panel-t">Recent Activity</div><div class="panel-s">Your last transactions</div></div><div class="panel-a" onclick="sv('pipeline',null)">All →</div></div>
+            <div id="dash-activity"></div>
+          </div>
+          <div class="panel" id="dash-req-panel">
+            <div class="panel-hd"><div><div class="panel-t">⚠️ Urgent Requirements</div><div class="panel-s">Action needed now</div></div><div class="panel-a" onclick="sv('requirements',null)">All →</div></div>
+            <div id="dash-reqs"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PIPELINE ── -->
+      <div id="v-pipeline" class="hidden">
+        <div class="ph">
+          <div class="ph-l">
+            <div class="ph-ey">Production Tracker</div>
+            <div class="ph-t">My Pipeline</div>
+            <div class="ph-s" id="pipe-sub">All applications</div>
+          </div>
+          <div class="ph-r">
+            <button class="btn-s btn-gh" onclick="fp(null)">All</button>
+            <button class="btn-s btn-gh" onclick="fp('issued')">Issued</button>
+            <button class="btn-s btn-gh" onclick="fp('pending')">Pending</button>
+            <button class="btn-s btn-gh" onclick="fp('requirements')">Needs Action</button>
+            <button class="btn-s btn-gh" onclick="fp('lapse')">Lapsed</button>
+          </div>
+        </div>
+        <div class="panel">
+          <table class="tbl">
+            <thead><tr><th>Client</th><th>Carrier</th><th>Product</th><th>Ann. Premium</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="pipe-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── REQUIREMENTS ── -->
+      <div id="v-requirements" class="hidden">
+        <div class="ph"><div class="ph-l"><div class="ph-ey">Action Center</div><div class="ph-t">Outstanding Requirements</div><div class="ph-s">Clear these to keep policies alive</div></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-t">⚠️ Needs Your Action</div></div><div id="req-list"></div></div>
+      </div>
+
+      <!-- ── COMMISSIONS ── -->
+      <div id="v-commissions" class="hidden">
+        <div class="ph"><div class="ph-l"><div class="ph-ey">Earnings</div><div class="ph-t">Commissions & Advances</div></div></div>
+        <div class="kpi-grid kpi-grid-3">
+          <div class="kpi-card kc-gold"><div class="kpi-lbl">Total Earned MTD</div><div class="kpi-v gold" id="c-total">$0</div><div class="kpi-note">before chargebacks</div></div>
+          <div class="kpi-card kc-blue"><div class="kpi-lbl">Advanced Balance</div><div class="kpi-v blue" id="c-adv">$0</div><div class="kpi-note">outstanding draws</div></div>
+          <div class="kpi-card kc-green"><div class="kpi-lbl">Net Deposited</div><div class="kpi-v green" id="c-net">$0</div><div class="kpi-note">in your account</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-t">Commission Ledger</div><div class="panel-a" onclick="toast('📥 Downloading statement PDF...')">Export PDF</div></div>
+          <div class="comm-row" style="background:var(--navy2);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-dk);">
+            <div>Carrier / Client / Product</div><div>Earned</div><div>Advanced</div><div>Net</div><div>Date</div>
+          </div>
+          <div id="comm-ledger"></div>
+        </div>
+      </div>
+
+      <!-- ── DOCUMENTS ── -->
+      <div id="v-documents" class="hidden">
+        <div class="ph"><div class="ph-l"><div class="ph-ey">Resources</div><div class="ph-t">Forms & Documents</div></div></div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-t">📋 Carrier Forms</div></div>
+            <div style="padding:14px">
+              <div class="doc-action"><div class="doc-ic">📄</div><div class="doc-inf"><div class="doc-n">Transamerica — Change of Beneficiary</div><div class="doc-d">TL-2200 · Fillable PDF</div></div><button class="doc-btn db-dl" onclick="toast('⬇️ TL-2200 downloading...')">Download</button></div>
+              <div class="doc-action"><div class="doc-ic">📄</div><div class="doc-inf"><div class="doc-n">Transamerica — Replacement Notice</div><div class="doc-d">TL-8840 · Required for replacements</div></div><button class="doc-btn db-dl" onclick="toast('⬇️ TL-8840 downloading...')">Download</button></div>
+              <div class="doc-action"><div class="doc-ic">📄</div><div class="doc-inf"><div class="doc-n">AIG/Corebridge — Supplemental Health</div><div class="doc-d">AIG-SH3 · Health history supplement</div></div><button class="doc-btn db-dl" onclick="toast('⬇️ AIG-SH3 downloading...')">Download</button></div>
+              <div class="doc-action"><div class="doc-ic">📄</div><div class="doc-inf"><div class="doc-n">Mutual of Omaha — APS Request</div><div class="doc-d">Standard physician statement request</div></div><button class="doc-btn db-dl" onclick="toast('⬇️ APS letter downloading...')">Download</button></div>
+              <div class="doc-action"><div class="doc-ic">✍️</div><div class="doc-inf"><div class="doc-n">Send E-Signature Request</div><div class="doc-d">Docusign — client signs on phone or email</div></div><button class="doc-btn db-sg" onclick="toast('✉️ DocuSign link sent to client!')">Send</button></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-t">🎓 NASB Training</div></div>
+            <div style="padding:14px">
+              <div class="doc-action"><div class="doc-ic">📘</div><div class="doc-inf"><div class="doc-n">New Agent Training Manual</div><div class="doc-d">Blair onboarding · SalesMafia checklist · 9-step</div></div><button class="doc-btn db-vw" onclick="toast('📘 Opening training manual...')">Open</button></div>
+              <div class="doc-action"><div class="doc-ic">📗</div><div class="doc-inf"><div class="doc-n">Field Sales Script (Full)</div><div class="doc-d">Door approach · Kitchen table · Close</div></div><button class="doc-btn db-vw" onclick="toast('📗 Opening field script...')">Open</button></div>
+              <div class="doc-action"><div class="doc-ic">🎯</div><div class="doc-inf"><div class="doc-n">Blair Master Onboarding Checklist</div><div class="doc-d">SuranceBay · NASBNation · nasbsalesmafia.com</div></div><button class="doc-btn db-vw" onclick="toast('🎯 Opening checklist...')">Open</button></div>
+              <div class="doc-action"><div class="doc-ic">📊</div><div class="doc-inf"><div class="doc-n">Career Track Guide</div><div class="doc-d">AG6 through Senior Partner — comp levels</div></div><button class="doc-btn db-vw" onclick="toast('📊 Opening career track...')">Open</button></div>
+              <div class="doc-action"><div class="doc-ic">🤝</div><div class="doc-inf"><div class="doc-n">SuranceBay Contracting Portal</div><div class="doc-d">License appointments, contracting status</div></div><button class="doc-btn db-vw" onclick="toast('🌐 Opening SuranceBay...')">Open</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ORG HIERARCHY ── -->
+      <div id="v-org" class="hidden">
+        <div class="ph">
+          <div class="ph-l"><div class="ph-ey">SalesMafia · NASB</div><div class="ph-t">Organization Hierarchy</div><div class="ph-s" id="org-sub">Full downline structure</div></div>
+          <div class="ph-r">
+            <button class="btn-s btn-gh" onclick="toast('📥 Exporting org chart...')">Export</button>
+            <button class="btn-s btn-pr" onclick="sv('recruiting',null)">+ Add Agent</button>
+          </div>
+        </div>
+        <div id="org-chart-content"></div>
+      </div>
+
+      <!-- ── DOWNLINE ── -->
+      <div id="v-downline" class="hidden">
+        <div class="ph"><div class="ph-l"><div class="ph-ey">Manager View</div><div class="ph-t">My Downline</div><div class="ph-s" id="dl-sub">Direct agents & their production</div></div></div>
+        <div id="downline-content"></div>
+      </div>
+
+      <!-- ── ANALYTICS ── -->
+      <div id="v-analytics" class="hidden">
+        <div class="ph">
+          <div class="ph-l"><div class="ph-ey">Analytics</div><div class="ph-t">Team Performance</div><div class="ph-s" id="analytics-sub">Production trends & breakdowns</div></div>
+          <div class="ph-r">
+            <div class="period-tabs">
+              <div class="pt" onclick="setPeriod('WTD',this)">WTD</div>
+              <div class="pt active" onclick="setPeriod('MTD',this)">MTD</div>
+              <div class="pt" onclick="setPeriod('QTD',this)">QTD</div>
+              <div class="pt" onclick="setPeriod('YTD',this)">YTD</div>
+            </div>
+          </div>
+        </div>
+        <div class="kpi-grid kpi-grid-4" id="analytics-kpis"></div>
+        <div class="two-col" style="margin-bottom:16px">
+          <div class="panel"><div class="panel-hd"><div class="panel-t">📈 Premium Trend — 6 Months</div></div><div class="chart-wrap"><canvas id="chart-trend" class="chart-canvas" height="160"></canvas></div></div>
+          <div class="panel"><div class="panel-hd"><div class="panel-t">🏛️ Carrier Mix</div></div><div class="chart-wrap"><canvas id="chart-carrier" class="chart-canvas" height="160"></canvas></div></div>
+        </div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-t">🏆 Agent Leaderboard — MTD</div></div>
+            <div id="analytics-lb"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-t">📊 Pipeline Stage Breakdown</div></div>
+            <div class="chart-wrap"><canvas id="chart-pipeline" class="chart-canvas" height="200"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── GOALS ── -->
+      <div id="v-goals" class="hidden">
+        <div class="ph"><div class="ph-l"><div class="ph-ey">Senior Partner</div><div class="ph-t">Set Agent Goals</div><div class="ph-s">Monthly production targets</div></div></div>
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-t">MTD Goals — All Agents</div><div class="panel-a" onclick="toast('✅ Goals saved!')">Save All</div></div>
+          <div id="goals-content"></div>
+        </div>
+      </div>
+
+      <!-- ── RECRUITING ── -->
+      <div id="v-recruiting" class="hidden">
+        <div class="ph"><div class="ph-l"><div class="ph-ey">Team Growth</div><div class="ph-t">Recruiting Pipeline</div></div><div class="ph-r"><button class="btn-s btn-pr" onclick="toast('📝 New recruit form...')">+ Add Prospect</button></div></div>
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-t">Active Recruiting Prospects</div></div>
+          <table class="tbl">
+            <thead><tr><th>Name</th><th>Source</th><th>Stage</th><th>Referred By</th><th>Last Contact</th><th>Actions</th></tr></thead>
+            <tbody id="recruit-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-ov" id="modal" onclick="closeMBG(event)">
+  <div class="modal-box"><button class="modal-x" onclick="closeM()">✕</button><div id="modal-body"></div></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast-el"><span id="toast-msg">—</span></div>
+
+<!-- SUPABASE CONFIG -->
+<div class="modal-ov" id="sb-modal" onclick="closeSBBG(event)">
+  <div class="modal-box" style="max-width:580px">
+    <button class="modal-x" onclick="closeSB()">✕</button>
+    <div class="modal-ey">Database Connection</div>
+    <div class="modal-t">Connect Supabase</div>
+    <div class="modal-s">Add your Supabase credentials below to enable live data sync across all agents.</div>
+    <div class="sb-cfg">
+      <div class="sb-cfg-t">Step 1 — Create your Supabase project</div>
+      <div class="sb-cfg-s">Go to <strong>supabase.com</strong>, create a new project, then copy your URL and anon key from Settings → API.</div>
+      <div class="fg"><label class="fl">Supabase Project URL</label><input class="fi" id="sb-url" placeholder="https://xyzabc.supabase.co"></div>
+      <div class="fg"><label class="fl">Anon / Public Key</label><input class="fi" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></div>
+      <div class="sb-cfg-t" style="margin-top:16px">Step 2 — Run this SQL in your Supabase SQL editor</div>
+      <div class="sb-code">
+<em>-- Agents table</em>
+CREATE TABLE agents (
+  id TEXT PRIMARY KEY,
+  name TEXT, role TEXT, tier TEXT,
+  manager_id TEXT, goal_target INT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+<em>-- Policies table</em>
+CREATE TABLE policies (
+  id TEXT PRIMARY KEY, agent_id TEXT,
+  client TEXT, carrier TEXT, product TEXT,
+  annual_premium INT, status TEXT,
+  submitted_date DATE, issued_date DATE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+<em>-- Requirements table</em>
+CREATE TABLE requirements (
+  id TEXT PRIMARY KEY, policy_id TEXT,
+  agent_id TEXT, title TEXT, description TEXT,
+  due_date DATE, resolved BOOLEAN DEFAULT FALSE
+);
+<em>-- Commissions table</em>
+CREATE TABLE commissions (
+  id TEXT PRIMARY KEY, agent_id TEXT,
+  policy_id TEXT, carrier TEXT, client TEXT,
+  earned INT, advanced INT, paid_date DATE
+);
+<em>-- Enable realtime</em>
+ALTER PUBLICATION supabase_realtime ADD TABLE policies;
+ALTER PUBLICATION supabase_realtime ADD TABLE requirements;
+      </div>
+      <button class="btn-login" onclick="connectSupabase()">Connect & Test →</button>
+      <div style="font-size:10px;color:var(--muted);margin-top:10px;text-align:center">Your credentials are stored locally in your browser only</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   DATA MODEL — mirrors Supabase schema
+══════════════════════════════════════════ */
+const DB = {
+  agents: {
+    luke:   { id:'luke',   name:'Luke H.',    initials:'LH', role:'Senior Partner', tier:'senior_partner', managerId:null,    goalTarget:300000, goalCurrent:184320, color:'gold' },
+    nathan: { id:'nathan', name:'Nathan G.',  initials:'NG', role:'Manager',        tier:'manager',        managerId:'luke',  goalTarget:120000, goalCurrent:98400,  color:'blue' },
+    ashton: { id:'ashton', name:'Ashton L.',  initials:'AL', role:'Manager',        tier:'manager',        managerId:'luke',  goalTarget:100000, goalCurrent:72100,  color:'green' },
+    dalton: { id:'dalton', name:'Dalton',     initials:'DA', role:'Field Agent',    tier:'agent',          managerId:'luke',  goalTarget:44000,  goalCurrent:31200,  color:'orange' },
+    joseph: { id:'joseph', name:'Joseph H.',  initials:'JH', role:'Field Agent',    tier:'agent',          managerId:'nathan', goalTarget:44000, goalCurrent:28100,  color:'purple' },
+    asher:  { id:'asher',  name:'Asher J.',   initials:'AJ', role:'Field Agent',    tier:'agent',          managerId:'nathan', goalTarget:44000, goalCurrent:22400,  color:'blue' },
+    paul:   { id:'paul',   name:'Paul H.',    initials:'PH', role:'Field Agent',    tier:'agent',          managerId:'nathan', goalTarget:44000, goalCurrent:18900,  color:'red' },
+    darryl: { id:'darryl', name:'Darryl T.',  initials:'DT', role:'Field Agent',    tier:'agent',          managerId:'ashton', goalTarget:44000, goalCurrent:26800,  color:'orange' },
+  },
+  policies: {
+    luke: [
+      {id:'l1',client:'Robert J.',carrier:'Transamerica',product:'GUL 15',ap:4200,submitted:'Jun 28',status:'issued'},
+      {id:'l2',client:'Martha K.',carrier:'Transamerica',product:'Trendsetter LB',ap:5600,submitted:'Jun 25',status:'issued'},
+    ],
+    nathan: [
+      {id:'n1',client:'Martha D.',carrier:'Transamerica',product:'Trendsetter LB',ap:5600,submitted:'Jun 25',status:'issued'},
+      {id:'n2',client:'James W.',carrier:'AIG/Corebridge',product:'AG ROP',ap:3800,submitted:'Jun 30',status:'pending'},
+      {id:'n3',client:'Linda C.',carrier:'Transamerica',product:'GUL 15',ap:4200,submitted:'Jun 28',status:'requirements'},
+      {id:'n4',client:'Frank O.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2100,submitted:'Jun 12',status:'lapse'},
+      {id:'n5',client:'Sandra P.',carrier:'Transamerica',product:'GUL 10',ap:3400,submitted:'Jun 20',status:'issued'},
+    ],
+    ashton: [
+      {id:'a1',client:'Robert J.',carrier:'Transamerica',product:'GUL 15',ap:4200,submitted:'Jun 28',status:'issued'},
+      {id:'a2',client:'Thomas R.',carrier:'Transamerica',product:'GUL 20',ap:6800,submitted:'Jun 18',status:'issued'},
+      {id:'a3',client:'David L.',carrier:'AIG/Corebridge',product:'AG ROP',ap:5400,submitted:'Jun 30',status:'pending'},
+      {id:'a4',client:'Barbara S.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2600,submitted:'Jun 29',status:'requirements'},
+    ],
+    dalton: [
+      {id:'da1',client:'Carol M.',carrier:'Transamerica',product:'GUL 15',ap:3800,submitted:'Jun 27',status:'issued'},
+      {id:'da2',client:'Steven P.',carrier:'AIG/Corebridge',product:'AG ROP',ap:2900,submitted:'Jun 29',status:'pending'},
+      {id:'da3',client:'Betty H.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2100,submitted:'Jun 30',status:'submitted'},
+    ],
+    joseph: [
+      {id:'j1',client:'Patricia M.',carrier:'Transamerica',product:'GUL 15',ap:3900,submitted:'Jun 26',status:'issued'},
+      {id:'j2',client:'William T.',carrier:'AIG/Corebridge',product:'AG ROP',ap:4800,submitted:'Jun 29',status:'pending'},
+      {id:'j3',client:'Nancy F.',carrier:'Mutual of Omaha',product:'Living Promise',ap:3200,submitted:'Jun 14',status:'lapse'},
+      {id:'j4',client:'George B.',carrier:'Transamerica',product:'Trendsetter',ap:2800,submitted:'Jun 21',status:'requirements'},
+    ],
+    asher: [
+      {id:'as1',client:'Dorothy K.',carrier:'Transamerica',product:'GUL 10',ap:4100,submitted:'Jun 26',status:'issued'},
+      {id:'as2',client:'Raymond S.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2400,submitted:'Jul 1',status:'submitted'},
+      {id:'as3',client:'Alice T.',carrier:'Transamerica',product:'Trendsetter LB',ap:3400,submitted:'Jun 28',status:'pending'},
+    ],
+    paul: [
+      {id:'p1',client:'Shirley W.',carrier:'Transamerica',product:'GUL 15',ap:3200,submitted:'Jun 24',status:'issued'},
+      {id:'p2',client:'Harold B.',carrier:'AIG/Corebridge',product:'AG ROP',ap:2400,submitted:'Jun 22',status:'requirements'},
+      {id:'p3',client:'Mildred R.',carrier:'Transamerica',product:'GUL 10',ap:3200,submitted:'Jun 27',status:'pending'},
+    ],
+    darryl: [
+      {id:'dr1',client:'Eugene P.',carrier:'AIG/Corebridge',product:'AG ROP',ap:2900,submitted:'Jun 29',status:'issued'},
+      {id:'dr2',client:'Vivian C.',carrier:'Mutual of Omaha',product:'Living Promise',ap:2100,submitted:'Jun 24',status:'requirements'},
+      {id:'dr3',client:'Frank T.',carrier:'Transamerica',product:'Trendsetter LB',ap:3800,submitted:'Jun 30',status:'pending'},
+    ],
+  },
+  requirements: {
+    luke:[],
+    nathan:[
+      {id:'nr1',icon:'📋',cls:'ri-red',title:'Replacement Notice Signature',client:'Linda C. — Transamerica $4,200 AP',desc:'Policy replaces existing coverage. TL-8840 form requires wet signature from client.',due:'⚠️ Due Jul 5 — 3 days',dueCls:'due-u',docCls:'ri-orange'},
+      {id:'nr2',icon:'🏥',cls:'ri-orange',title:'Medical Records Required',client:'Linda C. — Transamerica $4,200 AP',desc:'Underwriter flagged health history. Medical records from past 5 years required from primary care.',due:'⏱ Due Jul 12',dueCls:'due-s',docCls:'ri-red'},
+    ],
+    ashton:[
+      {id:'ar1',icon:'🪪',cls:'ri-orange',title:'Photo ID Required',client:'Barbara S. — Mutual of Omaha $2,600 AP',desc:'Client ID was blurry on upload. Need clear copy of state-issued photo ID front and back.',due:'⚠️ Due Jul 4 — 2 days',dueCls:'due-u',docCls:'ri-blue'},
+    ],
+    dalton:[],
+    joseph:[
+      {id:'jr1',icon:'✍️',cls:'ri-orange',title:'E-Signature Pending',client:'William T. — AIG/Corebridge $4,800 AP',desc:'DocuSign sent 3 days ago, not completed. Call client to complete while on phone.',due:'⚠️ Due Jul 4 — 2 days',dueCls:'due-u',docCls:'ri-green'},
+      {id:'jr2',icon:'📋',cls:'ri-blue',title:'Height/Weight Form',client:'George B. — Transamerica $2,800 AP',desc:'Carrier needs weight history form completed.',due:'⏱ Due Jul 9',dueCls:'due-s',docCls:'ri-orange'},
+    ],
+    asher:[],
+    paul:[
+      {id:'pr1',icon:'📋',cls:'ri-orange',title:'Beneficiary Form Incomplete',client:'Harold B. — AIG/Corebridge $2,400 AP',desc:'Beneficiary designation missing relationship field. Resubmit corrected form.',due:'⏱ Due Jul 7',dueCls:'due-s',docCls:'ri-blue'},
+    ],
+    darryl:[
+      {id:'dtr1',icon:'✍️',cls:'ri-orange',title:'Client E-Sig Pending',client:'Vivian C. — Mutual of Omaha $2,100 AP',desc:'DocuSign not yet completed by client. Follow up call required.',due:'⏱ Due Jul 8',dueCls:'due-s',docCls:'ri-green'},
+    ],
+  },
+  commissions: {
+    luke:{ total:'$82,400', adv:'$24,000', net:'$58,400',
+      rows:[{carrier:'Transamerica',client:'Robert J.',product:'GUL 15',earned:'$1,890',adv:'$1,500',net:'$390',date:'Jun 30'},{carrier:'Transamerica',client:'Martha K.',product:'Trendsetter LB',earned:'$2,520',adv:'$2,000',net:'$520',date:'Jun 28'}]},
+    nathan:{ total:'$44,280', adv:'$16,000', net:'$28,280',
+      rows:[{carrier:'Transamerica',client:'Martha D.',product:'Trendsetter LB',earned:'$2,520',adv:'$2,000',net:'$520',date:'Jun 29'},{carrier:'Transamerica',client:'Sandra P.',product:'GUL 10',earned:'$1,530',adv:'$1,000',net:'$530',date:'Jun 26'}]},
+    ashton:{ total:'$32,445', adv:'$14,000', net:'$18,445',
+      rows:[{carrier:'Transamerica',client:'Robert J.',product:'GUL 15',earned:'$1,890',adv:'$1,500',net:'$390',date:'Jun 30'},{carrier:'Transamerica',client:'Thomas R.',product:'GUL 20',earned:'$3,060',adv:'$2,500',net:'$560',date:'Jun 24'}]},
+    dalton:{ total:'$14,040', adv:'$8,000', net:'$6,040',
+      rows:[{carrier:'Transamerica',client:'Carol M.',product:'GUL 15',earned:'$1,710',adv:'$1,200',net:'$510',date:'Jun 28'}]},
+    joseph:{ total:'$12,645', adv:'$8,000', net:'$4,645',
+      rows:[{carrier:'Transamerica',client:'Patricia M.',product:'GUL 15',earned:'$1,755',adv:'$1,200',net:'$555',date:'Jun 28'}]},
+    asher:{ total:'$10,080', adv:'$6,000', net:'$4,080',
+      rows:[{carrier:'Transamerica',client:'Dorothy K.',product:'GUL 10',earned:'$1,845',adv:'$1,500',net:'$345',date:'Jun 27'}]},
+    paul:{ total:'$8,505', adv:'$5,000', net:'$3,505',
+      rows:[{carrier:'Transamerica',client:'Shirley W.',product:'GUL 15',earned:'$1,440',adv:'$1,000',net:'$440',date:'Jun 25'}]},
+    darryl:{ total:'$12,060', adv:'$7,000', net:'$5,060',
+      rows:[{carrier:'AIG/Corebridge',client:'Eugene P.',product:'AG ROP',earned:'$1,305',adv:'$1,000',net:'$305',date:'Jun 30'}]},
+  },
+  recruits:[
+    {name:'Tyler Wells',source:'Referral — Nathan G.',stage:'Licensing',by:'Nathan G.',last:'Jun 30'},
+    {name:'Jordan Smith',source:'Career Fair',stage:'Interview',by:'Luke H.',last:'Jul 1'},
+    {name:'Brittany Moore',source:'Facebook Ad',stage:'Contracting',by:'Ashton L.',last:'Jun 28'},
+    {name:'Kevin Park',source:'Referral — Darryl T.',stage:'First Field Day',by:'Darryl T.',last:'Jul 1'},
+    {name:'Marcus Davis',source:'Referral — Joseph H.',stage:'Licensing',by:'Joseph H.',last:'Jul 2'},
+  ],
+};
+
+// Computed KPIs per user
+function getKPI(id) {
+  const a = DB.agents[id];
+  // Aggregate downline if manager/SP
+  let pols = getPolicies(id);
+  let reqs = getReqs(id);
+  const issued = pols.filter(p=>p.status==='issued');
+  const pending = pols.filter(p=>p.status==='pending'||p.status==='submitted');
+  const lapses = pols.filter(p=>p.status==='lapse');
+  const issuedAP = issued.reduce((s,p)=>s+p.ap,0);
+  const pendingAP = pending.reduce((s,p)=>s+p.ap,0);
+  const comm = DB.commissions[id];
+  return { issuedAP, issuedCt:issued.length, pendingCt:pending.length, pendingAP, reqCt:reqs.length, lapseCt:lapses.length, lapseAP:lapses.reduce((s,p)=>s+p.ap,0), comm };
+}
+function getPolicies(id) {
+  const a = DB.agents[id];
+  if (a.tier==='senior_partner') return Object.values(DB.policies).flat();
+  if (a.tier==='manager') {
+    const directs = getDirects(id);
+    return [id,...directs].flatMap(aid=>DB.policies[aid]||[]);
+  }
+  return DB.policies[id]||[];
+}
+function getReqs(id) {
+  const a = DB.agents[id];
+  if (a.tier==='senior_partner') return Object.values(DB.requirements).flat();
+  if (a.tier==='manager') {
+    const directs = getDirects(id);
+    return [id,...directs].flatMap(aid=>DB.requirements[aid]||[]);
+  }
+  return DB.requirements[id]||[];
+}
+function getDirects(managerId) {
+  return Object.keys(DB.agents).filter(id=>DB.agents[id].managerId===managerId);
+}
+function getAllBelow(managerId) {
+  const directs = getDirects(managerId);
+  return directs.flatMap(d=>{ const a=DB.agents[d]; return a.tier==='manager'?[d,...getAllBelow(d)]:[d]; });
+}
+
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let CU = null; // current user
+let charts = {};
+
+/* ══════════════════════════════════════════
+   LOGIN
+══════════════════════════════════════════ */
+function ql(key) {
+  if(event) { event.preventDefault(); event.stopPropagation(); }
+  document.getElementById('lg-em').value = key+'@nasb.com';
+  document.getElementById('lg-pw').value = 'demo1234';
+  document.querySelectorAll('.demo-chip').forEach(c=>c.classList.remove('sel'));
+  if(event && event.target) event.target.classList.add('sel');
+  setTimeout(function(){ doLogin(); }, 150);
+}
+function doLogin() {
+  const em = document.getElementById('lg-em').value.trim();
+  const pw = document.getElementById('lg-pw').value.trim();
+  const err = document.getElementById('lg-err');
+  if (!em||!pw) { err.textContent='Enter email and password.'; return; }
+  if (pw !== 'demo1234') { err.textContent='Password is: demo1234'; return; }
+  const key = em.split('@')[0].toLowerCase().trim();
+  let agent = DB.agents[key];
+  if (!agent) {
+    const foundKey = Object.keys(DB.agents).find(function(k) {
+      const firstName = DB.agents[k].name.toLowerCase().split(' ')[0];
+      return firstName === key || k === key;
+    });
+    if (foundKey) agent = DB.agents[foundKey];
+  }
+  if (!agent) { err.textContent='Not found. Tap a name above to log in.'; return; }
+  err.textContent='';
+  loginAs(agent);
+}
+function loginAs(agent) {
+  CU = agent;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  // Topbar
+  document.getElementById('tb-un').textContent=agent.name;
+  document.getElementById('tb-ur').textContent=agent.role;
+  document.getElementById('tb-av').textContent=agent.initials;
+  document.getElementById('tb-ctx').textContent = agent.tier==='senior_partner'?'Senior Partner Portal': agent.tier==='manager'?'Manager Portal':'Agent Portal';
+  // Nav
+  document.getElementById('mgr-nav').classList[agent.tier==='manager'?'remove':'add']('hidden');
+  document.getElementById('sp-nav').classList[agent.tier==='senior_partner'?'remove':'add']('hidden');
+  // Goal
+  const pct = Math.min(100,Math.round(agent.goalCurrent/agent.goalTarget*100));
+  document.getElementById('sb-gfill').style.width=pct+'%';
+  document.getElementById('sb-gcur').textContent='$'+agent.goalCurrent.toLocaleString();
+  document.getElementById('sb-gtgt').textContent='/ $'+agent.goalTarget.toLocaleString();
+  // Counts
+  const k = getKPI(agent.id);
+  document.getElementById('nc-pipe').textContent=getPolicies(agent.id).length;
+  document.getElementById('nc-req').textContent=k.reqCt||'';
+  // Render
+  loadDashboard(); sv('dashboard',document.querySelector('.nl'));
+}
+function logout() {
+  CU=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  ['mgr-nav','sp-nav'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});
+  charts={};
+}
+
+/* ══════════════════════════════════════════
+   VIEW SWITCHING
+══════════════════════════════════════════ */
+const VIEWS=['dashboard','pipeline','requirements','commissions','documents','org','downline','analytics','goals','recruiting'];
+function sv(name, el) {
+  VIEWS.forEach(v=>{ const e=document.getElementById('v-'+v); if(e)e.classList.add('hidden'); });
+  const t=document.getElementById('v-'+name); if(t)t.classList.remove('hidden');
+  document.querySelectorAll('.nl').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const loaders={pipeline:loadPipeline,requirements:loadRequirements,commissions:loadCommissions,org:loadOrg,downline:loadDownline,analytics:loadAnalytics,goals:loadGoals,recruiting:loadRecruiting};
+  if(loaders[name]) loaders[name]();
+}
+
+/* ══════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════ */
+function loadDashboard() {
+  if(!CU)return;
+  const k=getKPI(CU.id);
+  const hr=new Date().getHours();
+  const gr=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  document.getElementById('dash-title').textContent=`${gr}, ${CU.name.split(' ')[0]}`;
+  document.getElementById('dash-sub').textContent=`${CU.role} · Month-to-Date Production`;
+  const isManager=CU.tier!=='agent';
+  const kpis=[
+    {lbl:isManager?'Team Issued AP':'Issued Premium',val:'$'+k.issuedAP.toLocaleString(),cls:'gold',color:'gold',icon:'💰',note:k.issuedCt+' policies issued'},
+    {lbl:'Pending / In Review',val:k.pendingCt,cls:'blue',color:'blue',icon:'📨',note:'$'+k.pendingAP.toLocaleString()+' in pipeline'},
+    {lbl:'Needs Action',val:k.reqCt,cls:'orange',color:'orange',icon:'⚠️',note:'outstanding requirements'},
+    {lbl:'Commissions MTD',val:DB.commissions[CU.id].total,cls:'green',color:'green',icon:'💳',note:DB.commissions[CU.id].adv+' advanced'},
+    {lbl:'Lapses / NTO',val:k.lapseCt,cls:'red',color:'red',icon:'🔴',note:'$'+k.lapseAP.toLocaleString()+' at risk'},
+  ];
+  document.getElementById('dash-kpis').innerHTML=kpis.map(k=>`
+    <div class="kpi-card kc-${k.cls}"><div class="kpi-bg-icon">${k.icon}</div>
+    <div class="kpi-lbl">${k.lbl}</div>
+    <div class="kpi-v ${k.color}">${k.val}</div>
+    <div class="kpi-note">${k.note}</div></div>`).join('');
+  // Activity
+  const pols=getPolicies(CU.id).slice(0,6);
+  const clr={issued:'var(--green-lt)',pending:'var(--blue-lt)',submitted:'var(--gold)',requirements:'var(--orange)',lapse:'var(--red)'};
+  const lbl={issued:'ISSUED',pending:'PENDING',submitted:'SUBMITTED',requirements:'ACTION NEEDED',lapse:'LAPSED'};
+  document.getElementById('dash-activity').innerHTML=pols.map(p=>`
+    <div class="act-item">
+      <div class="act-dot" style="background:${clr[p.status]||'var(--muted)'}"></div>
+      <div class="act-txt"><strong>${p.client}</strong> — ${p.carrier} ${p.product} <span style="color:var(--muted)">($${p.ap.toLocaleString()})</span></div>
+      <span class="sp sp-${p.status}">${lbl[p.status]||p.status}</span>
+      <div class="act-tm">${p.submitted}</div>
+    </div>`).join('');
+  // Urgent reqs
+  const urgReqs=getReqs(CU.id).filter(r=>r.dueCls==='due-u'||r.dueCls==='due-s').slice(0,3);
+  const rp=document.getElementById('dash-req-panel');
+  if(urgReqs.length===0){rp.classList.add('hidden');}
+  else{rp.classList.remove('hidden');document.getElementById('dash-reqs').innerHTML=urgReqs.map(r=>reqHTML(r)).join('');}
+}
+
+/* ══════════════════════════════════════════
+   PIPELINE
+══════════════════════════════════════════ */
+function loadPipeline(filter) {
+  if(!CU)return;
+  let pols=getPolicies(CU.id);
+  if(filter)pols=pols.filter(p=>p.status===filter);
+  document.getElementById('pipe-sub').textContent=`${pols.length} applications — ${CU.name}`;
+  const sLbl={issued:'Issued',pending:'Pending',submitted:'Submitted',requirements:'Needs Action',lapse:'Lapsed/NTO'};
+  document.getElementById('pipe-tbody').innerHTML=pols.map(p=>`
+    <tr>
+      <td><strong>${p.client}</strong></td>
+      <td><span class="tag tag-carrier">${p.carrier}</span></td>
+      <td style="color:var(--muted)">${p.product}</td>
+      <td class="mono" style="color:var(--gold)">$${p.ap.toLocaleString()}</td>
+      <td class="mono" style="color:var(--muted);font-size:10px">${p.submitted}</td>
+      <td><span class="sp sp-${p.status}">${sLbl[p.status]||p.status}</span></td>
+      <td><div style="display:flex;gap:4px">
+        <button class="ab ab-v" onclick="openPolicyModal('${p.id}')">View</button>
+        ${p.status==='requirements'?`<button class="ab ab-a" onclick="openReqModal('${p.id}')">⚠️ Action</button>`:''}
+        ${p.status==='pending'||p.status==='submitted'?`<button class="ab ab-d" onclick="toast('📄 Opening carrier portal...')">Docs</button>`:''}
+      </div></td>
+    </tr>`).join('');
+}
+function fp(f){loadPipeline(f);}
+
+/* ══════════════════════════════════════════
+   REQUIREMENTS
+══════════════════════════════════════════ */
+function reqHTML(r) {
+  return `<div class="req-item" onclick="openReqDetailModal('${r.id}')">
+    <div class="req-ic ${r.cls}">${r.icon}</div>
+    <div class="req-b">
+      <div class="req-t">${r.title}</div>
+      <div class="req-c">${r.client}</div>
+      <div class="req-d">${r.desc}</div>
+      <div class="req-due ${r.dueCls}">${r.due}</div>
+    </div>
+    <div><button class="ab ab-a" onclick="event.stopPropagation();openReqDetailModal('${r.id}')">Take Action</button></div>
+  </div>`;
+}
+function loadRequirements() {
+  if(!CU)return;
+  const reqs=getReqs(CU.id);
+  document.getElementById('req-list').innerHTML=reqs.length?reqs.map(r=>reqHTML(r)).join(''):'<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px">✅ No outstanding requirements — clean slate!</div>';
+}
+
+/* ══════════════════════════════════════════
+   COMMISSIONS
+══════════════════════════════════════════ */
+function loadCommissions() {
+  if(!CU)return;
+  const c=DB.commissions[CU.id];
+  document.getElementById('c-total').textContent=c.total;
+  document.getElementById('c-adv').textContent=c.adv;
+  document.getElementById('c-net').textContent=c.net;
+  document.getElementById('comm-ledger').innerHTML=c.rows.map(r=>`
+    <div class="comm-row">
+      <div><div style="font-size:12px;font-weight:600">${r.carrier}</div><div style="font-size:10px;color:var(--muted)">${r.client} · ${r.product}</div></div>
+      <div class="mono" style="color:var(--gold)">${r.earned}</div>
+      <div class="mono" style="color:var(--muted)">${r.adv}</div>
+      <div class="mono" style="color:var(--green-lt)">${r.net}</div>
+      <div class="mono" style="color:var(--muted);font-size:10px">${r.date}</div>
+    </div>`).join('')||'<div style="padding:20px;color:var(--muted);font-size:12px;text-align:center">No commission records yet — connect Supabase for live data</div>';
+}
+
+/* ══════════════════════════════════════════
+   ORG HIERARCHY
+══════════════════════════════════════════ */
+function loadOrg() {
+  if(!CU)return;
+  // Build full org tree visible to this user
+  document.getElementById('org-sub').textContent=CU.tier==='senior_partner'?'Full organization · All levels':'Your reporting structure';
+  let html='<div class="org-chart">';
+  // Level 0 — Senior Partners (or just this manager)
+  if(CU.tier==='senior_partner') {
+    html+=orgLevel('Senior Partner — You',[CU],1);
+    const myDirectMgrs=getDirects(CU.id).map(id=>DB.agents[id]).filter(a=>a.tier==='manager');
+    html+=orgLevel('Your Managers',myDirectMgrs,3);
+    const myDirectAgents=getDirects(CU.id).map(id=>DB.agents[id]).filter(a=>a.tier==='agent');
+    if(myDirectAgents.length) html+=orgLevel('Your Direct Agents',myDirectAgents,4);
+    // Show each manager's downline
+    myDirectMgrs.forEach(mgr=>{
+      const sub=getDirects(mgr.id).map(id=>DB.agents[id]);
+      if(sub.length) html+=orgLevel(mgr.name+"'s Team ("+sub.length+" agents)",sub,4);
+    });
+  } else if(CU.tier==='manager') {
+    html+=orgLevel('You — Manager',[CU],1);
+    const directs=getDirects(CU.id).map(id=>DB.agents[id]);
+    html+=orgLevel('Your Agents',directs,4);
+  }
+  html+='</div>';
+  document.getElementById('org-chart-content').innerHTML=html;
+}
+
+function orgLevel(label,agents,cols) {
+  if(!agents.length)return'';
+  return `<div class="org-level">
+    <div class="org-level-label">${label} <span style="color:var(--muted);font-weight:400;font-size:10px">(${agents.length})</span></div>
+    <div class="org-nodes org-nodes-${Math.min(cols,agents.length)}">
+      ${agents.map(a=>orgNode(a)).join('')}
+    </div>
+  </div>`;
+}
+
+function orgNode(a) {
+  const k=getKPI(a.id);
+  const pct=Math.min(100,Math.round(a.goalCurrent/a.goalTarget*100));
+  const barColor={gold:'var(--gold)',blue:'var(--blue-lt)',green:'var(--green-lt)',purple:'var(--purple)',orange:'var(--orange)',red:'var(--red)'}[a.color]||'var(--gold)';
+  const directs=getDirects(a.id);
+  return `<div class="org-node on-${a.color}" onclick="openAgentDrill('${a.id}')">
+    <div class="on-top">
+      <div class="on-av on-av-${a.color}">${a.initials}</div>
+      <div><div class="on-name">${a.name}</div><div class="on-role">${a.role}</div></div>
+    </div>
+    <div class="on-stats">
+      <div class="on-stat"><div class="on-stat-v" style="color:${barColor}">$${(a.goalCurrent/1000).toFixed(0)}k</div><div class="on-stat-l">Issued AP</div></div>
+      <div class="on-stat"><div class="on-stat-v" style="color:var(--orange)">${k.reqCt}</div><div class="on-stat-l">Reqs</div></div>
+      <div class="on-stat"><div class="on-stat-v" style="color:var(--red)">${k.lapseCt}</div><div class="on-stat-l">Lapses</div></div>
+    </div>
+    <div class="on-bar-wrap"><div class="on-bar" style="width:${pct}%;background:${barColor}"></div></div>
+    <div class="on-goal-pct">${pct}% of $${(a.goalTarget/1000).toFixed(0)}k goal${directs.length?' · '+directs.length+' agents below':''}</div>
+    <div class="on-actions">
+      <button class="ab ab-v" onclick="event.stopPropagation();openAgentDrill('${a.id}')">View Detail</button>
+      ${a.tier!=='senior_partner'?`<button class="ab ab-d" onclick="event.stopPropagation();toast('📞 Calling ${a.name}...')">📞 Call</button>`:''}
+    </div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════
+   DOWNLINE
+══════════════════════════════════════════ */
+function loadDownline() {
+  if(!CU)return;
+  document.getElementById('dl-sub').textContent=`Reporting to ${CU.name}`;
+  const directs=getDirects(CU.id).map(id=>DB.agents[id]);
+  if(!directs.length){document.getElementById('downline-content').innerHTML='<div style="padding:24px;color:var(--muted)">No direct reports yet.</div>';return;}
+  let html='';
+  directs.forEach(agent=>{
+    const k=getKPI(agent.id);
+    const pct=Math.min(100,Math.round(agent.goalCurrent/agent.goalTarget*100));
+    const barClr={gold:'var(--gold)',blue:'var(--blue-lt)',green:'var(--green-lt)',purple:'var(--purple)',orange:'var(--orange)',red:'var(--red)'}[agent.color]||'var(--gold)';
+    html+=`<div class="panel" style="cursor:pointer" onclick="openAgentDrill('${agent.id}')">
+      <div class="drill-header">
+        <div class="drill-av on-av-${agent.color}" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:var(--navy)">${agent.initials}</div>
+        <div class="drill-info">
+          <div class="drill-name">${agent.name}</div>
+          <div class="drill-meta">${agent.role} · ${agent.id}@nasb.com</div>
+        </div>
+        <div class="drill-stats">
+          <div class="drill-stat"><div class="drill-stat-v" style="color:${barClr}">$${(agent.goalCurrent/1000).toFixed(0)}k</div><div class="drill-stat-l">Issued AP</div></div>
+          <div class="drill-stat"><div class="drill-stat-v" style="color:var(--orange)">${k.reqCt}</div><div class="drill-stat-l">Reqs</div></div>
+          <div class="drill-stat"><div class="drill-stat-v" style="color:var(--red)">${k.lapseCt}</div><div class="drill-stat-l">Lapses</div></div>
+          <div class="drill-stat"><div class="drill-stat-v" style="color:var(--green-lt)">${pct}%</div><div class="drill-stat-l">Goal</div></div>
+        </div>
+        <button class="btn-s btn-pr" style="margin-left:12px" onclick="event.stopPropagation();openAgentDrill('${agent.id}')">Full View →</button>
+      </div>
+      <div style="padding:0 0 4px">
+        ${(DB.policies[agent.id]||[]).slice(0,3).map(p=>`
+          <div class="act-item">
+            <div class="act-dot" style="background:${{issued:'var(--green-lt)',pending:'var(--blue-lt)',submitted:'var(--gold)',requirements:'var(--orange)',lapse:'var(--red)'}[p.status]}"></div>
+            <div class="act-txt"><strong>${p.client}</strong> — ${p.carrier} ${p.product} ($${p.ap.toLocaleString()})</div>
+            <span class="sp sp-${p.status}">${p.status}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('downline-content').innerHTML=html;
+}
+
+/* ══════════════════════════════════════════
+   ANALYTICS
+══════════════════════════════════════════ */
+function loadAnalytics() {
+  if(!CU)return;
+  document.getElementById('analytics-sub').textContent=CU.tier==='senior_partner'?'All agents · All carriers':'Your team · Month-to-Date';
+  const visAgents = CU.tier==='senior_partner'
+    ? Object.values(DB.agents)
+    : [CU, ...getDirects(CU.id).map(id=>DB.agents[id])];
+  const totalAP = visAgents.reduce((s,a)=>s+a.goalCurrent,0);
+  const totalPols = visAgents.flatMap(a=>DB.policies[a.id]||[]);
+  const issuedPols = totalPols.filter(p=>p.status==='issued');
+  const reqCt = visAgents.flatMap(a=>DB.requirements[a.id]||[]).length;
+
+  document.getElementById('analytics-kpis').innerHTML=`
+    <div class="kpi-card kc-gold"><div class="kpi-lbl">Total Issued AP</div><div class="kpi-v gold">$${totalAP.toLocaleString()}</div><div class="kpi-note">${issuedPols.length} policies issued</div></div>
+    <div class="kpi-card kc-blue"><div class="kpi-lbl">Active Agents</div><div class="kpi-v blue">${visAgents.filter(a=>a.tier==='agent').length}</div><div class="kpi-note">producing this month</div></div>
+    <div class="kpi-card kc-orange"><div class="kpi-lbl">Open Requirements</div><div class="kpi-v orange">${reqCt}</div><div class="kpi-note">across team</div></div>
+    <div class="kpi-card kc-green"><div class="kpi-lbl">Avg Goal Attainment</div><div class="kpi-v green">${Math.round(visAgents.reduce((s,a)=>s+(a.goalCurrent/a.goalTarget),0)/visAgents.length*100)}%</div><div class="kpi-note">team average</div></div>`;
+
+  // Trend chart
+  setTimeout(()=>{
+    const tCtx=document.getElementById('chart-trend');
+    if(!tCtx)return;
+    if(charts.trend)charts.trend.destroy();
+    charts.trend=new Chart(tCtx,{type:'line',data:{labels:['Feb','Mar','Apr','May','Jun','Jul'],datasets:[{label:'Team Premium',data:[98000,112000,128000,145000,162000,184320],borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,0.08)',borderWidth:2,pointBackgroundColor:'#C9A84C',pointRadius:4,tension:0.3,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#5D7499',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#5D7499',font:{size:10},callback:v=>'$'+(v/1000).toFixed(0)+'k'}}}}});
+    // Carrier donut
+    const cCtx=document.getElementById('chart-carrier');
+    if(charts.carrier)charts.carrier.destroy();
+    charts.carrier=new Chart(cCtx,{type:'doughnut',data:{labels:['Transamerica','AIG/Corebridge','Mutual of Omaha'],datasets:[{data:[72,18,10],backgroundColor:['#C9A84C','#4A90E2','#27AE60'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,cutout:'68%',plugins:{legend:{position:'bottom',labels:{color:'#5D7499',font:{size:10},padding:14}}}}});
+    // Pipeline bar
+    const pCtx=document.getElementById('chart-pipeline');
+    if(charts.pipeline)charts.pipeline.destroy();
+    const stages=['Submitted','Pending','Approved','E-Sig','Issued'];
+    const stageData=[totalPols.filter(p=>p.status==='submitted').length,totalPols.filter(p=>p.status==='pending').length,2,3,issuedPols.length];
+    charts.pipeline=new Chart(pCtx,{type:'bar',data:{labels:stages,datasets:[{label:'Policies',data:stageData,backgroundColor:['#C9A84C','#4A90E2','#27AE60','#FF9800','#2ECC71'],borderRadius:5,borderWidth:0}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#5D7499',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#5D7499',font:{size:10}}}}}});
+  },100);
+
+  // Leaderboard
+  const lbAgents=visAgents.filter(a=>a.tier==='agent').sort((a,b)=>b.goalCurrent-a.goalCurrent);
+  const maxAP=lbAgents[0]?.goalCurrent||1;
+  const barClr=(c)=>({gold:'var(--gold)',blue:'var(--blue-lt)',green:'var(--green-lt)',purple:'var(--purple)',orange:'var(--orange)',red:'var(--red)'}[c]||'var(--gold)');
+  document.getElementById('analytics-lb').innerHTML=`
+    <table class="tbl">
+      <thead><tr><th>#</th><th>Agent</th><th>Issued AP</th><th>Apps</th><th>Reqs</th><th>Goal %</th></tr></thead>
+      <tbody>${lbAgents.map((a,i)=>{
+        const k=getKPI(a.id); const pct=Math.min(100,Math.round(a.goalCurrent/a.goalTarget*100));
+        return `<tr onclick="openAgentDrill('${a.id}')" style="cursor:pointer">
+          <td class="mono" style="color:${i<3?'var(--gold)':'var(--muted)'};font-weight:${i<3?700:400}">${String(i+1).padStart(2,'0')}</td>
+          <td><div style="display:flex;align-items:center;gap:8px"><div style="width:26px;height:26px;border-radius:50%;background:${barClr(a.color)};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--navy);flex-shrink:0">${a.initials}</div><div><div style="font-size:12px;font-weight:600">${a.name}</div><div style="font-size:10px;color:var(--muted)">${a.role}</div></div></div></td>
+          <td class="mono" style="color:${barClr(a.color)}">$${a.goalCurrent.toLocaleString()}</td>
+          <td>${(DB.policies[a.id]||[]).filter(p=>p.status==='issued').length}</td>
+          <td style="color:${k.reqCt>0?'var(--orange)':'var(--muted)'}">${k.reqCt}</td>
+          <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;height:4px;background:var(--slate3);border-radius:2px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${barClr(a.color)};border-radius:2px"></div></div><span class="mono" style="font-size:10px;color:${barClr(a.color)};width:28px">${pct}%</span></div></td>
+        </tr>`;}).join('')}
+      </tbody>
+    </table>`;
+}
+
+/* ══════════════════════════════════════════
+   GOALS
+══════════════════════════════════════════ */
+function loadGoals() {
+  const agents=Object.values(DB.agents).filter(a=>a.tier==='agent');
+  document.getElementById('goals-content').innerHTML=`
+    <table class="tbl">
+      <thead><tr><th>Agent</th><th>Current Goal</th><th>MTD Actual</th><th>Attainment</th><th>New Goal</th></tr></thead>
+      <tbody>${agents.map(a=>{const pct=Math.round(a.goalCurrent/a.goalTarget*100);return`
+        <tr>
+          <td><strong>${a.name}</strong><br><span style="font-size:10px;color:var(--muted)">${a.role}</span></td>
+          <td class="mono" style="color:var(--gold)">$${a.goalTarget.toLocaleString()}</td>
+          <td class="mono" style="color:var(--green-lt)">$${a.goalCurrent.toLocaleString()}</td>
+          <td><div style="display:flex;align-items:center;gap:6px"><div style="width:80px;height:5px;background:var(--slate3);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:var(--gold);border-radius:3px"></div></div><span class="mono" style="font-size:10px;color:var(--gold)">${pct}%</span></div></td>
+          <td><input style="background:var(--navy2);border:1px solid var(--border2);border-radius:5px;padding:5px 9px;font-size:12px;color:var(--white);font-family:'Courier New',monospace;width:100px" value="$${a.goalTarget.toLocaleString()}" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'"></td>
+        </tr>`;}).join('')}
+      </tbody>
+    </table>
+    <div style="padding:14px 18px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end">
+      <button class="btn-s btn-pr" onclick="toast('✅ Goals saved for all agents!')">Save Goals</button>
+    </div>`;
+}
+
+/* ══════════════════════════════════════════
+   RECRUITING
+══════════════════════════════════════════ */
+function loadRecruiting() {
+  const stgClr={Licensing:'var(--orange)',Interview:'var(--blue-lt)',Contracting:'var(--gold)','First Field Day':'var(--green-lt)'};
+  document.getElementById('recruit-tbody').innerHTML=DB.recruits.map(r=>`
+    <tr>
+      <td><strong>${r.name}</strong></td>
+      <td style="color:var(--muted);font-size:11px">${r.source}</td>
+      <td><span class="sp" style="background:rgba(255,255,255,.06);color:${stgClr[r.stage]||'var(--muted)'}">${r.stage}</span></td>
+      <td style="color:var(--muted)">${r.by}</td>
+      <td class="mono" style="color:var(--muted);font-size:10px">${r.last}</td>
+      <td><div style="display:flex;gap:4px"><button class="ab ab-v" onclick="toast('📝 Opening recruit profile...')">View</button><button class="ab ab-g" onclick="toast('📞 Calling...')">📞</button></div></td>
+    </tr>`).join('');
+}
+
+/* ══════════════════════════════════════════
+   MODALS
+══════════════════════════════════════════ */
+function openAgentDrill(agentId) {
+  const a=DB.agents[agentId];
+  if(!a)return;
+  const k=getKPI(a.id);
+  const pct=Math.min(100,Math.round(a.goalCurrent/a.goalTarget*100));
+  const pols=(DB.policies[a.id]||[]);
+  const reqs=(DB.requirements[a.id]||[]);
+  const barClr={gold:'var(--gold)',blue:'var(--blue-lt)',green:'var(--green-lt)',purple:'var(--purple)',orange:'var(--orange)',red:'var(--red)'}[a.color]||'var(--gold)';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="modal-ey">Agent Detail</div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:6px">
+      <div class="on-av on-av-${a.color}" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:var(--navy)">${a.initials}</div>
+      <div><div class="modal-t">${a.name}</div><div style="font-size:11px;color:var(--muted)">${a.role} · Reports to ${a.managerId?DB.agents[a.managerId]?.name:'—'}</div></div>
+    </div>
+    <div class="modal-sec">MTD Performance</div>
+    <div class="info-grid">
+      <div class="info-it"><div class="info-k">Issued AP</div><div class="info-v gold">$${a.goalCurrent.toLocaleString()}</div></div>
+      <div class="info-it"><div class="info-k">Goal</div><div class="info-v">$${a.goalTarget.toLocaleString()} (${pct}%)</div></div>
+      <div class="info-it"><div class="info-k">Pending Pipeline</div><div class="info-v blue">${k.pendingCt} apps / $${k.pendingAP.toLocaleString()}</div></div>
+      <div class="info-it"><div class="info-k">Requirements Open</div><div class="info-v orange">${k.reqCt}</div></div>
+      <div class="info-it"><div class="info-k">Lapses / NTO</div><div class="info-v red">${k.lapseCt}</div></div>
+      <div class="info-it"><div class="info-k">Commissions</div><div class="info-v green">${DB.commissions[a.id]?.total||'—'}</div></div>
+    </div>
+    <div style="margin:14px 0 4px">
+      <div style="height:6px;background:var(--slate3);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${barClr};border-radius:3px"></div></div>
+      <div class="mono" style="font-size:10px;color:var(--muted);margin-top:4px">${pct}% of $${(a.goalTarget/1000).toFixed(0)}k monthly goal</div>
+    </div>
+    <div class="modal-sec">Pipeline (${pols.length} apps)</div>
+    ${pols.map(p=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border2)">
+      <span class="sp sp-${p.status}">${p.status}</span>
+      <div style="flex:1;font-size:12px">${p.client} — ${p.carrier} ${p.product}</div>
+      <div class="mono" style="font-size:11px;color:var(--gold)">$${p.ap.toLocaleString()}</div>
+    </div>`).join('')}
+    ${reqs.length?`<div class="modal-sec">Requirements (${reqs.length})</div>${reqs.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border2)">
+      <div class="req-ic ${r.cls}" style="width:28px;height:28px">${r.icon}</div>
+      <div style="flex:1"><div style="font-size:12px;font-weight:600">${r.title}</div><div class="req-due ${r.dueCls}" style="font-size:10px">${r.due}</div></div>
+      <button class="ab ab-a" onclick="closeM();openReqDetailModal('${r.id}')">Action</button>
+    </div>`).join('')}`:''}
+    <div style="margin-top:18px;display:flex;gap:8px">
+      <button class="btn-s btn-gh" style="flex:1" onclick="toast('📞 Calling ${a.name}...')">📞 Call ${a.name.split(' ')[0]}</button>
+      <button class="btn-s btn-gh" style="flex:1" onclick="toast('💬 Message sent to ${a.name}')">💬 Message</button>
+      <button class="btn-s btn-pr" style="flex:1" onclick="toast('📊 Full report generating...')">Export Report</button>
+    </div>`;
+  openM();
+}
+
+function openPolicyModal(polId) {
+  const pol=getPolicies(CU.id).find(p=>p.id===polId);
+  if(!pol)return;
+  const steps=['Submitted','Under Review','Approved','Commission Released'];
+  const done={issued:[true,true,true,true],pending:[true,true,false,false],submitted:[true,false,false,false],requirements:[true,true,false,false],lapse:[true,true,false,false]};
+  const flags=done[pol.status]||[true,false,false,false];
+  const relReqs=getReqs(CU.id).filter(r=>r.client.includes(pol.client));
+  document.getElementById('modal-body').innerHTML=`
+    <div class="modal-ey">${pol.carrier} · ${pol.product}</div>
+    <div class="modal-t">${pol.client}</div>
+    <div class="modal-s">Annual Premium: <span style="color:var(--gold);font-family:'Courier New',monospace">$${pol.ap.toLocaleString()}</span> · Submitted ${pol.submitted}</div>
+    <div class="modal-sec">Status Timeline</div>
+    <div class="tl">${steps.map((s,i)=>`<div class="tl-it"><div class="tl-dot ${flags[i]?'tl-done':(i===flags.filter(Boolean).length?'tl-active':'tl-future')}">${flags[i]?'✓':''}</div><div class="tl-txt">${s}<span>${flags[i]?'Complete':(pol.status==='requirements'&&i===2?'⚠️ Requirements pending':'Pending')}</span></div></div>`).join('')}</div>
+    <div class="modal-sec">Policy Details</div>
+    <div class="info-grid">
+      <div class="info-it"><div class="info-k">Carrier</div><div class="info-v">${pol.carrier}</div></div>
+      <div class="info-it"><div class="info-k">Product</div><div class="info-v">${pol.product}</div></div>
+      <div class="info-it"><div class="info-k">Annual Premium</div><div class="info-v gold">$${pol.ap.toLocaleString()}</div></div>
+      <div class="info-it"><div class="info-k">Status</div><div class="info-v ${pol.status==='issued'?'green':pol.status==='lapse'?'red':'orange'}">${pol.status.toUpperCase()}</div></div>
+    </div>
+    ${relReqs.length?`<div class="modal-sec">⚠️ Outstanding Requirements</div>${relReqs.map(r=>`<div style="background:rgba(230,126,34,.07);border:1px solid rgba(230,126,34,.18);border-radius:7px;padding:11px;margin-bottom:7px"><div style="font-size:12px;font-weight:700">${r.icon} ${r.title}</div><div style="font-size:10px;color:var(--muted);margin-top:3px">${r.desc}</div><div class="req-due ${r.dueCls}" style="font-size:10px;margin-top:5px">${r.due}</div></div>`).join('')}`:''}
+    <div class="modal-sec">Documents</div>
+    <div class="doc-action"><div class="doc-ic">📄</div><div class="doc-inf"><div class="doc-n">Application Copy</div><div class="doc-d">Submitted application PDF</div></div><button class="doc-btn db-vw" onclick="toast('📄 Opening application...')">View</button></div>
+    ${pol.status!=='issued'?`<div class="doc-action"><div class="doc-ic">✍️</div><div class="doc-inf"><div class="doc-n">Resend E-Signature</div><div class="doc-d">Resend DocuSign to client</div></div><button class="doc-btn db-sg" onclick="toast('✉️ DocuSign resent!')">Resend</button></div>`:''}
+    ${pol.status==='issued'?`<div class="doc-action"><div class="doc-ic">📜</div><div class="doc-inf"><div class="doc-n">Policy Certificate</div><div class="doc-d">Issued policy — ready to deliver</div></div><button class="doc-btn db-dl" onclick="toast('⬇️ Downloading certificate...')">Download</button></div>`:''}`;
+  openM();
+}
+
+function openReqModal(polId) {
+  const pol=getPolicies(CU.id).find(p=>p.id===polId);
+  if(!pol)return;
+  const r=getReqs(CU.id).find(req=>req.client.includes(pol.client));
+  if(r)openReqDetailModal(r.id); else toast('No specific requirement — check Action Center');
+}
+
+function openReqDetailModal(reqId) {
+  const r=getReqs(CU.id).find(x=>x.id===reqId);
+  if(!r)return;
+  const docSets={
+    'ri-orange':[{icon:'📥',name:'Download Required Form',desc:'Pre-filled carrier form',btn:'Download',cls:'db-dl',msg:'⬇️ Downloading form...'},{icon:'📤',name:'Upload Completed Document',desc:'Submit the completed form',btn:'Upload',cls:'db-up',msg:'Opening upload...'}],
+    'ri-red':[{icon:'📥',name:'Download Medical Release',desc:'HIPAA authorization for records',btn:'Download',cls:'db-dl',msg:'⬇️ Downloading HIPAA...'},{icon:'📤',name:'Upload Records',desc:'Upload records from provider',btn:'Upload',cls:'db-up',msg:'Opening upload...'}],
+    'ri-blue':[{icon:'📤',name:'Upload Document',desc:'Submit the required document',btn:'Upload',cls:'db-up',msg:'Opening upload...'}],
+    'ri-green':[{icon:'✍️',name:'Resend E-Signature',desc:'Send DocuSign link via email',btn:'Resend',cls:'db-sg',msg:'✉️ DocuSign resent!'},{icon:'📞',name:'Call Client',desc:'Walk client through signing',btn:'Dial',cls:'db-cl',msg:'📞 Dialing client...'}],
+  };
+  const docs=docSets[r.docCls]||docSets['ri-orange'];
+  document.getElementById('modal-body').innerHTML=`
+    <div class="modal-ey">Outstanding Requirement</div>
+    <div class="modal-t">${r.icon} ${r.title}</div>
+    <div class="modal-s">${r.client}</div>
+    <div style="background:rgba(230,126,34,.07);border:1px solid rgba(230,126,34,.16);border-radius:8px;padding:13px;margin-bottom:16px">
+      <div style="font-size:12px;line-height:1.6">${r.desc}</div>
+      <div class="req-due ${r.dueCls}" style="font-size:10px;margin-top:7px">${r.due}</div>
+    </div>
+    <div class="modal-sec">Documents & Actions</div>
+    ${docs.map(d=>`<div class="doc-action"><div class="doc-ic">${d.icon}</div><div class="doc-inf"><div class="doc-n">${d.name}</div><div class="doc-d">${d.desc}</div></div><button class="doc-btn ${d.cls}" onclick="toast('${d.msg}')">${d.btn}</button></div>`).join('')}
+    <div class="doc-action"><div class="doc-ic">💬</div><div class="doc-inf"><div class="doc-n">Message Manager</div><div class="doc-d">Flag this to your manager for help</div></div><button class="doc-btn db-cl" onclick="toast('📨 Manager notified!')">Message</button></div>
+    <button class="btn-s btn-pr" style="width:100%;padding:11px;font-size:12px;margin-top:12px" onclick="toast('✅ Requirement marked resolved!');closeM()">✅ Mark Complete</button>`;
+  openM();
+}
+
+function openM(){document.getElementById('modal').classList.add('open');}
+function closeM(){document.getElementById('modal').classList.remove('open');}
+function closeMBG(e){if(e.target===document.getElementById('modal'))closeM();}
+
+/* ══════════════════════════════════════════
+   SUPABASE CONFIG
+══════════════════════════════════════════ */
+function openSupabaseConfig(){document.getElementById('sb-modal').classList.add('open');}
+function closeSB(){document.getElementById('sb-modal').classList.remove('open');}
+function closeSBBG(e){if(e.target===document.getElementById('sb-modal'))closeSB();}
+function connectSupabase(){
+  const url=document.getElementById('sb-url').value.trim();
+  const key=document.getElementById('sb-key').value.trim();
+  if(!url||!key){toast('⚠️ Enter both URL and key');return;}
+  localStorage.setItem('sb_url',url); localStorage.setItem('sb_key',key);
+  const banner=document.getElementById('db-banner');
+  banner.classList.add('connected');
+  document.getElementById('db-status-text').textContent='✅ Supabase connected — live sync active';
+  document.getElementById('tb-live-txt').textContent='LIVE';
+  toast('✅ Supabase connected! Live data sync enabled.');
+  closeSB();
+}
+
+/* ══════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════ */
+let toastT;
+function toast(msg){
+  const el=document.getElementById('toast-el');
+  document.getElementById('toast-msg').textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove('show'),3000);
+}
+function setPeriod(p,el){
+  document.querySelectorAll('.pt').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  toast(`📅 Switching to ${p} view...`);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeM();closeSB();}});
+document.getElementById('lg-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+// Check saved Supabase on load
+window.addEventListener('load',()=>{
+  const url=localStorage.getItem('sb_url');
+  if(url){document.getElementById('db-banner').classList.add('connected');document.getElementById('db-status-text').textContent='✅ Supabase connected — live sync active';}
+});
+</script>
+
+<script>
+// Self-contained chart renderer — no CDN needed
+class Chart {
+  constructor(canvas, config) {
+    this.canvas = canvas;
+    this.config = config;
+    this._render();
+  }
+  destroy() {
+    if(this.canvas) this.canvas.parentNode && (this.canvas.parentNode.innerHTML = '<canvas class="chart-canvas" height="' + this.canvas.height + '"></canvas>');
+  }
+  _render() {
+    const c = this.canvas;
+    const ctx = c.getContext('2d');
+    const W = c.offsetWidth || 400;
+    const H = c.height || 160;
+    c.width = W;
+    c.style.width = W + 'px';
+    const cfg = this.config;
+    const type = cfg.type;
+    const data = cfg.data;
+    const labels = data.labels || [];
+    const ds = data.datasets[0] || {};
+    const vals = ds.data || [];
+    ctx.clearRect(0, 0, W, H);
+    
+    if (type === 'line') {
+      const pad = {t:16,r:16,b:28,l:44};
+      const max = Math.max(...vals) * 1.1;
+      const min = 0;
+      const xStep = (W - pad.l - pad.r) / Math.max(vals.length - 1, 1);
+      const yScale = (H - pad.t - pad.b) / (max - min);
+      const pts = vals.map((v,i) => [pad.l + i*xStep, H - pad.b - (v-min)*yScale]);
+      // Grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = 1;
+      for(let i=0;i<=4;i++){
+        const y = pad.t + i*(H-pad.t-pad.b)/4;
+        ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+        const val = max - i*(max-min)/4;
+        ctx.fillStyle='#5D7499'; ctx.font='9px monospace'; ctx.textAlign='right';
+        ctx.fillText('$'+(val/1000).toFixed(0)+'k', pad.l-4, y+3);
+      }
+      // Labels
+      labels.forEach((l,i) => {
+        const x = pad.l + i*xStep;
+        ctx.fillStyle='#5D7499'; ctx.font='9px monospace'; ctx.textAlign='center';
+        ctx.fillText(l, x, H-pad.b+14);
+      });
+      // Area fill
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], H-pad.b);
+      pts.forEach(([x,y]) => ctx.lineTo(x,y));
+      ctx.lineTo(pts[pts.length-1][0], H-pad.b);
+      ctx.closePath();
+      ctx.fillStyle='rgba(201,168,76,0.08)'; ctx.fill();
+      // Line
+      ctx.beginPath();
+      pts.forEach(([x,y],i) => i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y));
+      ctx.strokeStyle='#C9A84C'; ctx.lineWidth=2; ctx.stroke();
+      // Dots
+      pts.forEach(([x,y]) => {
+        ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2);
+        ctx.fillStyle='#C9A84C'; ctx.fill();
+      });
+    }
+    
+    else if (type === 'bar') {
+      const colors = ds.backgroundColor || ['#C9A84C'];
+      const pad = {t:12,r:12,b:32,l:32};
+      const max = Math.max(...vals) * 1.15 || 1;
+      const barW = (W - pad.l - pad.r) / vals.length * 0.65;
+      const gap = (W - pad.l - pad.r) / vals.length;
+      vals.forEach((v,i) => {
+        const x = pad.l + i*gap + (gap-barW)/2;
+        const bH = (v/max) * (H-pad.t-pad.b);
+        const y = H - pad.b - bH;
+        ctx.fillStyle = Array.isArray(colors) ? (colors[i]||colors[0]) : colors;
+        ctx.beginPath();
+        ctx.roundRect ? ctx.roundRect(x, y, barW, bH, 4) : ctx.rect(x, y, barW, bH);
+        ctx.fill();
+        // label
+        ctx.fillStyle='#5D7499'; ctx.font='9px monospace'; ctx.textAlign='center';
+        ctx.fillText(labels[i]||'', x+barW/2, H-pad.b+14);
+        ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.font='9px monospace';
+        if(v>0) ctx.fillText(v, x+barW/2, y-4);
+      });
+    }
+    
+    else if (type === 'doughnut') {
+      const colors = ds.backgroundColor || ['#C9A84C','#4A90E2','#27AE60'];
+      const cx = W/2, cy = (H-24)/2, r = Math.min(cx,cy)*0.75, ir = r*0.65;
+      const total = vals.reduce((a,b)=>a+b,0) || 1;
+      let angle = -Math.PI/2;
+      vals.forEach((v,i) => {
+        const sweep = (v/total)*Math.PI*2;
+        ctx.beginPath();
+        ctx.arc(cx,cy,r,angle,angle+sweep);
+        ctx.arc(cx,cy,ir,angle+sweep,angle,true);
+        ctx.closePath();
+        ctx.fillStyle=colors[i]||'#888'; ctx.fill();
+        angle += sweep;
+      });
+      // Legend
+      const legY = H - 20;
+      const legTotalW = labels.length * 90;
+      const legStartX = (W - legTotalW) / 2;
+      labels.forEach((l,i) => {
+        const x = legStartX + i*90;
+        ctx.fillStyle=colors[i]||'#888';
+        ctx.fillRect(x,legY,8,8);
+        ctx.fillStyle='#5D7499'; ctx.font='9px monospace'; ctx.textAlign='left';
+        ctx.fillText(l.length>10?l.slice(0,10)+'…':l, x+12, legY+8);
+      });
+    }
+  }
+}
+</script>
+</body>
+</html>
