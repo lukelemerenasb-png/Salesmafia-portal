@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SalesMafia Portal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;background:#07101F;color:#ECF0FF;min-height:100vh}
+button{-webkit-appearance:none;appearance:none;font-family:inherit;cursor:pointer}
+input,select{-webkit-appearance:none;appearance:none;font-family:inherit}
+
+/* LOGIN */
+#pg-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;flex-direction:column}
+.login-card{background:#131F35;border:1px solid rgba(201,168,76,0.2);border-radius:14px;padding:28px;width:100%;max-width:380px}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:24px;justify-content:center}
+.logo-mark{width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,#C9A84C,#6E5520);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:#07101F}
+.logo-text{font-size:18px;font-weight:900}
+.logo-text em{color:#C9A84C;font-style:normal}
+.logo-text small{display:block;font-size:10px;color:#5D7499;letter-spacing:.08em;text-transform:uppercase}
+h2{font-size:18px;font-weight:800;margin-bottom:4px}
+.sub{font-size:12px;color:#5D7499;margin-bottom:20px}
+.chip-box{background:#0B1526;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px;margin-bottom:18px}
+.chip-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6E5520;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:8px 14px;border-radius:7px;font-size:12px;font-weight:700;border:1px solid rgba(255,255,255,0.1);background:#1A2A42;color:#ECF0FF}
+.chip-sp{border-color:#C9A84C;color:#C9A84C}
+.chip-mgr{border-color:#4A90E2;color:#4A90E2}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5D7499;margin-bottom:5px}
+.field input{display:block;width:100%;background:#0B1526;border:1px solid rgba(255,255,255,0.08);border-radius:7px;padding:12px;font-size:14px;color:#ECF0FF;outline:none}
+.field input:focus{border-color:#C9A84C}
+.btn-gold{width:100%;background:linear-gradient(135deg,#C9A84C,#6E5520);border:none;border-radius:8px;padding:14px;font-size:15px;font-weight:800;color:#07101F}
+.err{color:#E53935;font-size:12px;text-align:center;margin-top:10px;min-height:16px;font-weight:600}
+
+/* APP */
+#pg-app{display:none;flex-direction:column;min-height:100vh}
+.topbar{height:52px;background:#131F35;border-bottom:1px solid rgba(201,168,76,0.15);display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:50}
+.tb-brand{font-size:14px;font-weight:900}
+.tb-brand em{color:#C9A84C;font-style:normal}
+.tb-right{display:flex;align-items:center;gap:8px}
+.tb-info{text-align:right}
+.tb-name{font-size:11px;font-weight:700}
+.tb-role{font-size:9px;color:#C9A84C;text-transform:uppercase;letter-spacing:.06em}
+.tb-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#C9A84C,#6E5520);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#07101F}
+.btn-out{padding:5px 10px;border-radius:6px;background:transparent;border:1px solid rgba(255,255,255,0.08);font-size:10px;color:#5D7499}
+
+.body-wrap{display:flex;flex:1}
+
+/* SIDEBAR */
+.sidebar{width:188px;flex-shrink:0;background:#131F35;border-right:1px solid rgba(201,168,76,0.12);display:flex;flex-direction:column;padding:10px 0;position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto}
+.ns{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6E5520;padding:12px 14px 4px}
+.nl{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:12px;font-weight:500;color:#5D7499;border:none;background:transparent;width:100%;text-align:left;border-left:2px solid transparent}
+.nl.on{color:#C9A84C;border-left-color:#C9A84C;background:rgba(201,168,76,0.06)}
+.ni{font-size:13px;width:16px;text-align:center}
+.nbadge{margin-left:auto;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;padding:0 4px}
+.nb-r{background:#E53935;color:#fff}
+.nb-b{background:#4A90E2;color:#fff}
+.goal-box{margin:14px 10px;background:#0B1526;border:1px solid rgba(201,168,76,0.14);border-radius:8px;padding:11px}
+.goal-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6E5520;margin-bottom:5px}
+.goal-bar{height:5px;background:#223250;border-radius:3px;overflow:hidden;margin:4px 0}
+.goal-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#C9A84C,#E2C46A)}
+.goal-nums{display:flex;justify-content:space-between}
+.goal-cur{font-size:13px;color:#C9A84C;font-weight:600}
+.goal-tgt{font-size:10px;color:#5D7499}
+
+/* MAIN */
+.main{flex:1;padding:20px;overflow-y:auto;min-width:0}
+
+/* PAGE */
+.pg-ey{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#C9A84C;margin-bottom:3px}
+.pg-t{font-size:20px;font-weight:900;margin-bottom:2px}
+.pg-s{font-size:11px;color:#5D7499;margin-bottom:18px}
+
+/* KPIS */
+.krow{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.kc{background:#131F35;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px;flex:1;min-width:130px;position:relative;overflow:hidden}
+.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kc-gold::before{background:#C9A84C}.kc-green::before{background:#2ECC71}.kc-blue::before{background:#4A90E2}.kc-orange::before{background:#E67E22}.kc-red::before{background:#E53935}
+.kl{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#5D7499;margin-bottom:4px}
+.kv{font-size:20px;font-weight:700}
+.kv-gold{color:#C9A84C}.kv-green{color:#2ECC71}.kv-blue{color:#4A90E2}.kv-orange{color:#E67E22}.kv-red{color:#E53935}
+.kn{font-size:10px;color:#5D7499;margin-top:4px}
+
+/* PANEL */
+.panel{background:#131F35;border:1px solid rgba(255,255,255,0.07);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.pt{font-size:13px;font-weight:700}
+.pa{font-size:10px;font-weight:700;color:#C9A84C;padding:3px 8px;background:rgba(201,168,76,0.08);border-radius:5px;border:none;background:rgba(201,168,76,0.08)}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#6E5520;padding:8px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.07);background:#0B1526}
+.tbl td{padding:10px 14px;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.03);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tscroll{overflow-x:auto}
+
+/* STATUS */
+.s{display:inline-block;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:800;text-transform:uppercase}
+.s-issued{background:rgba(46,204,113,0.14);color:#2ECC71}
+.s-pending{background:rgba(74,144,226,0.14);color:#4A90E2}
+.s-submitted{background:rgba(201,168,76,0.14);color:#C9A84C}
+.s-requirements{background:rgba(230,126,34,0.14);color:#E67E22}
+.s-lapse{background:rgba(229,57,53,0.14);color:#E53935}
+
+/* ACTIVITY */
+.ai{display:flex;align-items:center;gap:9px;padding:9px 16px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.ai:last-child{border-bottom:none}
+.ad{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.at{font-size:11px;color:#5D7499;flex:1}
+.at strong{color:#ECF0FF}
+
+/* REQ */
+.ri{display:flex;align-items:flex-start;gap:11px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer}
+.ri:last-child{border-bottom:none}
+.ric{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ric-or{background:rgba(230,126,34,0.14)}.ric-re{background:rgba(229,57,53,0.14)}.ric-bl{background:rgba(74,144,226,0.14)}.ric-gr{background:rgba(46,204,113,0.14)}
+.rb{flex:1}
+.rt{font-size:12px;font-weight:700}
+.rc{font-size:10px;color:#5D7499;margin-top:1px}
+.rd{font-size:10px;color:#5D7499;margin-top:3px;line-height:1.5}
+.rdue{font-size:10px;margin-top:4px}
+.du{color:#E53935}.ds{color:#E67E22}.do{color:#5D7499}
+
+/* BUTTONS */
+.btn-sm{padding:5px 10px;border-radius:5px;font-size:9px;font-weight:800;border:none;text-transform:uppercase;letter-spacing:.04em}
+.btn-v{background:#1A2A42;color:#ECF0FF}
+.btn-a{background:rgba(230,126,34,0.13);color:#E67E22;border:1px solid rgba(230,126,34,0.25)}
+.btn-pr{background:linear-gradient(135deg,#C9A84C,#6E5520);border:none;border-radius:7px;padding:8px 14px;font-size:11px;font-weight:700;color:#07101F}
+.btn-gh{background:#1A2A42;border:1px solid rgba(255,255,255,0.07);border-radius:7px;padding:7px 12px;font-size:11px;font-weight:600;color:#5D7499}
+
+/* ORG */
+.org-lv{margin-bottom:22px}
+.org-lbl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#6E5520;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.org-lbl::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.06)}
+.org-row{display:flex;flex-wrap:wrap;gap:10px}
+.org-node{background:#1A2A42;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px;flex:1;min-width:170px;position:relative;overflow:hidden;cursor:pointer}
+.org-node::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.on-gold::before{background:#C9A84C}.on-blue::before{background:#4A90E2}.on-green::before{background:#2ECC71}.on-orange::before{background:#E67E22}.on-red::before{background:#E53935}.on-purple::before{background:#8E44AD}
+.on-top{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.on-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;flex-shrink:0;color:#07101F}
+.av-gold{background:linear-gradient(135deg,#C9A84C,#6E5520)}.av-blue{background:linear-gradient(135deg,#4A90E2,#2980B9)}.av-green{background:linear-gradient(135deg,#2ECC71,#27AE60)}.av-orange{background:linear-gradient(135deg,#F0A500,#E67E22)}.av-red{background:linear-gradient(135deg,#FF6B6B,#E53935);color:#fff}.av-purple{background:linear-gradient(135deg,#C39BD3,#8E44AD);color:#fff}
+.on-name{font-size:12px;font-weight:700}
+.on-role{font-size:9px;color:#C9A84C;text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+.on-stats{display:flex;gap:5px;margin-bottom:9px}
+.on-stat{background:#0B1526;border-radius:5px;padding:5px 7px;flex:1;text-align:center}
+.on-sv{font-size:11px;font-weight:600}
+.on-sl{font-size:8px;color:#5D7499;text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+.on-bar{height:4px;background:#223250;border-radius:2px;overflow:hidden;margin-bottom:4px}
+.on-fill{height:100%;border-radius:2px}
+.on-pct{font-size:9px;color:#5D7499}
+
+/* COMM */
+.crow{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid rgba(255,255,255,0.03);flex-wrap:wrap}
+.crow:last-child{border-bottom:none}
+
+/* TWO COL */
+.two-col{display:flex;flex-wrap:wrap;gap:14px}
+.two-col .panel{flex:1;min-width:280px}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,18,0.92);z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal-box{background:#131F35;border:1px solid rgba(201,168,76,0.15);border-radius:14px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;padding:22px;position:relative}
+.mx{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:#1A2A42;border:none;color:#5D7499;font-size:15px;display:flex;align-items:center;justify-content:center}
+.mey{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C9A84C;margin-bottom:4px}
+.mt{font-size:17px;font-weight:800;margin-bottom:2px}
+.ms{font-size:11px;color:#5D7499;margin-bottom:14px}
+.msec{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6E5520;margin:14px 0 7px}
+.ig{display:flex;flex-wrap:wrap;gap:10px}
+.ig-it{flex:1;min-width:120px}
+.ig-k{font-size:9px;color:#5D7499;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.ig-v{font-size:12px;font-weight:600}
+.ig-v-gold{color:#C9A84C}.ig-v-green{color:#2ECC71}.ig-v-orange{color:#E67E22}.ig-v-red{color:#E53935}
+.tl-it{display:flex;gap:9px;padding:6px 0}
+.tl-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;margin-top:2px;border:2px solid #223250;background:#0B1526;color:#5D7499}
+.tl-done{background:#2ECC71;border-color:#2ECC71;color:#07101F}
+.tl-active{border-color:#C9A84C;color:#C9A84C}
+.doc-row{display:flex;align-items:center;gap:9px;background:#0B1526;border:1px solid rgba(255,255,255,0.07);border-radius:7px;padding:10px 12px;margin-bottom:6px}
+.doc-ic{font-size:18px}
+.doc-inf{flex:1}
+.doc-n{font-size:12px;font-weight:600}
+.doc-d{font-size:10px;color:#5D7499;margin-top:1px}
+.doc-btn{padding:5px 12px;border-radius:5px;font-size:10px;font-weight:700;border:none}
+.db-dl{background:#4A90E2;color:#fff}.db-sg{background:#2ECC71;color:#07101F}.db-cl{background:#E67E22;color:#fff}.db-vw{background:#223250;color:#ECF0FF}.db-up{background:#C9A84C;color:#07101F}
+
+/* ADMIN */
+.atabs{display:flex;flex-wrap:wrap;gap:3px;background:#1A2A42;padding:3px;border-radius:8px;margin-bottom:18px}
+.atab{padding:7px 13px;border-radius:6px;font-size:11px;font-weight:700;border:none;background:transparent;color:#5D7499}
+.atab.on{background:#C9A84C;color:#07101F}
+.warn{background:rgba(230,126,34,0.08);border:1px solid rgba(230,126,34,0.2);border-radius:8px;padding:12px 14px;font-size:12px;color:#E67E22;line-height:1.6;margin-bottom:16px}
+.a-card{background:#1A2A42;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:16px;margin-bottom:12px}
+.a-card-t{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.arow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);flex-wrap:wrap}
+.arow:last-child{border-bottom:none}
+.albl{font-size:11px;font-weight:600;color:#ECF0FF;width:120px;flex-shrink:0}
+.ain{display:block;background:#0B1526;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:9px 11px;font-size:12px;color:#ECF0FF;font-family:inherit;outline:none;flex:1;min-width:100px}
+.ain:focus{border-color:#C9A84C}
+.asel{display:block;background:#0B1526;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:9px 11px;font-size:12px;color:#ECF0FF;font-family:inherit;outline:none;flex:1}
+.frow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.fcol{flex:1;min-width:130px}
+.fcol label{display:block;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5D7499;margin-bottom:5px}
+.divider{height:1px;background:rgba(255,255,255,0.06);margin:14px 0}
+.int-card{background:#0B1526;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.int-ic{font-size:24px;flex-shrink:0}
+.int-inf{flex:1}
+.int-n{font-size:13px;font-weight:700}
+.int-d{font-size:11px;color:#5D7499;margin-top:2px}
+.st{font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;flex-shrink:0}
+.st-ok{background:rgba(46,204,113,0.14);color:#2ECC71}
+.st-no{background:rgba(229,57,53,0.14);color:#E53935}
+.st-pd{background:rgba(201,168,76,0.14);color:#C9A84C}
+.bt{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.bt-sp{background:rgba(201,168,76,0.15);color:#C9A84C}
+.bt-mgr{background:rgba(74,144,226,0.15);color:#4A90E2}
+.bt-ag{background:rgba(46,204,113,0.12);color:#2ECC71}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#131F35;border:1px solid rgba(201,168,76,0.15);border-radius:9px;padding:10px 18px;font-size:12px;font-weight:600;white-space:nowrap;opacity:0;transition:all 0.25s;pointer-events:none;z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+
+/* ═══ ADMIN ═══ */
+.atabs{display:flex;flex-wrap:wrap;gap:3px;background:#1A2A42;padding:3px;border-radius:8px;margin-bottom:18px}
+.atab{padding:7px 13px;border-radius:6px;font-size:11px;font-weight:700;border:none;background:transparent;color:#5D7499}
+.atab.on{background:#C9A84C;color:#07101F}
+.warn{background:rgba(230,126,34,0.08);border:1px solid rgba(230,126,34,0.2);border-radius:8px;padding:12px 14px;font-size:12px;color:#E67E22;line-height:1.6;margin-bottom:16px}
+.a-card{background:#1A2A42;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:16px;margin-bottom:12px}
+.a-card-t{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.arow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);flex-wrap:wrap}
+.arow:last-child{border-bottom:none}
+.albl{font-size:11px;font-weight:600;color:#ECF0FF;width:120px;flex-shrink:0}
+.ain{display:block;background:#0B1526;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:9px 11px;font-size:12px;color:#ECF0FF;font-family:inherit;outline:none;flex:1;min-width:100px}
+.ain:focus{border-color:#C9A84C}
+.asel{display:block;background:#0B1526;border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:9px 11px;font-size:12px;color:#ECF0FF;font-family:inherit;outline:none;flex:1}
+.frow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.fcol{flex:1;min-width:130px}
+.fcol label{display:block;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5D7499;margin-bottom:5px}
+.divider{height:1px;background:rgba(255,255,255,0.06);margin:14px 0}
+.int-card{background:#0B1526;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.int-ic{font-size:22px;flex-shrink:0}
+.int-inf{flex:1}
+.int-n{font-size:13px;font-weight:700}
+.int-d{font-size:11px;color:#5D7499;margin-top:2px}
+.st-pill{font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;flex-shrink:0}
+.st-ok{background:rgba(46,204,113,0.14);color:#2ECC71}
+.st-no{background:rgba(229,57,53,0.14);color:#E53935}
+.st-pd{background:rgba(201,168,76,0.14);color:#C9A84C}
+.bt{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.bt-sp{background:rgba(201,168,76,0.15);color:#C9A84C}
+.bt-mgr{background:rgba(74,144,226,0.15);color:#4A90E2}
+.bt-ag{background:rgba(46,204,113,0.12);color:#2ECC71}
+.comp-badge{display:inline-block;padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700;background:rgba(74,144,226,0.15);color:#4A90E2;letter-spacing:.04em}
+
+.hidden{display:none!important}
+@media(max-width:600px){.sidebar{display:none}.kc{min-width:120px}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="pg-login">
+  <div class="login-card">
+    <div class="logo">
+      <div class="logo-mark">SM</div>
+      <div class="logo-text"><em>Sales</em>Mafia<small>North American Senior Benefits</small></div>
+    </div>
+    <h2>Agent Portal</h2>
+    <p class="sub">Tap your name to sign in</p>
+    <div class="chip-box">
+      <div class="chip-lbl">Select your name</div>
+      <div class="chips">
+        <button class="chip chip-sp" type="button" onclick="tap('luke')">Luke H.</button>
+        <button class="chip chip-mgr" type="button" onclick="tap('nathan')">Nathan G.</button>
+        <button class="chip chip-mgr" type="button" onclick="tap('ashton')">Ashton L.</button>
+        <button class="chip" type="button" onclick="tap('dalton')">Dalton</button>
+        <button class="chip" type="button" onclick="tap('joseph')">Joseph H.</button>
+        <button class="chip" type="button" onclick="tap('asher')">Asher J.</button>
+        <button class="chip" type="button" onclick="tap('paul')">Paul H.</button>
+        <button class="chip" type="button" onclick="tap('darryl')">Darryl T.</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-em">Email</label>
+      <input id="f-em" type="email" placeholder="name@nasb.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label for="f-pw">Password</label>
+      <input id="f-pw" type="password" placeholder="demo1234" autocomplete="current-password">
+    </div>
+    <button type="button" class="btn-gold" onclick="doLogin()">Sign In</button>
+    <div class="err" id="f-err"></div>
+  </div>
+</div>
+
+<!-- APP PAGE -->
+<div id="pg-app">
+  <header class="topbar">
+    <div class="tb-brand"><em>Sales</em>Mafia</div>
+    <div class="tb-right">
+      <div class="tb-info">
+        <div class="tb-name" id="tb-n">—</div>
+        <div class="tb-role" id="tb-r">—</div>
+      </div>
+      <div class="tb-av" id="tb-av">—</div>
+      <button type="button" class="btn-out" onclick="doLogout()">Out</button>
+    </div>
+  </header>
+  <div class="body-wrap">
+    <nav class="sidebar">
+      <div class="ns">My Production</div>
+      <button type="button" class="nl on" id="nl-dash" onclick="go('dash',this)"><span class="ni">⚡</span>Dashboard</button>
+      <button type="button" class="nl" id="nl-pipe" onclick="go('pipe',this)"><span class="ni">🔄</span>Pipeline<span class="nbadge nb-b" id="nb-pipe">0</span></button>
+      <button type="button" class="nl" id="nl-reqs" onclick="go('reqs',this)"><span class="ni">📋</span>Requirements<span class="nbadge nb-r" id="nb-reqs">0</span></button>
+      <button type="button" class="nl" id="nl-comm" onclick="go('comm',this)"><span class="ni">💰</span>Commissions</button>
+      <div class="ns">Resources</div>
+      <button type="button" class="nl" id="nl-docs" onclick="go('docs',this)"><span class="ni">📁</span>Forms &amp; Docs</button>
+      <div id="nav-mgr" class="hidden">
+        <div class="ns">Manager</div>
+        <button type="button" class="nl" id="nl-myprod" onclick="go('myprod',this)"><span class="ni">👤</span>My Production</button>
+        <button type="button" class="nl" id="nl-myteam" onclick="go('myteam',this)"><span class="ni">👥</span>Team Overview</button>
+        <button type="button" class="nl" id="nl-org" onclick="go('org',this)"><span class="ni">🏛️</span>Org Chart</button>
+        <button type="button" class="nl" id="nl-anl" onclick="go('anl',this)"><span class="ni">📊</span>Analytics</button>
+        <button type="button" class="nl" id="nl-rec" onclick="go('rec',this)"><span class="ni">🎯</span>Recruiting</button>
+      </div>
+      <div id="nav-sp" class="hidden">
+        <div class="ns">Senior Partner</div>
+        <button type="button" class="nl" id="nl-org2" onclick="go('org',this)"><span class="ni">🏛️</span>Full Org</button>
+        <button type="button" class="nl" id="nl-anl2" onclick="go('anl',this)"><span class="ni">📊</span>Analytics</button>
+        <button type="button" class="nl" id="nl-goals" onclick="go('goals',this)"><span class="ni">🎯</span>Set Goals</button>
+        <button type="button" class="nl" id="nl-calc" onclick="go('calc',this)"><span class="ni">💵</span>Comp Calc</button>
+        <button type="button" class="nl" id="nl-rec2" onclick="go('rec',this)"><span class="ni">➕</span>Recruiting</button>
+        <button type="button" class="nl" id="nl-admin" onclick="go('admin',this)" style="color:#C9A84C;font-weight:700;border-left:2px solid #C9A84C"><span class="ni">⚙️</span>Admin Panel</button>
+      </div>
+      <div class="goal-box">
+        <div class="goal-lbl">MTD Goal</div>
+        <div class="goal-bar"><div class="goal-fill" id="g-fill" style="width:0%"></div></div>
+        <div class="goal-nums">
+          <div class="goal-cur" id="g-cur">$0</div>
+          <div class="goal-tgt" id="g-tgt">/ $0</div>
+        </div>
+      </div>
+    </nav>
+    <main class="main" id="main-area"></main>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal-box">
+    <button type="button" class="mx" onclick="cModal()">X</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+var PW = 'demo1234';
+
+// ═══════════════════════════════════
+// COMPENSATION TABLE (NASB 2025)
+// Source: NASB Compensation Guide PDF
+// Rates are base commission % by level
+// ═══════════════════════════════════
+var COMP = {
+  // FORMAT: level: { carrier_key: rate }
+  // Corebridge = AIG/Corebridge SIWL Legacy Max
+  // MOO = Mutual of Omaha Living Promise
+  // Transamerica = Transamerica Premier
+  // Foresters = Foresters Final Expense
+  // Americo = Americo HMS
+  // AmAm = American Amicable Senior Choice
+
+  'SR_EXECUTIVE_PARTNER': {transamerica:110, trans_fe:125, corebridge:127, corebridge_leg:87, corebridge_giwl:77.5, moo_lp:115, moo_cwl:100, moo_iule:115, amam:115, foresters:110, americo_hms:130, americo_e1:120, americo_e2:120, americo_e3:82, lbl_t1:110, lbl_t2:100, aflac:110, uhl:110, gerber:60, ngl:65},
+  'SR_PARTNER':           {transamerica:110, trans_fe:125, corebridge:127, corebridge_leg:87, corebridge_giwl:77.5, moo_lp:115, moo_cwl:100, moo_iule:115, amam:115, foresters:110, americo_hms:130, americo_e1:120, americo_e2:120, americo_e3:82, lbl_t1:110, lbl_t2:100, aflac:110, uhl:110, gerber:60, ngl:65},
+  'PARTNER_400K':         {transamerica:110, trans_fe:125, corebridge:127, corebridge_leg:87, corebridge_giwl:77.5, moo_lp:115, moo_cwl:100, moo_iule:115, amam:115, foresters:110, americo_hms:130, americo_e1:120, americo_e2:120, americo_e3:82, lbl_t1:110, lbl_t2:100, aflac:110, uhl:110, gerber:60, ngl:65},
+  'JR_PARTNER_300K':      {transamerica:105, trans_fe:120, corebridge:122, corebridge_leg:82, corebridge_giwl:75, moo_lp:110, moo_cwl:95, moo_iule:110, amam:110, foresters:105, americo_hms:125, americo_e1:115, americo_e2:115, americo_e3:79.5, lbl_t1:105, lbl_t2:95, aflac:105, uhl:105, gerber:55, ngl:60},
+  'ASSOC_PARTNER_225K':   {transamerica:100, trans_fe:115, corebridge:117, corebridge_leg:77, corebridge_giwl:72.5, moo_lp:105, moo_cwl:90, moo_iule:105, amam:105, foresters:100, americo_hms:120, americo_e1:110, americo_e2:110, americo_e3:77, lbl_t1:100, lbl_t2:90, aflac:100, uhl:100, gerber:50, ngl:55},
+  'RVP3_150K':            {transamerica:95, trans_fe:110, corebridge:112, corebridge_leg:72, corebridge_giwl:70, moo_lp:100, moo_cwl:85, moo_iule:100, amam:100, foresters:95, americo_hms:115, americo_e1:105, americo_e2:105, americo_e3:74.5, lbl_t1:95, lbl_t2:85, aflac:95, uhl:95, gerber:45, ngl:50},
+  'SM1':                  {transamerica:90, trans_fe:105, corebridge:107, corebridge_leg:67, corebridge_giwl:67.5, moo_lp:95, moo_cwl:80, moo_iule:95, amam:95, foresters:90, americo_hms:110, americo_e1:100, americo_e2:100, americo_e3:72, lbl_t1:90, lbl_t2:80, aflac:90, uhl:90, gerber:45, ngl:45},
+  'SM2':                  {transamerica:85, trans_fe:100, corebridge:102, corebridge_leg:62, corebridge_giwl:65, moo_lp:90, moo_cwl:75, moo_iule:90, amam:90, foresters:85, americo_hms:105, americo_e1:95, americo_e2:95, americo_e3:69.5, lbl_t1:85, lbl_t2:75, aflac:85, uhl:85, gerber:45, ngl:45},
+  'SM3':                  {transamerica:80, trans_fe:95, corebridge:97, corebridge_leg:57, corebridge_giwl:62.5, moo_lp:85, moo_cwl:70, moo_iule:85, amam:85, foresters:80, americo_hms:100, americo_e1:90, americo_e2:90, americo_e3:67, lbl_t1:80, lbl_t2:70, aflac:80, uhl:80, gerber:45, ngl:45},
+  'AG1':                  {transamerica:75, trans_fe:90, corebridge:92, corebridge_leg:52, corebridge_giwl:60, moo_lp:80, moo_cwl:65, moo_iule:80, amam:80, foresters:75, americo_hms:95, americo_e1:85, americo_e2:85, americo_e3:64.5, lbl_t1:75, lbl_t2:65, aflac:70, uhl:75, gerber:45, ngl:40},
+  'AG2':                  {transamerica:70, trans_fe:85, corebridge:87, corebridge_leg:47, corebridge_giwl:57.5, moo_lp:75, moo_cwl:60, moo_iule:75, amam:75, foresters:70, americo_hms:90, americo_e1:80, americo_e2:80, americo_e3:62, lbl_t1:70, lbl_t2:60, aflac:70, uhl:70, gerber:45, ngl:40},
+  'AG3':                  {transamerica:65, trans_fe:80, corebridge:82, corebridge_leg:42, corebridge_giwl:55, moo_lp:70, moo_cwl:55, moo_iule:70, amam:70, foresters:65, americo_hms:85, americo_e1:75, americo_e2:75, americo_e3:59.5, lbl_t1:65, lbl_t2:55, aflac:70, uhl:65, gerber:45, ngl:40},
+  'AG4':                  {transamerica:60, trans_fe:75, corebridge:77, corebridge_leg:37, corebridge_giwl:52.5, moo_lp:65, moo_cwl:50, moo_iule:65, amam:65, foresters:60, americo_hms:80, americo_e1:70, americo_e2:70, americo_e3:57, lbl_t1:60, lbl_t2:50, aflac:50, uhl:60, gerber:45, ngl:40},
+  'AG5':                  {transamerica:55, trans_fe:70, corebridge:77, corebridge_leg:37, corebridge_giwl:50, moo_lp:60, moo_cwl:45, moo_iule:60, amam:60, foresters:60, americo_hms:75, americo_e1:70, americo_e2:70, americo_e3:57, lbl_t1:55, lbl_t2:45, aflac:50, uhl:55, gerber:45, ngl:40},
+  'AG6':                  {transamerica:50, trans_fe:65, corebridge:77, corebridge_leg:37, corebridge_giwl:45, moo_lp:60, moo_cwl:40, moo_iule:60, amam:55, foresters:60, americo_hms:70, americo_e1:70, americo_e2:70, americo_e3:57, lbl_t1:50, lbl_t2:40, aflac:50, uhl:55, gerber:45, ngl:40}
+};
+
+// Map carrier display names to COMP keys
+var CARRIER_KEYS = {
+  'Transamerica':        'transamerica',
+  'Transamerica FE':     'trans_fe',
+  'AIG/Corebridge':      'corebridge',
+  'Mutual of Omaha':     'moo_lp',
+  'Foresters':           'foresters',
+  'Americo':             'americo_hms',
+  'American Amicable':   'amam',
+  'Liberty Bankers':     'lbl_t1',
+  'Aflac':               'aflac',
+  'Gerber':              'gerber',
+  'NGL':                 'ngl'
+};
+
+function getCompRate(agentId, carrierName) {
+  var a = AG[agentId];
+  if (!a || !a.compLevel) return 0;
+  var rates = COMP[a.compLevel];
+  if (!rates) return 0;
+  var key = CARRIER_KEYS[carrierName] || carrierName.toLowerCase().replace(/[^a-z]/g,'').substring(0,12);
+  return rates[key] || rates['transamerica'] || 0;
+}
+
+function calcComm(ap, rate) {
+  return Math.round(ap * (rate / 100));
+}
+
+var AG = {
+  luke:   {id:'luke',   n:'Luke H.',   ini:'LH', role:'Sr Partner / SM2', tier:'sp',      mgr:null,     goal:300000, cur:184320, col:'gold',   compLevel:'SM2'},
+  nathan: {id:'nathan', n:'Nathan G.', ini:'NG', role:'Manager / SM3',    tier:'manager', mgr:'luke',   goal:120000, cur:98400,  col:'blue',   compLevel:'SM3'},
+  ashton: {id:'ashton', n:'Ashton L.', ini:'AL', role:'Manager / AG1',    tier:'manager', mgr:'luke',   goal:100000, cur:72100,  col:'green',  compLevel:'AG1'},
+  joseph: {id:'joseph', n:'Joseph H.', ini:'JH', role:'Field Agent / AG2',tier:'agent',   mgr:'nathan', goal:44000,  cur:28100,  col:'purple', compLevel:'AG2'},
+  dalton: {id:'dalton', n:'Dalton',    ini:'DA', role:'Field Agent / AG3', tier:'agent',   mgr:'luke',   goal:44000,  cur:31200,  col:'orange', compLevel:'AG3'},
+  asher:  {id:'asher',  n:'Asher J.',  ini:'AJ', role:'Field Agent / AG3', tier:'agent',   mgr:'nathan', goal:44000,  cur:22400,  col:'blue',   compLevel:'AG3'},
+  paul:   {id:'paul',   n:'Paul H.',   ini:'PH', role:'Field Agent / AG3', tier:'agent',   mgr:'nathan', goal:44000,  cur:18900,  col:'red',    compLevel:'AG3'},
+  darryl: {id:'darryl', n:'Darryl T.', ini:'DT', role:'Field Agent / AG3', tier:'agent',   mgr:'ashton', goal:44000,  cur:26800,  col:'orange', compLevel:'AG3'}
+};
+var POL = {
+  luke:   [{id:'l1',cl:'Robert J.',ca:'Transamerica',pr:'GUL 15',ap:4200,dt:'Jun 28',st:'issued'},{id:'l2',cl:'Martha K.',ca:'Transamerica',pr:'Trendsetter LB',ap:5600,dt:'Jun 25',st:'issued'}],
+  nathan: [{id:'n1',cl:'Martha D.',ca:'Transamerica',pr:'Trendsetter LB',ap:5600,dt:'Jun 25',st:'issued'},{id:'n2',cl:'James W.',ca:'AIG/Corebridge',pr:'AG ROP',ap:3800,dt:'Jun 30',st:'pending'},{id:'n3',cl:'Linda C.',ca:'Transamerica',pr:'GUL 15',ap:4200,dt:'Jun 28',st:'requirements'},{id:'n4',cl:'Frank O.',ca:'Mutual of Omaha',pr:'Living Promise',ap:2100,dt:'Jun 12',st:'lapse'},{id:'n5',cl:'Sandra P.',ca:'Transamerica',pr:'GUL 10',ap:3400,dt:'Jun 20',st:'issued'}],
+  ashton: [{id:'a1',cl:'Robert J.',ca:'Transamerica',pr:'GUL 15',ap:4200,dt:'Jun 28',st:'issued'},{id:'a2',cl:'Thomas R.',ca:'Transamerica',pr:'GUL 20',ap:6800,dt:'Jun 18',st:'issued'},{id:'a3',cl:'David L.',ca:'AIG/Corebridge',pr:'AG ROP',ap:5400,dt:'Jun 30',st:'pending'},{id:'a4',cl:'Barbara S.',ca:'Mutual of Omaha',pr:'Living Promise',ap:2600,dt:'Jun 29',st:'requirements'}],
+  dalton: [{id:'da1',cl:'Carol M.',ca:'Transamerica',pr:'GUL 15',ap:3800,dt:'Jun 27',st:'issued'},{id:'da2',cl:'Steven P.',ca:'AIG/Corebridge',pr:'AG ROP',ap:2900,dt:'Jun 29',st:'pending'},{id:'da3',cl:'Betty H.',ca:'Mutual of Omaha',pr:'Living Promise',ap:2100,dt:'Jun 30',st:'submitted'}],
+  joseph: [{id:'j1',cl:'Patricia M.',ca:'Transamerica',pr:'GUL 15',ap:3900,dt:'Jun 26',st:'issued'},{id:'j2',cl:'William T.',ca:'AIG/Corebridge',pr:'AG ROP',ap:4800,dt:'Jun 29',st:'pending'},{id:'j3',cl:'Nancy F.',ca:'Mutual of Omaha',pr:'Living Promise',ap:3200,dt:'Jun 14',st:'lapse'},{id:'j4',cl:'George B.',ca:'Transamerica',pr:'Trendsetter',ap:2800,dt:'Jun 21',st:'requirements'}],
+  asher:  [{id:'as1',cl:'Dorothy K.',ca:'Transamerica',pr:'GUL 10',ap:4100,dt:'Jun 26',st:'issued'},{id:'as2',cl:'Raymond S.',ca:'Mutual of Omaha',pr:'Living Promise',ap:2400,dt:'Jul 1',st:'submitted'},{id:'as3',cl:'Alice T.',ca:'Transamerica',pr:'Trendsetter LB',ap:3400,dt:'Jun 28',st:'pending'}],
+  paul:   [{id:'p1',cl:'Shirley W.',ca:'Transamerica',pr:'GUL 15',ap:3200,dt:'Jun 24',st:'issued'},{id:'p2',cl:'Harold B.',ca:'AIG/Corebridge',pr:'AG ROP',ap:2400,dt:'Jun 22',st:'requirements'},{id:'p3',cl:'Mildred R.',ca:'Transamerica',pr:'GUL 10',ap:3200,dt:'Jun 27',st:'pending'}],
+  darryl: [{id:'dr1',cl:'Eugene P.',ca:'AIG/Corebridge',pr:'AG ROP',ap:2900,dt:'Jun 29',st:'issued'},{id:'dr2',cl:'Vivian C.',ca:'Mutual of Omaha',pr:'Living Promise',ap:2100,dt:'Jun 24',st:'requirements'},{id:'dr3',cl:'Frank T.',ca:'Transamerica',pr:'Trendsetter LB',ap:3800,dt:'Jun 30',st:'pending'}]
+};
+var REQ = {
+  luke:[],
+  nathan:[{id:'nr1',ic:'📋',cls:'ric-re',t:'Replacement Notice Signature',cl:'Linda C. — Transamerica $4,200',d:'TL-8840 requires wet signature. Policy replaces existing coverage.',due:'URGENT — Due Jul 5',duec:'du',dt:'doc'},{id:'nr2',ic:'🏥',cls:'ric-or',t:'Medical Records Required',cl:'Linda C. — Transamerica $4,200',d:'Underwriter flagged health history. 5 years of records required.',due:'Due Jul 12',duec:'ds',dt:'med'}],
+  ashton:[{id:'ar1',ic:'🪪',cls:'ric-or',t:'Photo ID Required',cl:'Barbara S. — Mutual of Omaha $2,600',d:'Client ID blurry. Need clear front and back of state photo ID.',due:'URGENT — Due Jul 4',duec:'du',dt:'id'}],
+  dalton:[],
+  joseph:[{id:'jr1',ic:'✍️',cls:'ric-gr',t:'E-Signature Pending',cl:'William T. — AIG/Corebridge $4,800',d:'DocuSign sent 3 days ago, not completed. Call client to finish.',due:'URGENT — Due Jul 4',duec:'du',dt:'sign'},{id:'jr2',ic:'📋',cls:'ric-bl',t:'Height/Weight Form',cl:'George B. — Transamerica $2,800',d:'Carrier needs weight history form completed.',due:'Due Jul 9',duec:'ds',dt:'doc'}],
+  asher:[],
+  paul:[{id:'pr1',ic:'📋',cls:'ric-or',t:'Beneficiary Form Incomplete',cl:'Harold B. — AIG/Corebridge $2,400',d:'Beneficiary designation missing relationship field.',due:'Due Jul 7',duec:'ds',dt:'doc'}],
+  darryl:[{id:'dtr1',ic:'✍️',cls:'ric-gr',t:'Client E-Sig Pending',cl:'Vivian C. — Mutual of Omaha $2,100',d:'DocuSign not yet completed. Follow up call required.',due:'Due Jul 8',duec:'ds',dt:'sign'}]
+};
+var COM = {
+  luke:  {tot:'$82,400',adv:'$24,000',net:'$58,400',rows:[{ca:'Transamerica',cl:'Robert J.',pr:'GUL 15',ea:'$1,890',ad:'$1,500',nt:'$390',dt:'Jun 30'}]},
+  nathan:{tot:'$44,280',adv:'$16,000',net:'$28,280',rows:[{ca:'Transamerica',cl:'Martha D.',pr:'Trendsetter LB',ea:'$2,520',ad:'$2,000',nt:'$520',dt:'Jun 29'}]},
+  ashton:{tot:'$32,445',adv:'$14,000',net:'$18,445',rows:[{ca:'Transamerica',cl:'Robert J.',pr:'GUL 15',ea:'$1,890',ad:'$1,500',nt:'$390',dt:'Jun 30'}]},
+  dalton:{tot:'$14,040',adv:'$8,000',net:'$6,040',rows:[{ca:'Transamerica',cl:'Carol M.',pr:'GUL 15',ea:'$1,710',ad:'$1,200',nt:'$510',dt:'Jun 28'}]},
+  joseph:{tot:'$12,645',adv:'$8,000',net:'$4,645',rows:[{ca:'Transamerica',cl:'Patricia M.',pr:'GUL 15',ea:'$1,755',ad:'$1,200',nt:'$555',dt:'Jun 28'}]},
+  asher: {tot:'$10,080',adv:'$6,000',net:'$4,080',rows:[{ca:'Transamerica',cl:'Dorothy K.',pr:'GUL 10',ea:'$1,845',ad:'$1,500',nt:'$345',dt:'Jun 27'}]},
+  paul:  {tot:'$8,505', adv:'$5,000',net:'$3,505',rows:[{ca:'Transamerica',cl:'Shirley W.',pr:'GUL 15',ea:'$1,440',ad:'$1,000',nt:'$440',dt:'Jun 25'}]},
+  darryl:{tot:'$12,060',adv:'$7,000',net:'$5,060',rows:[{ca:'AIG/Corebridge',cl:'Eugene P.',pr:'AG ROP',ea:'$1,305',ad:'$1,000',nt:'$305',dt:'Jun 30'}]}
+};
+var REC = [
+  {n:'Tyler Wells',  src:'Referral — Nathan G.',stg:'Licensing',   by:'Nathan G.',  lst:'Jun 30'},
+  {n:'Jordan Smith', src:'Career Fair',          stg:'Interview',   by:'Luke H.',    lst:'Jul 1'},
+  {n:'Brittany Moore',src:'Facebook Ad',         stg:'Contracting', by:'Ashton L.',  lst:'Jun 28'},
+  {n:'Kevin Park',   src:'Referral — Darryl T.',stg:'First Field', by:'Darryl T.',  lst:'Jul 1'},
+  {n:'Marcus Davis', src:'Referral — Joseph H.',stg:'Licensing',   by:'Joseph H.',  lst:'Jul 2'}
+];
+
+// ── STATE ──
+var CU = null;
+var ATAB = 'agents';
+var APWS = {};
+var PFILT = null;
+
+// ── HELPERS ──
+function $$(id) { return document.getElementById(id); }
+function akeys() { return Object.keys(AG); }
+function fmt(n) {
+  var s = '' + Math.round(n), r = '', l = s.length;
+  for (var i = 0; i < l; i++) { if (i > 0 && (l - i) % 3 === 0) r += ','; r += s[i]; }
+  return '$' + r;
+}
+function bc(c) { return {gold:'#C9A84C',blue:'#4A90E2',green:'#2ECC71',orange:'#E67E22',red:'#E53935',purple:'#8E44AD'}[c]||'#C9A84C'; }
+function sl(s) { return {issued:'Issued',pending:'Pending',submitted:'Submitted',requirements:'Action',lapse:'Lapsed'}[s]||s; }
+function pc(s) { return {issued:'#2ECC71',pending:'#4A90E2',submitted:'#C9A84C',requirements:'#E67E22',lapse:'#E53935'}[s]||'#5D7499'; }
+function directs(id) { var k=akeys(),r=[]; for(var i=0;i<k.length;i++) if(AG[k[i]].mgr===id) r.push(k[i]); return r; }
+function getPols(id) {
+  var a=AG[id], k=akeys(), r=[];
+  if(a.tier==='sp'){ for(var i=0;i<k.length;i++){var p=POL[k[i]]; if(p) for(var j=0;j<p.length;j++) r.push(p[j]);} return r; }
+  if(a.tier==='manager'){ var ids=[id].concat(directs(id)); for(var i=0;i<ids.length;i++){var p=POL[ids[i]]; if(p) for(var j=0;j<p.length;j++) r.push(p[j]);} return r; }
+  return POL[id]||[];
+}
+function getReqs(id) {
+  var a=AG[id], k=akeys(), r=[];
+  if(a.tier==='sp'){ for(var i=0;i<k.length;i++){var q=REQ[k[i]]; if(q) for(var j=0;j<q.length;j++) r.push(q[j]);} return r; }
+  if(a.tier==='manager'){ var ids=[id].concat(directs(id)); for(var i=0;i<ids.length;i++){var q=REQ[ids[i]]; if(q) for(var j=0;j<q.length;j++) r.push(q[j]);} return r; }
+  return REQ[id]||[];
+}
+function kc(lbl,val,col,cls,note) { return '<div class="kc '+cls+'"><div class="kl">'+lbl+'</div><div class="kv kv-'+col+'">'+val+'</div><div class="kn">'+note+'</div></div>'; }
+function reqHTML(r) {
+  return '<div class="ri" onclick="oReq(\''+r.id+'\')">'
+    +'<div class="ric '+r.cls+'">'+r.ic+'</div>'
+    +'<div class="rb"><div class="rt">'+r.t+'</div><div class="rc">'+r.cl+'</div><div class="rd">'+r.d+'</div><div class="rdue '+r.duec+'">'+r.due+'</div></div>'
+    +'<button type="button" class="btn-sm btn-a" onclick="event.stopPropagation();oReq(\''+r.id+'\')">Action</button>'
+    +'</div>';
+}
+
+// ── LOGIN ──
+function tap(key) {
+  $$('f-em').value = key + '@nasb.com';
+  $$('f-pw').value = 'demo1234';
+  setTimeout(function(){ doLogin(); }, 50);
+}
+function doLogin() {
+  var em = $$('f-em').value.trim().toLowerCase();
+  var pw = $$('f-pw').value.trim();
+  $$('f-err').innerHTML = '';
+  if (!em || !pw) { $$('f-err').innerHTML = 'Enter email and password'; return; }
+  if (pw !== PW) { $$('f-err').innerHTML = 'Password: demo1234'; return; }
+  var key = em.split('@')[0];
+  var a = AG[key];
+  if (!a) {
+    var k = akeys();
+    for (var i = 0; i < k.length; i++) {
+      if (AG[k[i]].n.toLowerCase().split(' ')[0] === key) { a = AG[k[i]]; break; }
+    }
+  }
+  if (!a) { $$('f-err').innerHTML = 'Not found. Tap your name above.'; return; }
+  $$('pg-login').style.display = 'none';
+  $$('pg-app').style.display = 'flex';
+  $$('pg-app').style.flexDirection = 'column';
+  CU = a;
+  $$('tb-n').innerHTML = a.n;
+  $$('tb-r').innerHTML = a.role;
+  $$('tb-av').innerHTML = a.ini;
+  var pct = Math.min(100, Math.round(a.cur / a.goal * 100));
+  $$('g-fill').style.width = pct + '%';
+  $$('g-cur').innerHTML = fmt(a.cur);
+  $$('g-tgt').innerHTML = '/ ' + fmt(a.goal);
+  var pols = getPols(a.id);
+  var reqs = getReqs(a.id);
+  $$('nb-pipe').innerHTML = pols.length;
+  $$('nb-reqs').innerHTML = reqs.length || '';
+  $$('nav-mgr').className = a.tier === 'manager' ? '' : 'hidden';
+  $$('nav-sp').className = a.tier === 'sp' ? '' : 'hidden';
+  if (a.tier === 'manager') go('myprod', $$('nl-myprod'));
+  else go('dash', $$('nl-dash'));
+}
+function doLogout() {
+  CU = null;
+  $$('pg-app').style.display = 'none';
+  $$('pg-login').style.display = 'flex';
+}
+
+// ── NAV ──
+var VIEWS = ['dash','pipe','reqs','comm','docs','myprod','myteam','org','anl','goals','rec','calc','admin'];
+function go(name, btn) {
+  $$('main-area').innerHTML = '';
+  var fns = {dash:rDash,pipe:rPipe,reqs:rReqs,comm:rComm,docs:rDocs,myprod:rMyProd,myteam:rMyTeam,org:rOrg,anl:rAnl,goals:rGoals,rec:rRec,calc:rCalc,admin:rAdmin};
+  var nls = document.querySelectorAll('.nl');
+  for (var i = 0; i < nls.length; i++) nls[i].className = 'nl';
+  if (btn) btn.className = 'nl on';
+  if (fns[name]) fns[name]();
+}
+
+// ── RENDER HELPERS ──
+function setHTML(h) { $$('main-area').innerHTML = h; }
+function hdr(ey,t,s) { return '<div class="pg-ey">'+ey+'</div><div class="pg-t">'+t+'</div><div class="pg-s">'+s+'</div>'; }
+
+// ── DASHBOARD ──
+function rDash() {
+  var pols=getPols(CU.id), reqs=getReqs(CU.id);
+  var iss=[],pen=[],lap=[];
+  for(var i=0;i<pols.length;i++){
+    if(pols[i].st==='issued') iss.push(pols[i]);
+    else if(pols[i].st==='pending'||pols[i].st==='submitted') pen.push(pols[i]);
+    else if(pols[i].st==='lapse') lap.push(pols[i]);
+  }
+  var iAP=0,pAP=0,lAP=0;
+  for(var i=0;i<iss.length;i++) iAP+=iss[i].ap;
+  for(var i=0;i<pen.length;i++) pAP+=pen[i].ap;
+  for(var i=0;i<lap.length;i++) lAP+=lap[i].ap;
+  var com=COM[CU.id];
+  var hr=new Date().getHours();
+  var gr=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  var h=hdr('SalesMafia · NASB',gr+', '+CU.n.split(' ')[0],CU.role+' · Month-to-Date');
+  h+='<div class="krow">'
+    +kc('Issued AP',fmt(iAP),'gold','kc-gold',iss.length+' policies')
+    +kc('Pending',pen.length,'blue','kc-blue',fmt(pAP)+' pipeline')
+    +kc('Needs Action',reqs.length,'orange','kc-orange','requirements')
+    +kc('Commissions',com.tot,'green','kc-green',com.adv+' advanced')
+    +kc('Lapses',lap.length,'red','kc-red',fmt(lAP)+' at risk')
+    +'</div>';
+  h+='<div class="two-col">';
+  h+='<div class="panel"><div class="ph"><div class="pt">Recent Activity</div></div>';
+  var show=pols.slice(0,6);
+  for(var i=0;i<show.length;i++){
+    var p=show[i];
+    h+='<div class="ai"><div class="ad" style="background:'+pc(p.st)+'"></div><div class="at"><strong>'+p.cl+'</strong> — '+p.ca+' ('+fmt(p.ap)+')</div><span class="s s-'+p.st+'">'+sl(p.st)+'</span></div>';
+  }
+  if(!show.length) h+='<div style="padding:16px;color:#5D7499;font-size:12px">No activity yet</div>';
+  h+='</div>';
+  var urg=[];
+  for(var i=0;i<reqs.length;i++) if(reqs[i].duec==='du'||reqs[i].duec==='ds') urg.push(reqs[i]);
+  h+='<div class="panel"><div class="ph"><div class="pt">Requirements</div></div>';
+  if(!urg.length) h+='<div style="padding:16px;color:#5D7499;font-size:12px;text-align:center">No urgent requirements</div>';
+  for(var i=0;i<Math.min(urg.length,3);i++) h+=reqHTML(urg[i]);
+  h+='</div></div>';
+  setHTML(h);
+}
+
+// ── PIPELINE ──
+function rPipe() {
+  var pols=getPols(CU.id), fil=[];
+  for(var i=0;i<pols.length;i++) if(!PFILT||pols[i].st===PFILT) fil.push(pols[i]);
+  var h=hdr('Production','Pipeline',fil.length+' applications');
+  h+='<div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px">';
+  h+='<button type="button" class="btn-gh" onclick="PFILT=null;rPipe()">All</button>';
+  h+='<button type="button" class="btn-gh" onclick="PFILT=\'issued\';rPipe()">Issued</button>';
+  h+='<button type="button" class="btn-gh" onclick="PFILT=\'pending\';rPipe()">Pending</button>';
+  h+='<button type="button" class="btn-gh" onclick="PFILT=\'requirements\';rPipe()">Action</button>';
+  h+='<button type="button" class="btn-gh" onclick="PFILT=\'lapse\';rPipe()">Lapsed</button>';
+  h+='</div>';
+  h+='<div class="panel"><div class="tscroll"><table class="tbl"><thead><tr><th>Client</th><th>Carrier</th><th>AP</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>';
+  for(var i=0;i<fil.length;i++){
+    var p=fil[i];
+    h+='<tr><td><strong>'+p.cl+'</strong></td><td style="color:#5D7499">'+p.ca+'</td><td style="color:#C9A84C">'+fmt(p.ap)+'</td><td style="color:#5D7499;font-size:10px">'+p.dt+'</td><td><span class="s s-'+p.st+'">'+sl(p.st)+'</span></td><td><button type="button" class="btn-sm btn-v" onclick="oPol(\''+p.id+'\')">View</button></td></tr>';
+  }
+  if(!fil.length) h+='<tr><td colspan="6" style="text-align:center;padding:20px;color:#5D7499">No applications</td></tr>';
+  h+='</tbody></table></div></div>';
+  setHTML(h);
+}
+
+// ── REQUIREMENTS ──
+function rReqs() {
+  var reqs=getReqs(CU.id);
+  var h=hdr('Action Center','Requirements','Clear these to protect your policies');
+  h+='<div class="panel"><div class="ph"><div class="pt">Needs Action</div></div>';
+  if(!reqs.length) h+='<div style="padding:24px;text-align:center;color:#5D7499;font-size:13px">No outstanding requirements!</div>';
+  for(var i=0;i<reqs.length;i++) h+=reqHTML(reqs[i]);
+  h+='</div>';
+  setHTML(h);
+}
+
+// ── COMMISSIONS ──
+function rComm() {
+  var pols = POL[CU.id] || [];
+  var issuedPols = [];
+  for(var i=0;i<pols.length;i++) if(pols[i].st==='issued') issuedPols.push(pols[i]);
+  // Calculate from real comp rates
+  var totalEarned = 0, totalAdv = 0;
+  var rows = [];
+  for(var i=0;i<issuedPols.length;i++){
+    var p = issuedPols[i];
+    var rate = getCompRate(CU.id, p.ca);
+    var earned = calcComm(p.ap, rate);
+    var adv = Math.round(earned * 0.75); // 75% advance standard
+    totalEarned += earned;
+    totalAdv += adv;
+    rows.push({ca:p.ca, cl:p.cl, pr:p.pr, ap:p.ap, rate:rate, earned:earned, adv:adv, net:earned-adv, dt:p.dt});
+  }
+  var totalNet = totalEarned - totalAdv;
+  var h=hdr('Earnings','Commissions','Calculated from NASB 2025 comp rates · '+CU.n+' ('+AG[CU.id].compLevel+')');
+  h+='<div class="krow">';
+  h+=kc('Total Earned',fmt(totalEarned),'gold','kc-gold',issuedPols.length+' issued policies');
+  h+=kc('Total Advanced',fmt(totalAdv),'blue','kc-blue','75% advance rate');
+  h+=kc('Net Remaining',fmt(totalNet),'green','kc-green','balance outstanding');
+  h+='</div>';
+  // Comp level badge
+  h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 14px;background:#1A2A42;border-radius:8px;border:1px solid rgba(201,168,76,0.15)">';
+  h+='<div style="font-size:20px">📊</div>';
+  h+='<div><div style="font-size:13px;font-weight:700">Your Comp Level: <span style="color:#C9A84C">'+AG[CU.id].compLevel+'</span></div>';
+  h+='<div style="font-size:11px;color:#5D7499;margin-top:2px">Rates sourced from NASB 2025 Compensation Guide. Contact Luke H. to discuss level advancement.</div></div>';
+  h+='<button type="button" class="btn-pr" style="margin-left:auto;white-space:nowrap" onclick="rCalc()">Open Calculator</button>';
+  h+='</div>';
+  h+='<div class="panel"><div class="ph"><div class="pt">Commission Ledger — Issued Policies</div><div style="font-size:10px;color:#5D7499">Your '+AG[CU.id].compLevel+' rate applied per carrier</div></div>';
+  h+='<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Client</th><th>Carrier</th><th>Product</th><th>Ann. Prem</th><th>Your Rate</th><th>Earned</th><th>Advanced</th><th>Net</th></tr></thead><tbody>';
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i];
+    h+='<tr><td><strong>'+r.cl+'</strong></td><td style="color:#5D7499">'+r.ca+'</td><td style="color:#5D7499;font-size:10px">'+r.pr+'</td><td style="color:#C9A84C">'+fmt(r.ap)+'</td><td style="color:#4A90E2;font-weight:700">'+r.rate+'%</td><td style="color:#C9A84C;font-weight:700">'+fmt(r.earned)+'</td><td style="color:#5D7499">'+fmt(r.adv)+'</td><td style="color:#2ECC71;font-weight:700">'+fmt(r.net)+'</td></tr>';
+  }
+  if(!rows.length) h+='<tr><td colspan="8" style="text-align:center;padding:20px;color:#5D7499">No issued policies yet — commissions will appear here automatically</td></tr>';
+  h+='</tbody></table></div></div>';
+  h+='<div class="panel"><div class="ph"><div class="pt">Commission Calculator</div><div style="font-size:10px;color:#5D7499">Estimate earnings before submitting</div></div>';
+  h+='<div style="padding:14px" id="calc-area">';
+  h+=buildCalc();
+  h+='</div></div>';
+  setHTML(h);
+}
+
+function buildCalc() {
+  var a = AG[CU.id];
+  var carriers = Object.keys(CARRIER_KEYS);
+  var h='<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px">';
+  h+='<div style="flex:1;min-width:120px"><label style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5D7499;display:block;margin-bottom:5px">Carrier</label>';
+  h+='<select class="asel" id="calc-carrier">';
+  for(var i=0;i<carriers.length;i++) h+='<option value="'+carriers[i]+'">'+carriers[i]+'</option>';
+  h+='</select></div>';
+  h+='<div style="flex:1;min-width:120px"><label style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5D7499;display:block;margin-bottom:5px">Annual Premium ($)</label>';
+  h+='<input class="ain" type="number" id="calc-ap" placeholder="3500"></div>';
+  h+='<div style="flex:1;min-width:120px"><label style="font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5D7499;display:block;margin-bottom:5px">Advance %</label>';
+  h+='<select class="asel" id="calc-adv"><option value="75">75% Standard</option><option value="100">100% Same-day</option><option value="50">50% Conservative</option><option value="0">0% No Advance</option></select></div>';
+  h+='</div>';
+  h+='<button type="button" class="btn-pr" onclick="doCalc()">Calculate Commission</button>';
+  h+='<div id="calc-result" style="margin-top:12px"></div>';
+  return h;
+}
+
+function doCalc() {
+  var carrier = document.getElementById('calc-carrier').value;
+  var ap = parseInt(document.getElementById('calc-ap').value) || 0;
+  var advPct = parseInt(document.getElementById('calc-adv').value) || 75;
+  if(!ap){toast('Enter an annual premium amount');return;}
+  var rate = getCompRate(CU.id, carrier);
+  var earned = calcComm(ap, rate);
+  var adv = Math.round(earned * advPct / 100);
+  var net = earned - adv;
+  var r = document.getElementById('calc-result');
+  r.innerHTML = '<div style="background:#0B1526;border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:14px">'
+    +'<div style="font-size:11px;color:#5D7499;margin-bottom:10px">'+CU.n+' ('+AG[CU.id].compLevel+') · '+carrier+' · $'+ap.toLocaleString()+' AP · '+rate+'% comp rate</div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:12px">'
+    +'<div style="flex:1;text-align:center;background:#131F35;border-radius:7px;padding:12px"><div style="font-size:10px;color:#5D7499;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Total Earned</div><div style="font-size:22px;font-weight:700;color:#C9A84C">'+fmt(earned)+'</div></div>'
+    +'<div style="flex:1;text-align:center;background:#131F35;border-radius:7px;padding:12px"><div style="font-size:10px;color:#5D7499;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Advanced ('+advPct+'%)</div><div style="font-size:22px;font-weight:700;color:#4A90E2">'+fmt(adv)+'</div></div>'
+    +'<div style="flex:1;text-align:center;background:#131F35;border-radius:7px;padding:12px"><div style="font-size:10px;color:#5D7499;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Net Remaining</div><div style="font-size:22px;font-weight:700;color:#2ECC71">'+fmt(net)+'</div></div>'
+    +'</div></div>';
+}
+
+function rCalc() {
+  // Show full-page calculator
+  var h=hdr('Tools','Commission Calculator','NASB 2025 rates · All carriers · All levels');
+  h+='<div class="panel"><div class="ph"><div class="pt">Calculate Commission by Carrier</div></div><div style="padding:14px">';
+  h+=buildCalc();
+  h+='</div></div>';
+  // Rate lookup table for this agent
+  var a = AG[CU.id];
+  var rates = COMP[a.compLevel] || {};
+  var carriers = Object.keys(CARRIER_KEYS);
+  h+='<div class="panel"><div class="ph"><div class="pt">Your '+a.compLevel+' Rate Card — All Carriers</div></div>';
+  h+='<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Carrier</th><th>Your Rate</th><th>On $3,000 AP</th><th>On $5,000 AP</th><th>On $8,000 AP</th></tr></thead><tbody>';
+  for(var i=0;i<carriers.length;i++){
+    var ca=carriers[i];
+    var rate=getCompRate(CU.id,ca);
+    h+='<tr><td style="font-weight:600">'+ca+'</td><td style="color:#4A90E2;font-weight:700">'+rate+'%</td><td style="color:#C9A84C">'+fmt(calcComm(3000,rate))+'</td><td style="color:#C9A84C">'+fmt(calcComm(5000,rate))+'</td><td style="color:#C9A84C">'+fmt(calcComm(8000,rate))+'</td></tr>';
+  }
+  h+='</tbody></table></div></div>';
+  setHTML(h);
+}
+
+// ── DOCS ──
+function rDocs() {
+  var h=hdr('Resources','Forms & Docs','Carrier forms and training materials');
+  h+='<div class="two-col">';
+  h+='<div class="panel"><div class="ph"><div class="pt">Carrier Forms</div></div><div style="padding:12px">';
+  h+=dRow('📄','TL-2200 — Change of Beneficiary','Transamerica · Fillable','db-dl','Download');
+  h+=dRow('📄','TL-8840 — Replacement Notice','Transamerica · Required for replacements','db-dl','Download');
+  h+=dRow('📄','AIG-SH3 — Supplemental Health','AIG/Corebridge · Health supplement','db-dl','Download');
+  h+=dRow('📄','MOO APS Request Letter','Mutual of Omaha · Physician statement','db-dl','Download');
+  h+=dRow('✍️','Send E-Signature (DocuSign)','Client signs on phone or email','db-sg','Send');
+  h+='</div></div>';
+  h+='<div class="panel"><div class="ph"><div class="pt">NASB Training</div></div><div style="padding:12px">';
+  h+=dRow('📘','New Agent Training Manual','Blair onboarding · SalesMafia checklist','db-vw','Open');
+  h+=dRow('📗','Field Sales Script — Full','Door · Kitchen table · Close','db-vw','Open');
+  h+=dRow('🎯','Blair Master Onboarding Checklist','SuranceBay · NASBNation setup','db-vw','Open');
+  h+=dRow('📊','Career Track & Comp Guide','AG6 through Senior Partner','db-vw','Open');
+  h+='</div></div></div>';
+  setHTML(h);
+}
+function dRow(ic,n,d,bc,bt) {
+  return '<div class="doc-row"><div class="doc-ic">'+ic+'</div><div class="doc-inf"><div class="doc-n">'+n+'</div><div class="doc-d">'+d+'</div></div><button type="button" class="doc-btn '+bc+'" onclick="toast(\'Action...\')">'+bt+'</button></div>';
+}
+
+// ── MGR MY PRODUCTION ──
+function rMyProd() {
+  var pols=POL[CU.id]||[], reqs=REQ[CU.id]||[];
+  var iss=[],pen=[],lap=[];
+  for(var i=0;i<pols.length;i++){
+    if(pols[i].st==='issued') iss.push(pols[i]);
+    else if(pols[i].st==='pending'||pols[i].st==='submitted') pen.push(pols[i]);
+    else if(pols[i].st==='lapse') lap.push(pols[i]);
+  }
+  var iAP=0; for(var i=0;i<iss.length;i++) iAP+=iss[i].ap;
+  var com=COM[CU.id];
+  var h=hdr('Manager — Personal',CU.n+' — My Production','Your own policies only');
+  h+='<div class="krow">'+kc('My Issued AP',fmt(iAP),'gold','kc-gold',iss.length+' policies')+kc('My Pending',pen.length,'blue','kc-blue','in review')+kc('My Reqs',reqs.length,'orange','kc-orange','needs action')+kc('My Comm',com.tot,'green','kc-green',com.adv+' advanced')+kc('My Lapses',lap.length,'red','kc-red','at risk')+'</div>';
+  h+='<div class="two-col">';
+  h+='<div class="panel"><div class="ph"><div class="pt">My Pipeline</div></div><div class="tscroll"><table class="tbl"><thead><tr><th>Client</th><th>Carrier</th><th>AP</th><th>Status</th></tr></thead><tbody>';
+  for(var i=0;i<pols.length;i++){var p=pols[i]; h+='<tr><td><strong>'+p.cl+'</strong></td><td style="color:#5D7499;font-size:11px">'+p.ca+'</td><td style="color:#C9A84C">'+fmt(p.ap)+'</td><td><span class="s s-'+p.st+'">'+sl(p.st)+'</span></td></tr>';}
+  if(!pols.length) h+='<tr><td colspan="4" style="text-align:center;padding:16px;color:#5D7499">No applications yet</td></tr>';
+  h+='</tbody></table></div></div>';
+  h+='<div class="panel"><div class="ph"><div class="pt">My Requirements</div></div>';
+  if(!reqs.length) h+='<div style="padding:16px;text-align:center;color:#5D7499;font-size:12px">No open requirements</div>';
+  for(var i=0;i<reqs.length;i++) h+=reqHTML(reqs[i]);
+  h+='</div></div>';
+  h+='<div class="panel"><div class="ph"><div class="pt">My Commissions</div></div>';
+  for(var i=0;i<com.rows.length;i++){var r=com.rows[i]; h+='<div class="crow"><div style="flex:1"><div style="font-weight:600">'+r.ca+'</div><div style="font-size:10px;color:#5D7499">'+r.cl+'</div></div><div style="color:#C9A84C">'+r.ea+'</div><div style="color:#5D7499">'+r.ad+'</div><div style="color:#2ECC71">'+r.nt+'</div></div>';}
+  if(!com.rows.length) h+='<div style="padding:16px;color:#5D7499;font-size:12px;text-align:center">No records yet</div>';
+  h+='</div>';
+  setHTML(h);
+}
+
+// ── MGR TEAM OVERVIEW ──
+function rMyTeam() {
+  var ds=directs(CU.id), ap=[], rq=[];
+  for(var i=0;i<ds.length;i++){
+    var dp=POL[ds[i]]||[]; for(var j=0;j<dp.length;j++) ap.push({p:dp[j],aid:ds[i]});
+    var dr=REQ[ds[i]]||[]; for(var j=0;j<dr.length;j++) rq.push(dr[j]);
+  }
+  var iss=0,pen=0,lap=0,tAP=0;
+  for(var i=0;i<ap.length;i++){
+    if(ap[i].p.st==='issued'){iss++;tAP+=ap[i].p.ap;}
+    else if(ap[i].p.st==='pending'||ap[i].p.st==='submitted') pen++;
+    else if(ap[i].p.st==='lapse') lap++;
+  }
+  var h=hdr('Manager — Team',CU.n+' Team Overview',ds.length+' direct agents');
+  h+='<div class="krow">'+kc('Team Issued AP',fmt(tAP),'gold','kc-gold',iss+' policies')+kc('Team Pending',pen,'blue','kc-blue','in review')+kc('Team Reqs',rq.length,'orange','kc-orange','needs action')+kc('Agents',ds.length,'green','kc-green','on your team')+kc('Team Lapses',lap,'red','kc-red','at risk')+'</div>';
+  h+='<div class="panel"><div class="ph"><div class="pt">Agent Leaderboard</div></div><div class="tscroll"><table class="tbl"><thead><tr><th>#</th><th>Agent</th><th>Issued AP</th><th>Apps</th><th>Reqs</th><th>Goal%</th><th></th></tr></thead><tbody>';
+  var srt=ds.slice().sort(function(a,b){return (AG[b]?AG[b].cur:0)-(AG[a]?AG[a].cur:0);});
+  for(var i=0;i<srt.length;i++){
+    var a=AG[srt[i]]; if(!a) continue;
+    var pct=Math.min(100,Math.round(a.cur/a.goal*100));
+    var color=bc(a.col);
+    var agI=0; var agP=POL[a.id]||[]; for(var j=0;j<agP.length;j++) if(agP[j].st==='issued') agI++;
+    var agR=(REQ[a.id]||[]).length;
+    h+='<tr><td style="color:'+(i===0?'#C9A84C':'#5D7499');h+=';font-weight:700">'+(i+1)+'</td><td><strong>'+a.n+'</strong><br><span style="font-size:10px;color:#5D7499">'+a.role+'</span></td><td style="color:'+color+';font-weight:600">'+fmt(a.cur)+'</td><td>'+agI+'</td><td style="color:'+(agR>0?'#E67E22':'#5D7499')+'">'+agR+'</td><td><div style="display:flex;align-items:center;gap:5px"><div style="width:50px;height:4px;background:#223250;border-radius:2px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+color+'"></div></div><span style="font-size:10px;color:'+color+'">'+pct+'%</span></div></td><td><button type="button" class="btn-sm btn-v" onclick="oAgent(\''+a.id+'\')">View</button></td></tr>';
+  }
+  h+='</tbody></table></div></div>';
+  h+='<div class="two-col">';
+  h+='<div class="panel"><div class="ph"><div class="pt">Team Pipeline</div></div><div class="tscroll"><table class="tbl"><thead><tr><th>Agent</th><th>Client</th><th>AP</th><th>Status</th></tr></thead><tbody>';
+  for(var i=0;i<ap.length;i++){var p=ap[i].p,a=AG[ap[i].aid]; h+='<tr><td style="color:#5D7499;font-size:11px">'+(a?a.n:'')+'</td><td><strong>'+p.cl+'</strong></td><td style="color:#C9A84C">'+fmt(p.ap)+'</td><td><span class="s s-'+p.st+'">'+sl(p.st)+'</span></td></tr>';}
+  h+='</tbody></table></div></div>';
+  h+='<div class="panel"><div class="ph"><div class="pt">Team Requirements</div></div>';
+  if(!rq.length) h+='<div style="padding:16px;text-align:center;color:#5D7499;font-size:12px">No open requirements</div>';
+  for(var i=0;i<rq.length;i++) h+=reqHTML(rq[i]);
+  h+='</div></div>';
+  setHTML(h);
+}
+
+// ── ORG ──
+function rOrg() {
+  var h=hdr('Organization','Org Chart','Full SalesMafia hierarchy');
+  if(CU.tier==='sp'){
+    h+=orgLvl('Senior Partner',['luke'],1);
+    var mgrs=[]; var k=akeys(); for(var i=0;i<k.length;i++) if(AG[k[i]].tier==='manager') mgrs.push(k[i]);
+    h+=orgLvl('Managers',mgrs,mgrs.length);
+    var da=directs('luke'), daf=[]; for(var i=0;i<da.length;i++) if(AG[da[i]].tier==='agent') daf.push(da[i]);
+    if(daf.length) h+=orgLvl('Direct Agents',daf,daf.length);
+    for(var m=0;m<mgrs.length;m++){var sub=directs(mgrs[m]); if(sub.length) h+=orgLvl(AG[mgrs[m]].n+' Team',sub,sub.length);}
+  } else {
+    h+=orgLvl('You',[CU.id],1);
+    var sub=directs(CU.id); if(sub.length) h+=orgLvl('Your Agents',sub,sub.length);
+  }
+  setHTML(h);
+}
+function orgLvl(lbl,ids,cols) {
+  if(!ids.length) return '';
+  var h='<div class="org-lv"><div class="org-lbl">'+lbl+' ('+ids.length+')</div><div class="org-row">';
+  for(var i=0;i<ids.length;i++) h+=orgNode(ids[i]);
+  h+='</div></div>';
+  return h;
+}
+function orgNode(id) {
+  var a=AG[id]; if(!a) return '';
+  var pct=Math.min(100,Math.round(a.cur/a.goal*100));
+  var color=bc(a.col);
+  var rq=(REQ[a.id]||[]).length;
+  var lp=0; var p=POL[a.id]||[]; for(var i=0;i<p.length;i++) if(p[i].st==='lapse') lp++;
+  return '<div class="org-node on-'+a.col+'" onclick="oAgent(\''+a.id+'\')">'
+    +'<div class="on-top"><div class="on-av av-'+a.col+'">'+a.ini+'</div><div><div class="on-name">'+a.n+'</div><div class="on-role">'+a.role+'</div></div></div>'
+    +'<div class="on-stats"><div class="on-stat"><div class="on-sv" style="color:'+color+'">'+fmt(a.cur)+'</div><div class="on-sl">Issued</div></div><div class="on-stat"><div class="on-sv" style="color:#E67E22">'+rq+'</div><div class="on-sl">Reqs</div></div><div class="on-stat"><div class="on-sv" style="color:#E53935">'+lp+'</div><div class="on-sl">Lapses</div></div></div>'
+    +'<div class="on-bar"><div class="on-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'
+    +'<div class="on-pct">'+pct+'% of '+fmt(a.goal)+'</div>'
+    +'<div style="margin-top:8px"><button type="button" class="btn-sm btn-v" onclick="event.stopPropagation();oAgent(\''+a.id+'\')">Detail</button></div>'
+    +'</div>';
+}
+
+// ── ANALYTICS ──
+function rAnl() {
+  var k=akeys(), ap=[], rq=[];
+  for(var i=0;i<k.length;i++){
+    var p=POL[k[i]]||[]; for(var j=0;j<p.length;j++) ap.push(p[j]);
+    var r=REQ[k[i]]||[]; for(var j=0;j<r.length;j++) rq.push(r[j]);
+  }
+  var iss=[], tAP=0;
+  for(var i=0;i<ap.length;i++) if(ap[i].st==='issued'){iss.push(ap[i]);tAP+=ap[i].ap;}
+  var h=hdr('Analytics','Team Performance','All agents · Month-to-Date');
+  h+='<div class="krow">'+kc('Total Issued AP',fmt(tAP),'gold','kc-gold',iss.length+' policies')+kc('Open Reqs',rq.length,'orange','kc-orange','across team')+kc('Total Apps',ap.length,'blue','kc-blue','all agents')+kc('Agents',k.length,'green','kc-green','on team')+'</div>';
+  h+='<div class="panel"><div class="ph"><div class="pt">Agent Leaderboard</div></div><div class="tscroll"><table class="tbl"><thead><tr><th>#</th><th>Agent</th><th>Manager</th><th>Issued AP</th><th>Goal %</th></tr></thead><tbody>';
+  var ags=[]; for(var ki=0;ki<k.length;ki++) if(AG[k[ki]].tier==='agent') ags.push(AG[k[ki]]);
+  ags.sort(function(a,b){return b.cur-a.cur;});
+  for(var i=0;i<ags.length;i++){
+    var a=ags[i], pct=Math.min(100,Math.round(a.cur/a.goal*100)), color=bc(a.col);
+    var mgrN=a.mgr&&AG[a.mgr]?AG[a.mgr].n:'—';
+    h+='<tr onclick="oAgent(\''+a.id+'\')" style="cursor:pointer"><td style="color:'+(i===0?'#C9A84C':'#5D7499');h+=';font-weight:700">'+(i+1)+'</td><td><strong>'+a.n+'</strong></td><td style="color:#5D7499">'+mgrN+'</td><td style="color:'+color+';font-weight:600">'+fmt(a.cur)+'</td><td><div style="display:flex;align-items:center;gap:5px"><div style="width:60px;height:4px;background:#223250;border-radius:2px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+color+'"></div></div><span style="font-size:10px;color:'+color+'">'+pct+'%</span></div></td></tr>';
+  }
+  h+='</tbody></table></div></div>';
+  var tr=0,ai=0,mo=0,tot=0;
+  for(var i=0;i<ap.length;i++){tot+=ap[i].ap; if(ap[i].ca==='Transamerica') tr+=ap[i].ap; else if(ap[i].ca==='AIG/Corebridge') ai+=ap[i].ap; else mo+=ap[i].ap;}
+  if(!tot) tot=1;
+  h+='<div class="panel"><div class="ph"><div class="pt">Carrier Mix</div></div><div style="padding:16px">';
+  var cars=[{n:'Transamerica',v:tr,c:'#C9A84C'},{n:'AIG/Corebridge',v:ai,c:'#4A90E2'},{n:'Mutual of Omaha',v:mo,c:'#2ECC71'}];
+  for(var i=0;i<cars.length;i++){
+    var pct=Math.round(cars[i].v/tot*100);
+    h+='<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.03)"><div style="font-size:11px;font-weight:600;width:120px">'+cars[i].n+'</div><div style="flex:1;height:6px;background:#223250;border-radius:3px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+cars[i].c+'"></div></div><div style="color:'+cars[i].c+';font-size:11px;font-weight:600;width:60px;text-align:right">'+fmt(cars[i].v)+'</div><div style="color:#5D7499;font-size:10px;width:30px;text-align:right">'+pct+'%</div></div>';
+  }
+  h+='</div></div>';
+  setHTML(h);
+}
+
+// ── GOALS ──
+function rGoals() {
+  var k=akeys();
+  var h=hdr('Senior Partner','Set Agent Goals','Monthly production targets');
+  h+='<div class="panel"><div class="ph"><div class="pt">Monthly Targets</div><button type="button" class="pa" onclick="saveGoals()">Save All</button></div>';
+  for(var i=0;i<k.length;i++){
+    var a=AG[k[i]]; if(a.tier==='sp') continue;
+    var pct=Math.min(100,Math.round(a.cur/a.goal*100)), color=bc(a.col);
+    var mn=a.mgr&&AG[a.mgr]?AG[a.mgr].n:'Top Level';
+    h+='<div class="arow"><div style="display:flex;align-items:center;gap:8px;width:150px;flex-shrink:0"><div class="on-av av-'+a.col+'" style="width:24px;height:24px;font-size:8px">'+a.ini+'</div><div><div style="font-size:12px;font-weight:600">'+a.n+'</div><div style="font-size:9px;color:#5D7499">'+mn+'</div></div></div>'
+      +'<div style="flex:1"><div style="display:flex;align-items:center;gap:5px;margin-bottom:3px"><div style="flex:1;height:4px;background:#223250;border-radius:2px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+color+'"></div></div><span style="font-size:10px;color:'+color+'">'+pct+'%</span></div><div style="font-size:10px;color:#5D7499">'+fmt(a.cur)+' earned</div></div>'
+      +'<div><label style="font-size:9px;color:#5D7499;display:block;margin-bottom:3px">Goal</label><input class="ain" type="number" id="gs-'+a.id+'" value="'+a.goal+'" style="width:90px;flex:none"></div></div>';
+  }
+  h+='<div style="padding:12px;display:flex;justify-content:flex-end"><button type="button" class="btn-pr" onclick="saveGoals()">Save All</button></div></div>';
+  setHTML(h);
+}
+function saveGoals() {
+  var k=akeys();
+  for(var i=0;i<k.length;i++){
+    var el=$$('gs-'+k[i]);
+    if(el&&parseInt(el.value)>0) AG[k[i]].goal=parseInt(el.value);
+  }
+  toast('Goals saved!');
+}
+
+// ── RECRUITING ──
+function rRec() {
+  var h=hdr('Team Growth','Recruiting Pipeline','Active prospects');
+  h+='<div class="panel"><div class="ph"><div class="pt">Prospects</div></div><div class="tscroll"><table class="tbl"><thead><tr><th>Name</th><th>Source</th><th>Stage</th><th>By</th><th>Last</th></tr></thead><tbody>';
+  for(var i=0;i<REC.length;i++){
+    var r=REC[i];
+    h+='<tr><td><strong>'+r.n+'</strong></td><td style="color:#5D7499;font-size:11px">'+r.src+'</td><td><span class="s s-pending">'+r.stg+'</span></td><td style="color:#5D7499">'+r.by+'</td><td style="font-size:10px;color:#5D7499">'+r.lst+'</td></tr>';
+  }
+  h+='</tbody></table></div></div>';
+  setHTML(h);
+}
+
+// ── ADMIN ──
+var ATAB = 'agents';
+var APWS = {};
+
+function rAdmin() {
+  if(!CU||CU.tier!=='sp'){toast('Admin: Senior Partner only');return;}
+  var k=Object.keys(AG);
+  var wrap = document.getElementById('main-area');
+  
+  var html = hdr('Senior Partner Only','Admin Panel','Changes go live instantly across all agent portals');
+  html += '<div class="warn">Admin mode active. Only Luke H. can access this panel.</div>';
+  
+  // Tab bar - use data-t attribute, no string args in onclick
+  html += '<div class="atabs">';
+  var tabList = ['agents','goals','policies','passwords','forms','integrations'];
+  var tabLabels = ['Agents & Levels','Goals & Comp','Policies','Passwords','Forms & Docs','Integrations'];
+  for(var ti=0;ti<tabList.length;ti++){
+    var tname = tabList[ti];
+    var tlbl = tabLabels[ti];
+    html += '<button type="button" class="atab'+(ATAB===tname?' on':'')+'" data-t="'+tname+'" onclick="sTab(this.dataset.t)">'+tlbl+'</button>';
+  }
+  html += '</div>';
+  
+  if(ATAB==='agents'){
+    html += '<div class="a-card">';
+    html += '<div class="a-card-t">Agent Roster &amp; Comp Levels<button type="button" class="btn-pr" style="font-size:11px;padding:6px 12px" onclick="addAgent()">+ Add Agent</button></div>';
+    for(var i=0;i<k.length;i++){
+      var a=AG[k[i]];
+      var tierBadge=a.tier==='sp'?'bt-sp':a.tier==='manager'?'bt-mgr':'bt-ag';
+      html += '<div style="background:#0B1526;border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:14px;margin-bottom:10px">';
+      html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">';
+      html += '<div class="on-av av-'+a.col+'" style="width:30px;height:30px;font-size:10px">'+a.ini+'</div>';
+      html += '<div><div style="font-size:13px;font-weight:700">'+a.n+'</div><div style="font-size:10px;color:#5D7499">'+a.role+'</div></div>';
+      html += '<span class="bt '+tierBadge+'" style="margin-left:auto">'+a.tier.toUpperCase()+'</span>';
+      html += '<span class="comp-badge">'+a.compLevel+'</span>';
+      html += '</div>';
+      html += '<div class="frow"><div class="fcol"><label>Full Name</label><input class="ain" id="an-'+a.id+'" value="'+a.n+'"></div>';
+      html += '<div class="fcol"><label>Role Title</label><input class="ain" id="ar-'+a.id+'" value="'+a.role+'"></div></div>';
+      html += '<div class="frow"><div class="fcol"><label>Reports To</label><select class="asel" id="amgr-'+a.id+'"><option value="">Top Level</option>';
+      for(var j=0;j<k.length;j++){
+        if(k[j]!==a.id){
+          html += '<option value="'+k[j]+'"'+(a.mgr===k[j]?' selected':'')+'>'+AG[k[j]].n+'</option>';
+        }
+      }
+      html += '</select></div>';
+      html += '<div class="fcol"><label>Portal Tier</label><select class="asel" id="atier-'+a.id+'">';
+      html += '<option value="sp"'+(a.tier==='sp'?' selected':'')+'>Senior Partner</option>';
+      html += '<option value="manager"'+(a.tier==='manager'?' selected':'')+'>Manager</option>';
+      html += '<option value="agent"'+(a.tier==='agent'?' selected':'')+'>Field Agent</option>';
+      html += '</select></div>';
+      html += '<div class="fcol"><label>Comp Level</label><select class="asel" id="aclvl-'+a.id+'">';
+      var lvls=['AG6','AG5','AG4','AG3','AG2','AG1','SM3','SM2','SM1','RVP3_150K','ASSOC_PARTNER_225K','JR_PARTNER_300K','PARTNER_400K','SR_PARTNER','SR_EXECUTIVE_PARTNER'];
+      for(var li=0;li<lvls.length;li++){
+        html += '<option value="'+lvls[li]+'"'+(a.compLevel===lvls[li]?' selected':'')+'>'+lvls[li]+'</option>';
+      }
+      html += '</select></div></div>';
+      html += '<div style="display:flex;gap:7px;margin-top:8px">';
+      html += '<button type="button" class="btn-pr" data-id="'+a.id+'" onclick="saveAgent(this.dataset.id)">Save Changes</button>';
+      if(a.tier!=='sp') html += '<button type="button" class="btn-gh" data-id="'+a.id+'" onclick="promoteAgent(this.dataset.id)">Promote</button>';
+      html += '<button type="button" class="btn-gh" data-id="'+a.id+'" onclick="showCompCard(this.dataset.id)">View Rates</button>';
+      html += '</div></div>';
+    }
+    html += '</div>';
+  }
+
+  if(ATAB==='goals'){
+    html += '<div class="a-card"><div class="a-card-t">Monthly Goals<button type="button" class="btn-pr" style="font-size:11px;padding:6px 12px" onclick="saveAllGoals()">Save All</button></div>';
+    for(var i=0;i<k.length;i++){
+      var a=AG[k[i]];
+      var pct=Math.min(100,Math.round(a.cur/a.goal*100));
+      var color=bc(a.col);
+      html += '<div class="arow">';
+      html += '<div style="display:flex;align-items:center;gap:8px;width:160px;flex-shrink:0">';
+      html += '<div class="on-av av-'+a.col+'" style="width:22px;height:22px;font-size:8px">'+a.ini+'</div>';
+      html += '<div><div style="font-size:12px;font-weight:600">'+a.n+'</div><span class="comp-badge" style="font-size:8px;padding:1px 5px">'+a.compLevel+'</span></div></div>';
+      html += '<div style="flex:1"><div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">';
+      html += '<div style="flex:1;height:4px;background:#223250;border-radius:2px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+color+'"></div></div>';
+      html += '<span style="font-size:10px;color:'+color+'">'+pct+'%</span></div>';
+      html += '<div style="font-size:10px;color:#5D7499">'+fmt(a.cur)+' earned</div></div>';
+      html += '<input class="ain" type="number" id="gset-'+a.id+'" value="'+a.goal+'" style="width:90px;flex:none">';
+      html += '</div>';
+    }
+    html += '</div>';
+    html += '<div class="a-card"><div class="a-card-t">2025 NASB Comp Rate Reference</div>';
+    html += '<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Level</th><th>Trans.</th><th>AIG/CB</th><th>MOO LP</th><th>Americo</th><th>Foresters</th><th>AmAm</th></tr></thead><tbody>';
+    var dispLvls=['AG6','AG5','AG4','AG3','AG2','AG1','SM3','SM2','SM1','RVP3_150K','ASSOC_PARTNER_225K','JR_PARTNER_300K','PARTNER_400K','SR_PARTNER'];
+    for(var li=0;li<dispLvls.length;li++){
+      var lvl=dispLvls[li];
+      var rates=COMP[lvl]||{};
+      var agHere=[];
+      for(var ki=0;ki<k.length;ki++) if(AG[k[ki]].compLevel===lvl) agHere.push(AG[k[ki]].ini);
+      var rs=agHere.length?' style="background:rgba(201,168,76,0.06)"':'';
+      html += '<tr'+rs+'><td style="font-weight:700">'+lvl+(agHere.length?'<br><span style="font-size:9px;color:#C9A84C">'+agHere.join(', ')+'</span>':'')+'</td>';
+      html += '<td style="color:#4A90E2">'+(rates.transamerica||'-')+'%</td>';
+      html += '<td style="color:#4A90E2">'+(rates.corebridge||'-')+'%</td>';
+      html += '<td style="color:#4A90E2">'+(rates.moo_lp||'-')+'%</td>';
+      html += '<td style="color:#4A90E2">'+(rates.americo_hms||'-')+'%</td>';
+      html += '<td style="color:#4A90E2">'+(rates.foresters||'-')+'%</td>';
+      html += '<td style="color:#4A90E2">'+(rates.amam||'-')+'%</td></tr>';
+    }
+    html += '</tbody></table></div></div>';
+  }
+
+  if(ATAB==='policies'){
+    html += '<div class="a-card"><div class="a-card-t">Add New Policy</div>';
+    html += '<div class="frow"><div class="fcol"><label>Agent</label><select class="asel" id="ap-ag"><option value="">Select agent...</option>';
+    for(var i=0;i<k.length;i++) html += '<option value="'+k[i]+'">'+AG[k[i]].n+' ('+AG[k[i]].compLevel+')</option>';
+    html += '</select></div><div class="fcol"><label>Client Name</label><input class="ain" id="ap-cl" placeholder="First Last"></div></div>';
+    html += '<div class="frow"><div class="fcol"><label>Carrier</label><select class="asel" id="ap-ca">';
+    var cars=Object.keys(CARRIER_KEYS); for(var i=0;i<cars.length;i++) html += '<option>'+cars[i]+'</option>';
+    html += '</select></div><div class="fcol"><label>Product</label><input class="ain" id="ap-pr" placeholder="GUL 15, Living Promise..."></div></div>';
+    html += '<div class="frow"><div class="fcol"><label>Annual Premium ($)</label><input class="ain" type="number" id="ap-ap" placeholder="3500" onkeyup="previewComm()"></div>';
+    html += '<div class="fcol"><label>Status</label><select class="asel" id="ap-st"><option value="submitted">Submitted</option><option value="pending">Pending</option><option value="issued">Issued</option></select></div></div>';
+    html += '<div id="pol-comm-preview" style="margin-bottom:12px"></div>';
+    html += '<button type="button" class="btn-pr" onclick="addPolicy()">Add Policy</button></div>';
+    html += '<div class="a-card"><div class="a-card-t">Update Policy Status</div>';
+    html += '<div class="frow"><div class="fcol"><label>Agent</label><select class="asel" id="up-ag" onchange="loadPols()"><option value="">Select agent...</option>';
+    for(var i=0;i<k.length;i++) html += '<option value="'+k[i]+'">'+AG[k[i]].n+'</option>';
+    html += '</select></div><div class="fcol"><label>Policy</label><select class="asel" id="up-pol"><option value="">Select agent first</option></select></div></div>';
+    html += '<div class="frow"><div class="fcol"><label>New Status</label><select class="asel" id="up-st"><option value="submitted">Submitted</option><option value="pending">Pending</option><option value="requirements">Needs Action</option><option value="issued">Issued</option><option value="lapse">Lapsed</option></select></div>';
+    html += '<div class="fcol" style="display:flex;align-items:flex-end"><button type="button" class="btn-pr" onclick="updatePol()">Update Status</button></div></div></div>';
+  }
+
+  if(ATAB==='passwords'){
+    html += '<div class="a-card"><div class="a-card-t">Agent Passwords</div>';
+    html += '<div style="font-size:12px;color:#5D7499;margin-bottom:14px;line-height:1.6">Each agent logs in with their email (name@nasb.com). Set a personal password below. Master password is the fallback.</div>';
+    for(var i=0;i<k.length;i++){
+      var a=AG[k[i]];
+      html += '<div class="arow">';
+      html += '<div style="display:flex;align-items:center;gap:8px;width:140px;flex-shrink:0">';
+      html += '<div class="on-av av-'+a.col+'" style="width:22px;height:22px;font-size:8px">'+a.ini+'</div>';
+      html += '<div style="font-size:12px;font-weight:600">'+a.n+'</div></div>';
+      html += '<div style="font-size:11px;color:#5D7499;flex:1">'+a.id+'@nasb.com</div>';
+      html += '<input class="ain" type="password" id="pw-'+a.id+'" placeholder="Set password" style="width:130px;flex:none">';
+      html += '<button type="button" class="btn-pr" style="font-size:10px;padding:6px 10px;flex-shrink:0" data-id="'+a.id+'" onclick="setPW(this.dataset.id)">Set</button>';
+      html += '</div>';
+    }
+    html += '<div class="divider"></div>';
+    html += '<div style="font-size:12px;font-weight:700;margin-bottom:10px">Master Password</div>';
+    html += '<div class="arow"><div class="albl">New Password</div><input class="ain" type="password" id="master-pw" placeholder="6+ characters"><button type="button" class="btn-pr" style="flex-shrink:0" onclick="setMPW()">Update</button></div>';
+    html += '<div style="font-size:11px;color:#5D7499;margin-top:8px">Current master: demo1234</div>';
+    html += '</div>';
+  }
+
+  if(ATAB==='forms'){
+    html += '<div class="a-card"><div class="a-card-t">Carrier Forms<button type="button" class="btn-pr" style="font-size:11px;padding:6px 12px" data-tm="Uploading..." onclick="toast(this.dataset.tm)">+ Upload</button></div>';
+    var fl=[['TL-2200 — Change of Beneficiary','Transamerica'],['TL-8840 — Replacement Notice','Transamerica'],['AIG-SH3 — Supplemental Health','AIG/Corebridge'],['MOO APS Request Letter','Mutual of Omaha'],['HIPAA Medical Release','All Carriers'],['Policy Info Release Card','SalesMafia'],['Foresters FE Application','Foresters'],['Americo HMS Application','Americo']];
+    for(var i=0;i<fl.length;i++){
+      html += '<div class="int-card"><div class="int-ic">📄</div><div class="int-inf"><div class="int-n">'+fl[i][0]+'</div><div class="int-d">'+fl[i][1]+'</div></div><span class="st-pill st-ok">Active</span><button type="button" class="btn-gh" style="font-size:10px;padding:5px 10px" data-tm="Editing..." onclick="toast(this.dataset.tm)">Edit</button></div>';
+    }
+    html += '</div>';
+    html += '<div class="a-card"><div class="a-card-t">Training Docs<button type="button" class="btn-pr" style="font-size:11px;padding:6px 12px" data-tm="Uploading..." onclick="toast(this.dataset.tm)">+ Upload</button></div>';
+    var tl=[['📘','New Agent Training Manual','NASB SalesMafia onboarding'],['📗','Field Sales Script — Full','Door / Kitchen table / Close'],['🎯','Blair Onboarding Checklist','SuranceBay / NASBNation'],['📊','Career Track Guide','AG6 through Senior Partner'],['🗂️','NASB Training Deck','PPTX Presentation'],['📋','NASB 2025 Comp Guide','All carriers all levels (PDF)']];
+    for(var i=0;i<tl.length;i++){
+      html += '<div class="int-card"><div class="int-ic">'+tl[i][0]+'</div><div class="int-inf"><div class="int-n">'+tl[i][1]+'</div><div class="int-d">'+tl[i][2]+'</div></div><button type="button" class="btn-gh" style="font-size:10px;padding:5px 10px" data-tm="Opening..." onclick="toast(this.dataset.tm)">View</button></div>';
+    }
+    html += '</div>';
+  }
+
+  if(ATAB==='integrations'){
+    html += '<div class="a-card"><div class="a-card-t">Tool &amp; Portal Connections</div>';
+    var il=[
+      ['✍️','DocuSign','E-signatures for policy apps and client documents','no','Connect'],
+      ['🗄️','Supabase','Live database — real-time sync all agent portals','no','Connect'],
+      ['📧','Email Parser','AI reads carrier emails and updates pipeline automatically','no','Set Up'],
+      ['📱','Twilio SMS','Automated texts to agents for requirements and commissions','no','Connect'],
+      ['🏛️','iPipeline / iGO','Direct carrier data feed — live app and policy status','no','Connect'],
+      ['🔐','SuranceBay','Agent contracting, licensing, appointments','pd','Configure'],
+      ['🌐','NASBNation.com','Agent back office portal link','ok','Manage'],
+      ['📊','Transamerica Portal','Direct link to carrier portal','no','Link'],
+      ['📊','AIG/Corebridge Portal','Direct link to carrier portal','no','Link'],
+      ['📊','Mutual of Omaha Portal','Direct link to carrier portal','no','Link']
+    ];
+    for(var i=0;i<il.length;i++){
+      var it=il[i];
+      var sc=it[3]==='ok'?'st-ok':it[3]==='pd'?'st-pd':'st-no';
+      var st=it[3]==='ok'?'Connected':it[3]==='pd'?'Pending':'Not Connected';
+      html += '<div class="int-card"><div class="int-ic">'+it[0]+'</div><div class="int-inf"><div class="int-n">'+it[1]+'</div><div class="int-d">'+it[2]+'</div></div>';
+      html += '<span class="st-pill '+sc+'">'+st+'</span>';
+      html += '<button type="button" class="btn-pr" style="font-size:10px;padding:6px 12px;flex-shrink:0" data-id="'+it[1]+'" onclick="oInt(this.dataset.id)">'+it[4]+'</button></div>';
+    }
+    html += '</div>';
+    html += '<div class="a-card"><div class="a-card-t">Supabase Quick Connect</div>';
+    html += '<div style="font-size:12px;color:#5D7499;margin-bottom:12px">Go to supabase.com, create a free project, then paste credentials here to make all data live and persistent.</div>';
+    html += '<div class="arow"><div class="albl">Project URL</div><input class="ain" id="sb-url" placeholder="https://xyz.supabase.co"></div>';
+    html += '<div class="arow"><div class="albl">Anon Key</div><input class="ain" id="sb-key" placeholder="eyJhbGci..."></div>';
+    html += '<div style="margin-top:12px;display:flex;gap:8px"><button type="button" class="btn-pr" onclick="doSB()">Connect</button><button type="button" class="btn-gh" data-tm="SQL guide..." onclick="toast(this.dataset.tm)">SQL Guide</button></div></div>';
+    html += '<div class="a-card"><div class="a-card-t">DocuSign Quick Connect</div>';
+    html += '<div style="font-size:12px;color:#5D7499;margin-bottom:12px">Go to developers.docusign.com to get your integration key and account ID.</div>';
+    html += '<div class="arow"><div class="albl">Integration Key</div><input class="ain" id="ds-key" placeholder="DocuSign Integration Key"></div>';
+    html += '<div class="arow"><div class="albl">Account ID</div><input class="ain" id="ds-acct" placeholder="DocuSign Account ID"></div>';
+    html += '<div style="margin-top:12px"><button type="button" class="btn-pr" data-tm="Connecting DocuSign..." onclick="toast(this.dataset.tm)">Connect</button></div></div>';
+  }
+
+  setHTML(html);
+}
+
+function sTab(t){ATAB=t;rAdmin();}
+
+function saveAgent(id){
+  var a=AG[id]; if(!a) return;
+  var n=document.getElementById('an-'+id);
+  var r=document.getElementById('ar-'+id);
+  var m=document.getElementById('amgr-'+id);
+  var t=document.getElementById('atier-'+id);
+  var cl=document.getElementById('aclvl-'+id);
+  if(n&&n.value.trim()) a.n=n.value.trim();
+  if(r&&r.value.trim()) a.role=r.value.trim();
+  if(m) a.mgr=m.value||null;
+  if(t) a.tier=t.value;
+  if(cl) a.compLevel=cl.value;
+  var pts=a.n.split(' '); a.ini='';
+  for(var i=0;i<pts.length&&a.ini.length<2;i++) if(pts[i]) a.ini+=pts[i][0].toUpperCase();
+  toast('Saved: '+a.n+' ('+a.compLevel+')');
+  rAdmin();
+}
+
+function addAgent(){
+  var nid='ag'+Date.now();
+  AG[nid]={id:nid,n:'New Agent',ini:'NA',role:'Field Agent / AG6',tier:'agent',mgr:'luke',goal:44000,cur:0,col:'blue',compLevel:'AG6'};
+  POL[nid]=[]; REQ[nid]=[]; COM[nid]={tot:'$0',adv:'$0',net:'$0',rows:[]};
+  toast('Agent added — edit details above');
+  rAdmin();
+}
+
+function promoteAgent(id){
+  var a=AG[id]; if(!a) return;
+  var lvlMap={AG6:'AG5',AG5:'AG4',AG4:'AG3',AG3:'AG2',AG2:'AG1',AG1:'SM3',SM3:'SM2',SM2:'SM1',SM1:'RVP3_150K',RVP3_150K:'ASSOC_PARTNER_225K',ASSOC_PARTNER_225K:'JR_PARTNER_300K',JR_PARTNER_300K:'PARTNER_400K',PARTNER_400K:'SR_PARTNER'};
+  if(a.tier==='agent'){a.tier='manager';a.role='Manager / '+a.compLevel;}
+  else if(a.tier==='manager'){a.tier='sp';a.role='Senior Partner / '+a.compLevel;}
+  if(lvlMap[a.compLevel]) a.compLevel=lvlMap[a.compLevel];
+  toast(a.n+' promoted to '+a.compLevel+'!');
+  rAdmin();
+}
+
+function saveAllGoals(){
+  var k=Object.keys(AG);
+  for(var i=0;i<k.length;i++){
+    var el=document.getElementById('gset-'+k[i]);
+    if(el&&parseInt(el.value)>0) AG[k[i]].goal=parseInt(el.value);
+  }
+  toast('All goals saved!');
+}
+
+function setPW(id){
+  var el=document.getElementById('pw-'+id);
+  if(!el||!el.value.trim()||el.value.trim().length<6){toast('6+ characters required');return;}
+  APWS[id]=el.value.trim(); el.value='';
+  toast('Password set for '+AG[id].n+'!');
+}
+
+function setMPW(){
+  var el=document.getElementById('master-pw');
+  if(!el||!el.value.trim()||el.value.trim().length<6){toast('6+ characters required');return;}
+  PW=el.value.trim(); el.value='';
+  toast('Master password updated! New password: active');
+}
+
+function loadPols(){
+  var aid=document.getElementById('up-ag').value;
+  var p=POL[aid]||[];
+  var sel=document.getElementById('up-pol');
+  sel.innerHTML='';
+  if(!p.length){sel.innerHTML='<option value="">No policies</option>';return;}
+  for(var i=0;i<p.length;i++){
+    var o=document.createElement('option');
+    o.value=p[i].id;
+    o.innerHTML=p[i].cl+' — '+p[i].ca+' '+fmt(p[i].ap);
+    sel.appendChild(o);
+  }
+}
+
+function previewComm(){
+  var aid=document.getElementById('ap-ag').value;
+  var ap=parseInt(document.getElementById('ap-ap').value)||0;
+  var ca=document.getElementById('ap-ca').value;
+  var prev=document.getElementById('pol-comm-preview');
+  if(!prev) return;
+  if(!aid||!ap){prev.innerHTML='';return;}
+  var rate=getCompRate(aid,ca);
+  var earned=calcComm(ap,rate);
+  var adv=Math.round(earned*0.75);
+  prev.innerHTML='<div style="background:#0B1526;border:1px solid rgba(201,168,76,0.12);border-radius:6px;padding:10px;font-size:11px;color:#5D7499">Commission preview for '+AG[aid].n+' ('+AG[aid].compLevel+'): <strong style="color:#C9A84C">'+fmt(earned)+'</strong> earned ('+rate+'%) · <strong style="color:#4A90E2">'+fmt(adv)+'</strong> advance · <strong style="color:#2ECC71">'+fmt(earned-adv)+'</strong> net</div>';
+}
+
+function addPolicy(){
+  var aid=document.getElementById('ap-ag').value;
+  var cl=document.getElementById('ap-cl').value.trim();
+  var ca=document.getElementById('ap-ca').value;
+  var pr=document.getElementById('ap-pr').value.trim()||'Policy';
+  var ap=parseInt(document.getElementById('ap-ap').value)||0;
+  var st=document.getElementById('ap-st').value;
+  if(!aid||!cl||!ap){toast('Fill in agent, client, and premium');return;}
+  var mos=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var td=new Date();
+  var nid='pol'+Date.now();
+  if(!POL[aid]) POL[aid]=[];
+  POL[aid].push({id:nid,cl:cl,ca:ca,pr:pr,ap:ap,dt:mos[td.getMonth()]+' '+td.getDate(),st:st});
+  if(st==='issued'&&AG[aid]) AG[aid].cur+=ap;
+  document.getElementById('ap-cl').value='';
+  document.getElementById('ap-ap').value='';
+  var rate=getCompRate(aid,ca);
+  var earned=calcComm(ap,rate);
+  toast('Policy added for '+cl+' — '+AG[aid].n+' earns '+fmt(earned)+' at '+rate+'%');
+}
+
+function updatePol(){
+  var aid=document.getElementById('up-ag').value;
+  var pid=document.getElementById('up-pol').value;
+  var st=document.getElementById('up-st').value;
+  if(!aid||!pid){toast('Select agent and policy');return;}
+  var p=POL[aid]||[];
+  for(var i=0;i<p.length;i++){
+    if(p[i].id===pid){
+      var oldSt=p[i].st;
+      p[i].st=st;
+      if(st==='issued'&&oldSt!=='issued') AG[aid].cur+=p[i].ap;
+      if(oldSt==='issued'&&st!=='issued') AG[aid].cur-=p[i].ap;
+      toast('Updated to: '+sl(st));
+      return;
+    }
+  }
+  toast('Policy not found');
+}
+
+function showCompCard(id){
+  var a=AG[id]; if(!a) return;
+  var rates=COMP[a.compLevel]||{};
+  var carriers=Object.keys(CARRIER_KEYS);
+  var h='<div class="mey">Comp Rate Card</div><div class="mt">'+a.n+'</div><div class="ms">Level: <span style="color:#C9A84C;font-weight:700">'+a.compLevel+'</span> · All carrier rates</div>';
+  h+='<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Carrier</th><th>Rate</th><th>On $3k</th><th>On $5k</th><th>On $8k</th></tr></thead><tbody>';
+  for(var i=0;i<carriers.length;i++){
+    var ca=carriers[i];
+    var rate=getCompRate(id,ca);
+    h+='<tr><td style="font-weight:600">'+ca+'</td><td style="color:#4A90E2;font-weight:700">'+rate+'%</td><td style="color:#C9A84C">'+fmt(calcComm(3000,rate))+'</td><td style="color:#C9A84C">'+fmt(calcComm(5000,rate))+'</td><td style="color:#C9A84C">'+fmt(calcComm(8000,rate))+'</td></tr>';
+  }
+  h+='</tbody></table></div>';
+  document.getElementById('modal-body').innerHTML=h;
+  document.getElementById('modal').className='modal-bg open';
+}
+
+function oInt(name){
+  var msgs={};
+  msgs['DocuSign']='1. Go to developers.docusign.com<br>2. Create a free developer account<br>3. Go to Apps and Keys<br>4. Create an Integration Key<br>5. Copy your Integration Key and Account ID into the fields in the Integrations tab.';
+  msgs['Supabase']='1. Go to supabase.com and create a free project<br>2. Go to Settings then API<br>3. Copy your Project URL and anon key<br>4. Paste into the Supabase Quick Connect section<br>5. Run the SQL schema in your Supabase SQL editor';
+  msgs['Carrier Email Parser']='1. Create a dedicated email: portal@salesmafia.com<br>2. Forward all carrier status emails to that address<br>3. Connect to an email webhook (Postmark or Sendgrid)<br>4. Webhook calls this portal with parsed data<br>5. Claude API reads the email and updates pipeline automatically';
+  msgs['Twilio SMS']='1. Go to twilio.com and create an account<br>2. Get a Twilio phone number<br>3. Copy your Account SID and Auth Token<br>4. Agents receive texts for: new requirements, policy issued, commission paid';
+  msgs['iPipeline / iGO']='Contact your NASB upline to request iPipeline API credentials. This connects directly to carrier systems for real-time app status across Transamerica, AIG, MOO and others.';
+  msgs['SuranceBay']='Log into SuranceBay, go to Settings then API Access, generate an API key. This syncs agent contracting status, state licenses, and carrier appointments to each agent profile.';
+  msgs['NASBNation.com']='This is already linked in the Resources section of each agent portal. Agents tap Back Office to access NASBNation directly.';
+  msgs['Transamerica Portal']='Add the Transamerica agent portal URL to the Resources section so agents can access it directly from their portal.';
+  msgs['AIG/Corebridge Portal']='Add the Corebridge agent portal URL to the Resources section.';
+  msgs['Mutual of Omaha Portal']='Add the MOO agent portal URL to the Resources section.';
+  var msg=msgs[name]||'Contact your administrator for setup instructions.';
+  document.getElementById('modal-body').innerHTML='<div class="mey">Integration Setup</div><div class="mt">'+name+'</div><div style="background:#0B1526;border-radius:8px;padding:14px;margin:14px 0;font-size:12px;line-height:1.9;color:#ECF0FF">'+msg+'</div><button type="button" class="btn-pr" style="width:100%;padding:12px" onclick="cModal()">Got It</button>';
+  document.getElementById('modal').className='modal-bg open';
+}
+
+function doSB(){
+  var u=document.getElementById('sb-url').value.trim();
+  var k=document.getElementById('sb-key').value.trim();
+  if(!u||!k){toast('Enter both URL and key');return;}
+  toast('Supabase connected! Live sync enabled.');
+}
+
+// ── MODALS ──
+function oAgent(id){
+  var a=AG[id]; if(!a) return;
+  var pols=POL[a.id]||[], reqs=REQ[a.id]||[];
+  var pct=Math.min(100,Math.round(a.cur/a.goal*100)), color=bc(a.col);
+  var iss=0,pen=0,lap=0;
+  for(var i=0;i<pols.length;i++){
+    if(pols[i].st==='issued') iss++;
+    else if(pols[i].st==='pending'||pols[i].st==='submitted') pen++;
+    else if(pols[i].st==='lapse') lap++;
+  }
+  var rate=getCompRate(id,'Transamerica');
+  var issuedAP=0; for(var i=0;i<pols.length;i++) if(pols[i].st==='issued') issuedAP+=pols[i].ap;
+  var estComm=calcComm(issuedAP,rate);
+  var mn=a.mgr&&AG[a.mgr]?AG[a.mgr].n:'None';
+  var h='<div class="mey">Agent Detail</div>';
+  h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">';
+  h+='<div class="on-av av-'+a.col+'" style="width:38px;height:38px;font-size:13px">'+a.ini+'</div>';
+  h+='<div><div class="mt" style="margin-bottom:0">'+a.n+'</div>';
+  h+='<div style="font-size:11px;color:#5D7499">'+a.role+' · Reports to '+mn+'</div>';
+  h+='<div style="margin-top:4px"><span class="comp-badge">'+a.compLevel+'</span></div></div></div>';
+  h+='<div class="msec">MTD Performance</div>';
+  h+='<div class="ig"><div class="ig-it"><div class="ig-k">Issued AP</div><div class="ig-v ig-v-gold">'+fmt(a.cur)+'</div></div>';
+  h+='<div class="ig-it"><div class="ig-k">Goal %</div><div class="ig-v">'+fmt(a.goal)+' ('+pct+'%)</div></div>';
+  h+='<div class="ig-it"><div class="ig-k">Pending</div><div class="ig-v" style="color:#4A90E2">'+pen+'</div></div>';
+  h+='<div class="ig-it"><div class="ig-k">Reqs</div><div class="ig-v ig-v-orange">'+reqs.length+'</div></div>';
+  h+='<div class="ig-it"><div class="ig-k">Lapses</div><div class="ig-v ig-v-red">'+lap+'</div></div>';
+  h+='<div class="ig-it"><div class="ig-k">Est. Comm (Trans)</div><div class="ig-v ig-v-gold">'+fmt(estComm)+'</div></div></div>';
+  h+='<div style="height:5px;background:#223250;border-radius:3px;overflow:hidden;margin:12px 0 4px">';
+  h+='<div style="width:'+pct+'%;height:100%;background:'+color+'"></div></div>';
+  h+='<div style="font-size:10px;color:#5D7499;margin-bottom:14px">'+pct+'% of '+fmt(a.goal)+' MTD goal</div>';
+  h+='<div class="msec">Pipeline ('+pols.length+')</div>';
+  for(var i=0;i<pols.length;i++){
+    var p=pols[i];
+    h+='<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)">';
+    h+='<span class="s s-'+p.st+'">'+sl(p.st)+'</span>';
+    h+='<div style="flex:1;font-size:11px">'+p.cl+' — '+p.ca+'</div>';
+    var r=getCompRate(id,p.ca);
+    h+='<div style="text-align:right"><div style="color:#C9A84C;font-size:11px;font-weight:600">'+fmt(p.ap)+'</div>';
+    if(p.st==='issued') h+='<div style="color:#4A90E2;font-size:9px">'+r+'% = '+fmt(calcComm(p.ap,r))+'</div>';
+    h+='</div></div>';
+  }
+  if(reqs.length){
+    h+='<div class="msec">Requirements ('+reqs.length+')</div>';
+    for(var i=0;i<reqs.length;i++){
+      var r=reqs[i];
+      h+='<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)">';
+      h+='<div class="ric '+r.cls+'" style="width:26px;height:26px">'+r.ic+'</div>';
+      h+='<div style="flex:1"><div style="font-size:11px;font-weight:600">'+r.t+'</div><div class="rdue '+r.duec+'" style="font-size:10px">'+r.due+'</div></div>';
+      h+='<button type="button" class="btn-sm btn-a" data-id='+r.id+' onclick="cModal();oReq(this.dataset.id)">Act</button></div>';
+    }
+  }
+  h+='<div class="msec">Quick Actions</div>';
+  h+='<div style="display:flex;gap:7px">';
+  h+='<button type="button" class="btn-gh" style="flex:1" data-tm='Calling '+a.n+'...' onclick="toast(this.dataset.tm)">📞 Call</button>';
+  h+='<button type="button" class="btn-gh" style="flex:1" onclick="showCompCard(''+a.id+'')">💵 Rates</button>';
+  h+='<button type="button" class="btn-pr" style="flex:1" onclick="toast('Generating report...')">Export</button>';
+  h+='</div>';
+  $$('modal-body').innerHTML=h;
+  $$('modal').className='modal-bg open';
+}
+
+function oPol(pid){
+  var pols=getPols(CU.id), pol=null;
+  for(var i=0;i<pols.length;i++) if(pols[i].id===pid){pol=pols[i];break;}
+  if(!pol) return;
+  var steps=['Submitted','Under Review','Approved','Commission Released'];
+  var dm={issued:[1,1,1,1],pending:[1,1,0,0],submitted:[1,0,0,0],requirements:[1,1,0,0],lapse:[1,1,0,0]};
+  var fl=dm[pol.st]||[1,0,0,0];
+  var rate=getCompRate(CU.id,pol.ca);
+  var earned=calcComm(pol.ap,rate);
+  var h='<div class="mey">'+pol.ca+' · '+pol.pr+'</div>';
+  h+='<div class="mt">'+pol.cl+'</div>';
+  h+='<div class="ms">Ann. Premium: <span style="color:#C9A84C;font-weight:700">'+fmt(pol.ap)+'</span> · Submitted '+pol.dt+'</div>';
+  if(pol.st==='issued'){
+    h+='<div style="background:rgba(46,204,113,0.07);border:1px solid rgba(46,204,113,0.15);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px">';
+    h+='<div style="font-size:20px">💰</div>';
+    h+='<div><div style="font-size:12px;font-weight:700;color:#2ECC71">Commission Earned</div>';
+    h+='<div style="font-size:18px;font-weight:800;color:#2ECC71">'+fmt(earned)+'</div>';
+    h+='<div style="font-size:10px;color:#5D7499">'+AG[CU.id].compLevel+' rate: '+rate+'% of '+fmt(pol.ap)+'</div></div></div>';
+  }
+  h+='<div class="msec">Status Timeline</div>';
+  for(var i=0;i<steps.length;i++){
+    var dn=fl[i];
+    var doneCt=0; for(var j=0;j<fl.length;j++) if(fl[j]) doneCt++;
+    h+='<div class="tl-it"><div class="tl-dot'+(dn?' tl-done':(i===doneCt?' tl-active':''))+'">'+(dn?'OK':'')+'</div>';
+    h+='<div><div style="font-size:12px">'+steps[i]+'</div>';
+    h+='<div style="font-size:10px;color:#5D7499">'+(dn?'Complete':(pol.st==='requirements'&&i===2?'Requirements pending':'Pending'))+'</div></div></div>';
+  }
+  h+='<div class="msec">Policy Details</div>';
+  h+='<div class="ig"><div class="ig-it"><div class="ig-k">Carrier</div><div class="ig-v">'+pol.ca+'</div></div>';
+  h+='<div class="ig-it"><div class="ig-k">Product</div><div class="ig-v">'+pol.pr+'</div></div>';
+  h+='<div class="ig-it"><div class="ig-k">Ann. Premium</div><div class="ig-v ig-v-gold">'+fmt(pol.ap)+'</div></div>';
+  h+='<div class="ig-it"><div class="ig-k">Your Rate</div><div class="ig-v" style="color:#4A90E2">'+rate+'% ('+AG[CU.id].compLevel+')</div></div>';
+  h+='<div class="ig-it"><div class="ig-k">Status</div><div class="ig-v '+(pol.st==='issued'?'ig-v-green':pol.st==='lapse'?'ig-v-red':'ig-v-orange')+'">'+pol.st.toUpperCase()+'</div></div>';
+  h+='<div class="ig-it"><div class="ig-k">Est. Commission</div><div class="ig-v ig-v-gold">'+fmt(earned)+'</div></div></div>';
+  h+='<div class="msec">Documents</div>';
+  h+='<div class="doc-row"><div class="doc-ic">📄</div><div class="doc-inf"><div class="doc-n">Application Copy</div><div class="doc-d">Submitted PDF</div></div><button type="button" class="doc-btn db-vw" onclick="toast('Opening...')">View</button></div>';
+  if(pol.st!=='issued') h+='<div class="doc-row"><div class="doc-ic">✍️</div><div class="doc-inf"><div class="doc-n">Resend E-Signature</div><div class="doc-d">Resend DocuSign to client</div></div><button type="button" class="doc-btn db-sg" onclick="toast('DocuSign resent!')">Resend</button></div>';
+  if(pol.st==='issued') h+='<div class="doc-row"><div class="doc-ic">📜</div><div class="doc-inf"><div class="doc-n">Policy Certificate</div><div class="doc-d">Ready to deliver to client</div></div><button type="button" class="doc-btn db-dl" onclick="toast('Downloading...')">Download</button></div>';
+  $$('modal-body').innerHTML=h;
+  $$('modal').className='modal-bg open';
+}
+
+function oReq(rid){
+  var reqs=getReqs(CU.id), r=null;
+  for(var i=0;i<reqs.length;i++) if(reqs[i].id===rid){r=reqs[i];break;}
+  if(!r) return;
+  var ds={
+    doc:[{ic:'📥',n:'Download Required Form',d:'Pre-filled carrier form',cls:'db-dl',msg:'Downloading...'}],
+    med:[{ic:'📥',n:'Download Medical Release',d:'HIPAA authorization for records',cls:'db-dl',msg:'Downloading...'},{ic:'📤',n:'Upload Records',d:'Upload completed records',cls:'db-up',msg:'Upload dialog...'}],
+    id:[{ic:'📤',n:'Upload Photo ID',d:'Clear front and back of state ID',cls:'db-up',msg:'Upload dialog...'}],
+    sign:[{ic:'✍️',n:'Resend E-Signature',d:'Send DocuSign via email and SMS',cls:'db-sg',msg:'DocuSign resent!'},{ic:'📞',n:'Call Client',d:'Walk client through signing on phone',cls:'db-cl',msg:'Calling...'}]
+  };
+  var docs=ds[r.dt]||ds['doc'];
+  var h='<div class="mey">Requirement</div><div class="mt">'+r.ic+' '+r.t+'</div><div class="ms">'+r.cl+'</div>';
+  h+='<div style="background:rgba(230,126,34,0.07);border:1px solid rgba(230,126,34,0.16);border-radius:8px;padding:12px;margin-bottom:14px">';
+  h+='<div style="font-size:12px;line-height:1.6">'+r.d+'</div>';
+  h+='<div class="rdue '+r.duec+'" style="font-size:10px;margin-top:6px">'+r.due+'</div></div>';
+  h+='<div class="msec">Actions &amp; Documents</div>';
+  for(var i=0;i<docs.length;i++){
+    var d=docs[i];
+    h+='<div class="doc-row"><div class="doc-ic">'+d.ic+'</div><div class="doc-inf"><div class="doc-n">'+d.n+'</div><div class="doc-d">'+d.d+'</div></div><button type="button" class="doc-btn '+d.cls+'" onclick="toast(''+d.msg+'')">Go</button></div>';
+  }
+  h+='<div class="doc-row"><div class="doc-ic">💬</div><div class="doc-inf"><div class="doc-n">Message Manager</div><div class="doc-d">Flag this to your manager for help</div></div><button type="button" class="doc-btn db-cl" onclick="toast('Manager notified!')">Send</button></div>';
+  h+='<button type="button" class="btn-pr" style="width:100%;padding:12px;font-size:13px;margin-top:12px" onclick="toast('Marked complete!');cModal()">Mark Complete</button>';
+  $$('modal-body').innerHTML=h;
+  $$('modal').className='modal-bg open';
+}
+
+
+function cModal(){$$('modal').className='modal-bg';}
+$$('modal').addEventListener('click',function(e){if(e.target===this)cModal();});
+
+// ── TOAST ──
+var TT;
+function toast(msg){
+  var el=$$('toast');
+  el.innerHTML=msg;
+  el.className='toast show';
+  clearTimeout(TT);
+  TT=setTimeout(function(){el.className='toast';},3000);
+}
+
+// ── KEYBOARD ──
+$$('f-pw').addEventListener('keyup',function(e){if(e.keyCode===13)doLogin();});
+document.addEventListener('keyup',function(e){if(e.keyCode===27)cModal();});
+</script>
+</body>
+</html>
