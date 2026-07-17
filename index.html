@@ -1,0 +1,1830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SalesMafia Portal — NASB</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#07101F;--navy2:#0B1526;--slate:#131F35;--slate2:#1A2A42;--slate3:#223250;
+  --gold:#C9A84C;--gold-lt:#E2C46A;--gold-dk:#6E5520;
+  --red:#E53935;--green:#27AE60;--green-lt:#2ECC71;
+  --blue:#2980B9;--blue-lt:#4A90E2;--orange:#E67E22;--purple:#8E44AD;
+  --white:#ECF0FF;--muted:#5D7499;--muted2:#3D5070;
+  --border:rgba(201,168,76,0.13);--border2:rgba(255,255,255,0.06);
+  --shadow:0 8px 32px rgba(0,0,0,0.5);
+  --mono:'Courier New',Courier,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  --r:10px;
+}
+html,body{font-family:var(--sans);background:var(--navy);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
+*{-webkit-tap-highlight-color:transparent}
+button,a,[onclick]{touch-action:manipulation;cursor:pointer}
+.hidden{display:none!important}
+
+/* ── LOGIN ── */
+#login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden}
+.lg-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 60% 40%,rgba(201,168,76,0.07) 0%,transparent 70%)}
+.lg-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(201,168,76,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.03) 1px,transparent 1px);background-size:44px 44px}
+.lg-inner{position:relative;z-index:1;width:100%;max-width:420px}
+.lg-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;justify-content:center}
+.lg-mark{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold-dk));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--navy)}
+.lg-brand{font-size:20px;font-weight:900;color:var(--white)}
+.lg-brand em{color:var(--gold);font-style:normal}
+.lg-brand small{display:block;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.lg-card{background:var(--slate);border:1px solid var(--border);border-radius:16px;padding:28px;box-shadow:var(--shadow)}
+.lg-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.lg-sub{font-size:12px;color:var(--muted);margin-bottom:22px}
+.demo-box{background:var(--navy2);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:20px}
+.demo-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-dk);margin-bottom:8px}
+.demo-row{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:7px 12px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--slate2);color:var(--white);transition:all .15s;-webkit-user-select:none;user-select:none}
+.chip:active,.chip.sel{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.chip-sp{border-color:var(--gold);color:var(--gold)}
+.chip-mgr{border-color:var(--blue-lt);color:var(--blue-lt)}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.fi{width:100%;background:var(--navy2);border:1px solid var(--border2);border-radius:7px;padding:11px 13px;font-size:14px;color:var(--white);font-family:var(--sans);outline:none;transition:border-color .13s;-webkit-appearance:none}
+.fi:focus{border-color:var(--gold)}
+.fi::placeholder{color:var(--muted2)}
+.btn-login{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold-dk));border:none;border-radius:8px;padding:14px;font-size:15px;font-weight:800;color:var(--navy);cursor:pointer;letter-spacing:.02em;-webkit-appearance:none;touch-action:manipulation}
+.btn-login:active{opacity:.85}
+.lg-err{font-size:12px;color:var(--red);text-align:center;margin-top:10px;min-height:18px;font-weight:600}
+
+/* ── TOPBAR ── */
+#app{display:none;flex-direction:column;min-height:100vh}
+.topbar{height:52px;background:var(--slate);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:200;flex-shrink:0}
+.tb-l{display:flex;align-items:center;gap:10px}
+.tb-mark{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--gold),var(--gold-dk));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:var(--navy);flex-shrink:0}
+.tb-name{font-size:14px;font-weight:800}
+.tb-name em{color:var(--gold);font-style:normal}
+.tb-r{display:flex;align-items:center;gap:8px}
+.live-pill{display:flex;align-items:center;gap:5px;background:rgba(39,174,96,.09);border:1px solid rgba(39,174,96,.18);border-radius:20px;padding:3px 8px;font-size:10px;color:var(--green-lt);font-family:var(--mono);letter-spacing:.06em}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green-lt);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.btn-admin{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,var(--gold),var(--gold-dk));border:none;border-radius:7px;padding:6px 11px;font-size:10px;font-weight:800;color:var(--navy);letter-spacing:.03em;text-transform:uppercase;-webkit-appearance:none}
+.btn-admin:active{opacity:.85}
+.tb-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dk));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:var(--navy)}
+.tb-info{text-align:right}
+.tb-un{font-size:11px;font-weight:700;line-height:1.2}
+.tb-ur{font-size:9px;color:var(--gold);letter-spacing:.06em;text-transform:uppercase}
+.btn-out{padding:5px 10px;border-radius:6px;background:transparent;border:1px solid var(--border2);font-size:10px;color:var(--muted);cursor:pointer;font-family:var(--sans);-webkit-appearance:none}
+.btn-out:active{border-color:var(--red);color:var(--red)}
+
+/* ── BODY ── */
+.app-body{display:flex;flex:1}
+
+/* ── SIDEBAR ── */
+.sidebar{width:196px;flex-shrink:0;background:var(--slate);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:12px 0;position:sticky;top:52px;height:calc(100vh - 52px);overflow-y:auto}
+.ns{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-dk);padding:12px 14px 4px}
+.nl{display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border-left:2px solid transparent;transition:all .12s;-webkit-user-select:none;user-select:none}
+.nl:active,.nl.active{color:var(--gold);border-left-color:var(--gold);background:rgba(201,168,76,.06)}
+.ni{font-size:13px;width:16px;text-align:center}
+.nc{margin-left:auto;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;padding:0 4px}
+.nc-r{background:var(--red);color:#fff}
+.nc-b{background:var(--blue-lt);color:#fff}
+.sb-goal{margin:12px 10px;background:var(--navy2);border:1px solid var(--border);border-radius:8px;padding:11px}
+.sb-gl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-dk);margin-bottom:5px}
+.sb-gbar{height:5px;background:var(--slate3);border-radius:3px;overflow:hidden;margin:4px 0}
+.sb-gfill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold-lt));transition:width .7s ease}
+.sb-gnums{display:flex;justify-content:space-between;align-items:baseline}
+.sb-gcur{font-family:var(--mono);font-size:13px;color:var(--gold)}
+.sb-gtgt{font-family:var(--mono);font-size:10px;color:var(--muted)}
+
+/* ── MAIN ── */
+.main{flex:1;padding:20px;overflow-y:auto;min-width:0}
+
+/* ── PAGE HEADER ── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:10px;flex-wrap:wrap}
+.ph-ey{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:3px}
+.ph-t{font-size:20px;font-weight:900;letter-spacing:-.02em}
+.ph-s{font-size:11px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+.ph-r{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.btn-s{padding:7px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--sans);border:none;-webkit-appearance:none;touch-action:manipulation}
+.btn-gh{background:var(--slate2);color:var(--muted);border:1px solid var(--border2)}
+.btn-gh:active{color:var(--white)}
+.btn-gh.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.btn-pr{background:linear-gradient(135deg,var(--gold),var(--gold-dk));color:var(--navy)}
+.btn-pr:active{opacity:.85}
+.ptabs{display:flex;gap:3px;background:var(--slate2);padding:3px;border-radius:7px}
+.pt{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);-webkit-user-select:none;user-select:none}
+.pt.active{background:var(--gold);color:var(--navy)}
+
+/* ── KPI ── */
+.kgrid{display:grid;gap:10px;margin-bottom:18px}
+.kg5{grid-template-columns:repeat(5,1fr)}
+.kg4{grid-template-columns:repeat(4,1fr)}
+.kg3{grid-template-columns:repeat(3,1fr)}
+.kg2{grid-template-columns:repeat(2,1fr)}
+.kcard{background:var(--slate);border:1px solid var(--border2);border-radius:var(--r);padding:14px;position:relative;overflow:hidden;cursor:pointer;transition:transform .15s}
+.kcard:active{transform:scale(.98)}
+.kcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kc-gold::before{background:linear-gradient(90deg,var(--gold),transparent)}
+.kc-green::before{background:linear-gradient(90deg,var(--green-lt),transparent)}
+.kc-blue::before{background:linear-gradient(90deg,var(--blue-lt),transparent)}
+.kc-orange::before{background:linear-gradient(90deg,var(--orange),transparent)}
+.kc-red::before{background:linear-gradient(90deg,var(--red),transparent)}
+.kc-purple::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.kbg{position:absolute;right:10px;top:8px;font-size:18px;opacity:.12}
+.klbl{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.kval{font-family:var(--mono);font-size:20px;font-weight:500;line-height:1}
+.kval.gold{color:var(--gold)}.kval.green{color:var(--green-lt)}.kval.blue{color:var(--blue-lt)}.kval.orange{color:var(--orange)}.kval.red{color:var(--red)}.kval.purple{color:var(--purple)}.kval.white{color:var(--white)}
+.knote{font-size:10px;color:var(--muted);margin-top:4px;font-family:var(--mono)}
+
+/* ── PANEL ── */
+.panel{background:var(--slate);border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.panel-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border2)}
+.panel-t{font-size:13px;font-weight:700}
+.panel-s{font-size:10px;color:var(--muted);margin-top:1px}
+.panel-a{font-size:10px;font-weight:700;color:var(--gold);cursor:pointer;padding:3px 8px;background:rgba(201,168,76,.08);border-radius:5px;-webkit-user-select:none;user-select:none}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--gold-dk);padding:8px 14px;text-align:left;border-bottom:1px solid var(--border2);background:var(--navy2)}
+.tbl td{padding:10px 14px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.035);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:active td{background:rgba(255,255,255,.02)}
+.tbl-scroll{overflow-x:auto}
+
+/* ── STATUS ── */
+.sp{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.sp::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.sp-issued{background:rgba(39,174,96,.14);color:var(--green-lt)}
+.sp-pending{background:rgba(41,128,185,.14);color:var(--blue-lt)}
+.sp-submitted{background:rgba(201,168,76,.14);color:var(--gold)}
+.sp-requirements{background:rgba(230,126,34,.14);color:var(--orange)}
+.sp-lapse{background:rgba(229,57,53,.14);color:var(--red)}
+
+/* ── BUTTONS ── */
+.ab{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:5px;font-size:9px;font-weight:800;cursor:pointer;border:none;font-family:var(--sans);text-transform:uppercase;letter-spacing:.04em;-webkit-appearance:none;touch-action:manipulation}
+.ab-v{background:var(--slate2);color:var(--white)}
+.ab-a{background:rgba(230,126,34,.13);color:var(--orange);border:1px solid rgba(230,126,34,.25)}
+.ab-d{background:rgba(41,128,185,.13);color:var(--blue-lt);border:1px solid rgba(41,128,185,.22)}
+.ab-g{background:rgba(39,174,96,.12);color:var(--green-lt);border:1px solid rgba(39,174,96,.2)}
+
+/* ── ACTIVITY ── */
+.act-item{display:flex;align-items:center;gap:9px;padding:9px 16px;border-bottom:1px solid rgba(255,255,255,.03)}
+.act-item:last-child{border-bottom:none}
+.act-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.act-txt{font-size:11px;color:var(--muted);flex:1;line-height:1.4}
+.act-txt strong{color:var(--white)}
+.act-tm{font-family:var(--mono);font-size:9px;color:var(--gold-dk);white-space:nowrap}
+
+/* ── REQUIREMENTS ── */
+.req-item{display:flex;align-items:flex-start;gap:11px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.035);cursor:pointer}
+.req-item:last-child{border-bottom:none}
+.req-item:active{background:rgba(255,255,255,.02)}
+.req-ic{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ri-or{background:rgba(230,126,34,.14)}
+.ri-re{background:rgba(229,57,53,.14)}
+.ri-bl{background:rgba(41,128,185,.14)}
+.ri-gr{background:rgba(39,174,96,.14)}
+.req-b{flex:1}
+.req-t{font-size:12px;font-weight:700}
+.req-c{font-size:10px;color:var(--muted);margin-top:1px}
+.req-d{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.5}
+.req-due{font-family:var(--mono);font-size:10px;margin-top:4px}
+.due-u{color:var(--red)}.due-s{color:var(--orange)}.due-o{color:var(--muted)}
+
+/* ── ORG CHART ── */
+.org-level{margin-bottom:24px}
+.org-lbl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-dk);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.org-lbl::after{content:'';flex:1;height:1px;background:var(--border2)}
+.org-nodes{display:grid;gap:10px}
+.on1{grid-template-columns:1fr}
+.on2{grid-template-columns:repeat(2,1fr)}
+.on3{grid-template-columns:repeat(3,1fr)}
+.on4{grid-template-columns:repeat(4,1fr)}
+.org-node{background:var(--slate2);border:1px solid var(--border2);border-radius:var(--r);padding:14px;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s}
+.org-node:active{transform:scale(.98)}
+.org-node::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.on-gold::before{background:var(--gold)}.on-blue::before{background:var(--blue-lt)}.on-green::before{background:var(--green-lt)}.on-purple::before{background:var(--purple)}.on-orange::before{background:var(--orange)}.on-red::before{background:var(--red)}
+.on-top{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.on-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:var(--navy);flex-shrink:0}
+.av-gold{background:linear-gradient(135deg,var(--gold),var(--gold-dk))}.av-blue{background:linear-gradient(135deg,var(--blue-lt),var(--blue))}.av-green{background:linear-gradient(135deg,var(--green-lt),var(--green))}.av-purple{background:linear-gradient(135deg,#C39BD3,var(--purple));color:#fff}.av-orange{background:linear-gradient(135deg,#F0A500,var(--orange))}.av-red{background:linear-gradient(135deg,#FF6B6B,var(--red));color:#fff}
+.on-name{font-size:12px;font-weight:700}
+.on-role{font-size:9px;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
+.on-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:9px}
+.on-stat{background:var(--navy2);border-radius:5px;padding:5px 7px}
+.on-sv{font-family:var(--mono);font-size:11px;font-weight:500}
+.on-sl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+.on-bar-w{height:4px;background:var(--slate3);border-radius:2px;overflow:hidden;margin-bottom:4px}
+.on-bar{height:100%;border-radius:2px;transition:width .6s ease}
+.on-pct{font-family:var(--mono);font-size:9px;color:var(--muted)}
+.on-acts{display:flex;gap:5px;margin-top:8px}
+
+/* ── COMM ROWS ── */
+.comm-row{display:grid;grid-template-columns:1fr 80px 90px 70px 60px;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid rgba(255,255,255,.03)}
+.comm-row:last-child{border-bottom:none}
+
+/* ── DOC ACTION ── */
+.doc-action{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;background:var(--navy2);border:1px solid var(--border2);margin-bottom:8px}
+.doc-ic{width:32px;height:32px;border-radius:7px;background:var(--slate2);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.doc-inf{flex:1;min-width:0}
+.doc-n{font-size:12px;font-weight:700}
+.doc-d{font-size:10px;color:var(--muted);margin-top:1px}
+.doc-btn{padding:6px 12px;border-radius:6px;font-size:10px;font-weight:800;border:none;text-transform:uppercase;letter-spacing:.03em;-webkit-appearance:none;flex-shrink:0}
+.db-dl{background:rgba(74,144,226,.15);color:var(--blue-lt)}
+.db-up{background:rgba(230,126,34,.15);color:var(--orange)}
+.db-sg{background:rgba(201,168,76,.18);color:var(--gold)}
+.db-vw{background:var(--slate2);color:var(--white)}
+.db-cl{background:rgba(39,174,96,.15);color:var(--green-lt)}
+
+/* ── TIMELINE ── */
+.tl{margin-bottom:4px}
+.tl-it{display:flex;align-items:flex-start;gap:11px;padding:7px 0}
+.tl-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+.tl-done{background:var(--green-lt);color:var(--navy)}
+.tl-active{background:rgba(201,168,76,.2);color:var(--gold);border:2px solid var(--gold)}
+.tl-future{background:var(--slate2);color:var(--muted);border:2px solid var(--border2)}
+.tl-txt{font-size:12px;font-weight:600;padding-top:1px}
+.tl-txt span{display:block;font-size:10px;font-weight:400;color:var(--muted);margin-top:1px}
+
+/* ── MODAL ── */
+.modal-ov{display:none;position:fixed;inset:0;z-index:500;background:rgba(4,8,18,.9);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px}
+.modal-ov.open{display:flex}
+.modal-box{background:var(--slate);border:1px solid var(--border);border-radius:14px;width:100%;max-width:600px;max-height:88vh;overflow-y:auto;padding:24px;box-shadow:var(--shadow);position:relative}
+.modal-x{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--slate2);border:none;cursor:pointer;color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center;-webkit-appearance:none}
+.modal-x:active{background:var(--red);color:#fff}
+.modal-ey{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.modal-t{font-size:17px;font-weight:800;margin-bottom:2px}
+.modal-s{font-size:11px;color:var(--muted);margin-bottom:16px}
+.modal-sec{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-dk);margin:16px 0 7px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.info-k{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.info-v{font-family:var(--mono);font-size:12px;font-weight:500}
+.info-v.gold{color:var(--gold)}.info-v.green{color:var(--green-lt)}.info-v.orange{color:var(--orange)}.info-v.red{color:var(--red)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--slate2);border:1px solid var(--border);color:var(--white);padding:11px 20px;border-radius:8px;font-size:12px;font-weight:600;z-index:999;box-shadow:var(--shadow);opacity:0;transition:all .25s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ── ADMIN ── */
+.admin-ov{display:none;position:fixed;inset:0;z-index:600;background:rgba(4,8,18,.75);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.admin-ov.open{display:block}
+.admin-panel{position:absolute;top:0;right:0;bottom:0;width:100%;max-width:920px;background:var(--navy);border-left:2px solid var(--gold);box-shadow:-20px 0 60px rgba(0,0,0,.6);display:flex;flex-direction:column}
+.admin-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--slate);border-bottom:2px solid var(--gold);flex-shrink:0}
+.admin-body{flex:1;overflow-y:auto;display:flex}
+.admin-tabs{width:190px;flex-shrink:0;background:var(--slate);border-right:1px solid var(--border2);padding:10px 0;overflow-y:auto}
+.admin-tab{display:flex;align-items:center;gap:8px;padding:10px 16px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-left:2px solid transparent}
+.admin-tab.active,.admin-tab:active{color:var(--gold);border-left-color:var(--gold);background:rgba(201,168,76,.06)}
+.admin-content{flex:1;padding:22px;min-width:0;overflow-y:auto}
+.admin-sec-t{font-size:18px;font-weight:800;margin-bottom:3px}
+.admin-sec-s{font-size:11px;color:var(--muted);margin-bottom:16px}
+.admin-input{background:var(--navy2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--white);font-family:var(--mono);width:100%}
+.admin-input:focus{outline:none;border-color:var(--gold)}
+.admin-select{background:var(--navy2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;font-size:11px;color:var(--white);font-family:var(--sans)}
+.admin-select:focus{outline:none;border-color:var(--gold)}
+.admin-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border2);flex-wrap:wrap}
+.admin-row:last-child{border-bottom:none}
+.admin-field{display:block;margin-bottom:12px}
+.admin-field label{display:block;font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.cascade-note{background:rgba(201,168,76,.08);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.toggle-pill{padding:4px 10px;border-radius:20px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.tp-on{background:rgba(39,174,96,.15);color:var(--green-lt)}
+.tp-off{background:var(--slate2);color:var(--muted)}
+
+/* ── MISC ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){
+  .sidebar{position:fixed;left:-220px;top:52px;bottom:0;z-index:150;transition:left .2s;box-shadow:var(--shadow)}
+  .sidebar.open{left:0}
+  .kg5,.kg4,.kg3{grid-template-columns:repeat(2,1fr)}
+  .two-col{grid-template-columns:1fr}
+  .on2,.on3,.on4{grid-template-columns:1fr}
+  .comm-row{grid-template-columns:1fr 70px 60px}
+  .tbl td:nth-child(3),.tbl th:nth-child(3){display:none}
+  .admin-body{flex-direction:column}
+  .admin-tabs{width:100%;display:flex;overflow-x:auto;white-space:nowrap;padding:8px}
+  .admin-tab{border-left:none;border-bottom:2px solid transparent;flex-shrink:0}
+  .admin-tab.active{border-bottom-color:var(--gold);border-left-color:transparent}
+}
+@media(min-width:701px){
+  .main{padding:24px 28px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="lg-bg"></div>
+  <div class="lg-grid"></div>
+  <div class="lg-inner">
+    <div class="lg-logo">
+      <div class="lg-mark">SM</div>
+      <div class="lg-brand"><em>Sales</em>Mafia<small>North American Senior Benefits</small></div>
+    </div>
+    <div class="lg-card">
+      <div class="lg-title">Agent Portal</div>
+      <div class="lg-sub">Tap your name to sign in</div>
+      <div class="demo-box">
+        <div class="demo-lbl">— Select your name —</div>
+        <div class="demo-row">
+          <div class="chip chip-sp" onclick="ql('luke')">👑 Luke LeMere</div>
+          <div class="chip chip-mgr" onclick="ql('nathan')">Nathan Gabbert</div>
+          <div class="chip chip-mgr" onclick="ql('ashton')">Ashton Lamkin</div>
+          <div class="chip" onclick="ql('dalton')">Dalton Brown</div>
+          <div class="chip" onclick="ql('joseph')">Joseph Henry</div>
+          <div class="chip" onclick="ql('asher')">Asher Johnson</div>
+          <div class="chip" onclick="ql('paul')">Paul Harris</div>
+          <div class="chip" onclick="ql('darryl')">Darryl Turner</div>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Email</label>
+        <input class="fi" id="lg-em" type="email" placeholder="name@nasb-agency.com" autocomplete="email">
+      </div>
+      <div class="fg">
+        <label class="fl">Password</label>
+        <input class="fi" id="lg-pw" type="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-login" type="button" onclick="doLogin()">Sign In →</button>
+      <div class="lg-err" id="lg-err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header class="topbar">
+    <div class="tb-l">
+      <button class="btn-out" id="hamburger" style="display:none" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <div class="tb-mark">SM</div>
+      <div class="tb-name"><em>Sales</em>Mafia</div>
+    </div>
+    <div class="tb-r">
+      <div class="live-pill"><div class="live-dot"></div>LIVE</div>
+      <button class="btn-admin hidden" id="btn-admin" onclick="openAdmin()">🛡️ Admin</button>
+      <div class="tb-info">
+        <div class="tb-un" id="tb-un">—</div>
+        <div class="tb-ur" id="tb-ur">—</div>
+      </div>
+      <div class="tb-av" id="tb-av">—</div>
+      <button class="btn-out" onclick="logout()">Out</button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <nav class="sidebar" id="sidebar">
+      <div class="ns">My Production</div>
+      <div class="nl active" onclick="sv('dashboard',this)"><span class="ni">⚡</span>Dashboard</div>
+      <div class="nl" onclick="sv('pipeline',this)"><span class="ni">🔄</span>Pipeline<span class="nc nc-b" id="nc-pipe">0</span></div>
+      <div class="nl" onclick="sv('requirements',this)"><span class="ni">📋</span>Requirements<span class="nc nc-r" id="nc-req">0</span></div>
+      <div class="nl" onclick="sv('commissions',this)"><span class="ni">💰</span>Commissions</div>
+      <div class="ns">Resources</div>
+      <div class="nl" onclick="sv('documents',this)"><span class="ni">📁</span>Forms & Docs</div>
+      <div id="mgr-nav" class="hidden">
+        <div class="ns">Manager</div>
+        <div class="nl" onclick="sv('org',this)"><span class="ni">🏛️</span>Org Chart</div>
+        <div class="nl" onclick="sv('downline',this)"><span class="ni">👥</span>My Team</div>
+        <div class="nl" onclick="sv('analytics',this)"><span class="ni">📊</span>Analytics</div>
+      </div>
+      <div id="sp-nav" class="hidden">
+        <div class="ns">High Archie</div>
+        <div class="nl" onclick="sv('org',this)"><span class="ni">🏛️</span>Full Org</div>
+        <div class="nl" onclick="sv('analytics',this)"><span class="ni">📊</span>Analytics</div>
+      </div>
+      <div class="sb-goal">
+        <div class="sb-gl">MTD Goal</div>
+        <div class="sb-gbar"><div class="sb-gfill" id="sb-fill" style="width:0%"></div></div>
+        <div class="sb-gnums">
+          <div class="sb-gcur" id="sb-cur">$0</div>
+          <div class="sb-gtgt" id="sb-tgt">/ $0</div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main" id="main">
+
+      <!-- DASHBOARD -->
+      <div id="v-dashboard">
+        <div class="ph">
+          <div>
+            <div class="ph-ey">SalesMafia · NASB</div>
+            <div class="ph-t" id="dash-title">Dashboard</div>
+            <div class="ph-s" id="dash-sub">Month-to-Date</div>
+          </div>
+          <div class="ph-r">
+            <div class="ptabs">
+              <div class="pt" onclick="setPeriod('WTD',this,'dashboard')">WTD</div>
+              <div class="pt active" onclick="setPeriod('MTD',this,'dashboard')">MTD</div>
+              <div class="pt" onclick="setPeriod('QTD',this,'dashboard')">QTD</div>
+              <div class="pt" onclick="setPeriod('YTD',this,'dashboard')">YTD</div>
+            </div>
+            <button class="btn-s btn-pr" onclick="toast('📝 New app wizard...')">+ New App</button>
+          </div>
+        </div>
+        <div class="kgrid kg5" id="dash-kpis"></div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-hd"><div><div class="panel-t">Recent Activity</div></div><div class="panel-a" onclick="sv('pipeline',null)">All →</div></div>
+            <div id="dash-activity"></div>
+          </div>
+          <div class="panel" id="dash-req-panel">
+            <div class="panel-hd"><div><div class="panel-t">⚠️ Urgent Requirements</div></div><div class="panel-a" onclick="sv('requirements',null)">All →</div></div>
+            <div id="dash-reqs"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PIPELINE -->
+      <div id="v-pipeline" class="hidden">
+        <div class="ph">
+          <div><div class="ph-ey">Production</div><div class="ph-t">My Pipeline</div><div class="ph-s" id="pipe-sub">All applications</div></div>
+          <div class="ph-r">
+            <button class="btn-s btn-gh" onclick="fp(null,this)">All</button>
+            <button class="btn-s btn-gh" onclick="fp('issued',this)">Issued</button>
+            <button class="btn-s btn-gh" onclick="fp('pending',this)">Pending</button>
+            <button class="btn-s btn-gh" onclick="fp('requirements',this)">Action</button>
+            <button class="btn-s btn-gh" onclick="fp('lapse',this)">Lapsed</button>
+          </div>
+        </div>
+        <div class="panel"><div class="tbl-scroll"><table class="tbl">
+          <thead><tr><th>Client</th><th>Carrier</th><th>Product</th><th>AP</th><th>Rate</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="pipe-tbody"></tbody>
+        </table></div></div>
+      </div>
+
+      <!-- REQUIREMENTS -->
+      <div id="v-requirements" class="hidden">
+        <div class="ph"><div><div class="ph-ey">Action Center</div><div class="ph-t">Requirements</div><div class="ph-s">Clear these to protect your policies</div></div></div>
+        <div class="panel"><div class="panel-hd"><div class="panel-t">⚠️ Needs Your Action</div></div><div id="req-list"></div></div>
+      </div>
+
+      <!-- COMMISSIONS -->
+      <div id="v-commissions" class="hidden">
+        <div class="ph">
+          <div><div class="ph-ey">Earnings</div><div class="ph-t">Commissions & Advances</div><div class="ph-s" id="comm-sub">Calculated live from the 2025 carrier comp guide</div></div>
+          <div class="ph-r">
+            <div class="ptabs">
+              <div class="pt" onclick="setPeriod('WTD',this,'commissions')">WTD</div>
+              <div class="pt active" onclick="setPeriod('MTD',this,'commissions')">MTD</div>
+              <div class="pt" onclick="setPeriod('QTD',this,'commissions')">QTD</div>
+              <div class="pt" onclick="setPeriod('YTD',this,'commissions')">YTD</div>
+            </div>
+          </div>
+        </div>
+        <div class="kgrid kg3">
+          <div class="kcard kc-gold"><div class="klbl" id="c-total-lbl">Total Earned MTD</div><div class="kval gold" id="c-total">$0</div><div class="knote">before chargebacks</div></div>
+          <div class="kcard kc-blue"><div class="klbl">Advanced Balance</div><div class="kval blue" id="c-adv">$0</div><div class="knote">outstanding draws</div></div>
+          <div class="kcard kc-green"><div class="klbl">Back End Pay</div><div class="kval green" id="c-net">$0</div><div class="knote">remaining 25%, paid ~9 mo. later</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-t">Commission Ledger</div><div class="panel-a" onclick="toast('📥 Exporting...')">Export</div></div>
+          <div class="comm-row" style="background:var(--navy2);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-dk)">
+            <div>Carrier / Client</div><div>Rate</div><div>Earned</div><div>Advanced</div><div>Back End</div>
+          </div>
+          <div id="comm-ledger"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-t">📐 Your Comp Rate — By Carrier</div><div class="panel-s" id="comm-level-note"></div></div>
+          <div class="tbl-scroll"><table class="tbl">
+            <thead><tr><th>Carrier / Product</th><th>Group</th><th style="text-align:right">Your Rate</th></tr></thead>
+            <tbody id="comm-rate-tbody"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- DOCUMENTS -->
+      <div id="v-documents" class="hidden">
+        <div class="ph"><div><div class="ph-ey">Resources</div><div class="ph-t">Forms & Documents</div></div></div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-t">📋 Carrier Forms</div></div>
+            <div style="padding:12px" id="doc-forms"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-t">🎓 NASB Training</div></div>
+            <div style="padding:12px">
+              <div class="doc-action"><div class="doc-ic">📘</div><div class="doc-inf"><div class="doc-n">New Agent Training Manual</div><div class="doc-d">Blair onboarding · SalesMafia checklist</div></div><button class="doc-btn db-vw" onclick="toast('📘 Opening manual...')">Open</button></div>
+              <div class="doc-action"><div class="doc-ic">📗</div><div class="doc-inf"><div class="doc-n">Field Sales Script (Full)</div><div class="doc-d">Door approach · Kitchen table · Close</div></div><button class="doc-btn db-vw" onclick="toast('📗 Opening script...')">Open</button></div>
+              <div class="doc-action"><div class="doc-ic">🎯</div><div class="doc-inf"><div class="doc-n">Blair Master Onboarding Checklist</div><div class="doc-d">SuranceBay · NASBNation · nasbsalesmafia.com</div></div><button class="doc-btn db-vw" onclick="toast('🎯 Opening checklist...')">Open</button></div>
+              <div class="doc-action"><div class="doc-ic">📊</div><div class="doc-inf"><div class="doc-n">Career Track Guide</div><div class="doc-d">AG6 through Sr. Executive Partner — comp levels</div></div><button class="doc-btn db-vw" onclick="toast('📊 Opening career track...')">Open</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ORG CHART -->
+      <div id="v-org" class="hidden">
+        <div class="ph">
+          <div><div class="ph-ey">SalesMafia Organization</div><div class="ph-t">Org Chart</div><div class="ph-s" id="org-sub">Full hierarchy</div></div>
+        </div>
+        <div id="org-content"></div>
+      </div>
+
+      <!-- DOWNLINE / MY TEAM -->
+      <div id="v-downline" class="hidden">
+        <div class="ph"><div><div class="ph-ey">Manager View</div><div class="ph-t">My Team</div><div class="ph-s" id="dl-sub">Direct agents</div></div></div>
+        <div class="ptabs" style="width:fit-content;margin-bottom:14px">
+          <div class="pt active" id="dl-tab-personal" onclick="setDlTab('personal')">My Personal Production</div>
+          <div class="pt" id="dl-tab-team" onclick="setDlTab('team')">Team Overall</div>
+        </div>
+        <div id="dl-content"></div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div id="v-analytics" class="hidden">
+        <div class="ph">
+          <div><div class="ph-ey">Analytics</div><div class="ph-t">Team Performance</div><div class="ph-s" id="an-sub">Production overview</div></div>
+          <div class="ph-r">
+            <div class="ptabs">
+              <div class="pt" onclick="setPeriod('WTD',this,'analytics')">WTD</div>
+              <div class="pt active" onclick="setPeriod('MTD',this,'analytics')">MTD</div>
+              <div class="pt" onclick="setPeriod('QTD',this,'analytics')">QTD</div>
+              <div class="pt" onclick="setPeriod('YTD',this,'analytics')">YTD</div>
+            </div>
+          </div>
+        </div>
+        <div class="kgrid kg4" id="an-kpis"></div>
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-t">🏆 Agent Leaderboard — MTD Issued Premium</div></div>
+          <div id="an-lb"></div>
+        </div>
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-t">🏛️ Carrier Mix</div></div>
+            <div style="padding:16px" id="an-carrier"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-hd"><div class="panel-t">📊 Pipeline Stages</div></div>
+            <div style="padding:16px" id="an-stages"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ADMIN PORTAL -->
+<div class="admin-ov" id="admin-ov">
+  <div class="admin-panel">
+    <div class="admin-hd">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="tb-mark">🛡️</div>
+        <div>
+          <div style="font-size:15px;font-weight:800">High Archie Admin Portal</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Changes cascade live to every agent's portal</div>
+        </div>
+      </div>
+      <button class="modal-x" style="position:static" onclick="closeAdmin()">✕</button>
+    </div>
+    <div class="admin-body">
+      <div class="admin-tabs" id="admin-tabs">
+        <div class="admin-tab active" onclick="setAdminTab('goals',this)">🎯 Goals</div>
+        <div class="admin-tab" onclick="setAdminTab('levels',this)">🏅 Agent Levels</div>
+        <div class="admin-tab" onclick="setAdminTab('orgedit',this)">🏛️ Team Layout</div>
+        <div class="admin-tab" onclick="setAdminTab('manualpolicy',this)">➕ Manual Policy</div>
+        <div class="admin-tab" onclick="setAdminTab('access',this)">🔑 Agent Access</div>
+        <div class="admin-tab" onclick="setAdminTab('formslib',this)">📁 Forms Library</div>
+        <div class="admin-tab" onclick="setAdminTab('carrierdocs',this)">📂 Carrier Forms</div>
+        <div class="admin-tab" onclick="setAdminTab('tools',this)">🔗 Connected Tools</div>
+      </div>
+      <div class="admin-content" id="admin-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-ov" id="modal" onclick="closeMBG(event)">
+  <div class="modal-box"><button class="modal-x" onclick="closeM()">✕</button><div id="modal-body"></div></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast-el"></div>
+
+<script>
+// ═══════════════════════════════════
+// COMP GRID — North American Senior Benefits, 2025 Compensation Guide
+// ═══════════════════════════════════
+var LEVELS = [
+  'SR EXECUTIVE PARTNER','EXECUTIVE PARTNER','SR PARTNER','PARTNER ($400k)',
+  'JR PARTNER ($300k)','ASSOCIATE PARTNER (225K)','RVP3 ($150k)',
+  'SM1 ($75K)','SM2 ($50K)','SM3 ($25K)',
+  'AG1 ($12K)','AG2 ($10K)','AG3 ($8K)','AG4 ($6K)','AG5 ($4K)','AG6 ($2K)'
+];
+var CARRIERS = {
+  'Corebridge SIWL Legacy Max': {group:'Corebridge Financial', rates:[127,127,127,127,122,117,112,107,102,97,92,87,82,77,77,77]},
+  'Corebridge SIWL Legacy':     {group:'Corebridge Financial', rates:[87,87,87,87,82,77,72,67,62,57,52,47,42,37,37,37]},
+  'Corebridge GIWL':            {group:'Corebridge Financial', rates:[77.5,77.5,77.5,77.5,75,72.5,70,67.5,65,62.5,60,57.5,55,52.5,50,45]},
+  'UOO Living Promise':         {group:'Mutual of Omaha', rates:[115,115,115,115,110,105,100,95,90,85,80,75,70,65,60,60]},
+  'UOO CWL':                    {group:'Mutual of Omaha', rates:[100,100,100,100,95,90,85,80,75,70,65,60,55,50,45,40]},
+  'UOO IULE':                   {group:'Mutual of Omaha', rates:[115,115,115,115,110,105,100,95,90,85,80,75,70,65,60,60]},
+  'AmAm Senior Choice':         {group:'American-Amicable', rates:[115,115,115,115,110,105,100,95,90,85,80,75,70,65,60,55]},
+  'Foresters Final Expense':    {group:'Foresters Financial', rates:[110,110,110,110,105,100,95,90,85,80,75,70,65,60,55,50]},
+  'Americo HMS':                {group:'Americo', rates:[130,130,130,130,125,120,115,110,105,100,95,90,85,80,75,70]},
+  'Americo Eagle Select 1':     {group:'Americo', rates:[120,120,120,120,115,110,105,100,95,90,85,80,75,70,70,70]},
+  'Americo Eagle Select 2':     {group:'Americo', rates:[120,120,120,120,115,110,105,100,95,90,85,80,75,70,70,70]},
+  'Americo Eagle Select 3':     {group:'Americo', rates:[82,82,82,82,79.5,77,74.5,72,69.5,67,64.5,62,59.5,57,57,57]},
+  'Royal Neighbors':            {group:'Royal Neighbors', rates:[105,105,105,105,100,95,90,85,80,75,70,65,60,60,60,45]},
+  'Royal Neighbors GRADED':     {group:'Royal Neighbors', rates:[67.5,67.5,67.5,67.5,65,62.5,60,57.5,55,50,47.5,47,46,46,46,45]},
+  'Royal Neighbors GI':         {group:'Royal Neighbors', rates:[23,23,23,23,21,19,17,15,13,11,9,8.5,8,8,8,7]},
+  'AETNA Accendo/CVS F.E.':     {group:'Aetna / CVS', rates:[120,120,120,120,115,110,105,100,95,90,85,80,70,70,70,70]},
+  'Transamerica Premier':       {group:'Transamerica', rates:[110,110,110,110,105,100,95,90,85,80,75,70,65,60,55,50]},
+  'Transamerica FE Express':    {group:'Transamerica', rates:[125,125,125,125,120,115,110,105,100,95,90,85,80,75,70,65]},
+  'Liberty Bankers LBL Tier 1': {group:'Liberty Bankers Life', rates:[110,110,110,110,105,100,95,90,85,80,75,70,65,60,55,50]},
+  'Liberty Bankers LBL Tier 2': {group:'Liberty Bankers Life', rates:[100,100,100,100,95,90,85,80,75,70,60,60,55,50,45,40]},
+  'AFLAC (Level)':              {group:'Aflac', rates:[110,110,110,110,105,100,95,90,85,80,70,70,70,50,50,50]},
+  'UHL':                        {group:'United Home Life', rates:[110,110,110,110,105,100,95,90,85,80,75,70,65,60,55,55]},
+  'Gerber Life':                {group:'Gerber', rates:[60,60,60,60,55,50,45,45,45,45,45,45,45,45,45,45]},
+  'NGL':                        {group:'National Guardian Life', rates:[65,65,65,65,60,55,50,45,45,45,40,40,40,40,40,40]}
+};
+function rateFor(level, carrier) {
+  var li = LEVELS.indexOf(level);
+  var c = CARRIERS[carrier];
+  if (li===-1 || !c) return 0;
+  return c.rates[li];
+}
+
+// ═══════════════════════════════════
+// DATA — your real hierarchy, levels, and production
+// ═══════════════════════════════════
+var DB = {
+  agents: {
+    luke:   {id:'luke',   name:'Luke LeMere',    initials:'LL', role:'High Archie / Owner', tier:'sp',      mgr:null,   level:'SM2 ($50K)', goal:60000, color:'gold'},
+    nathan: {id:'nathan', name:'Nathan Gabbert',  initials:'NG', role:'Team Manager',        tier:'manager', mgr:'luke', level:'SM3 ($25K)', goal:40000, color:'blue'},
+    ashton: {id:'ashton', name:'Ashton Lamkin',   initials:'AL', role:'Team Manager',        tier:'manager', mgr:'luke', level:'AG1 ($12K)', goal:24000, color:'green'},
+    dalton: {id:'dalton', name:'Dalton Brown',    initials:'DB', role:'Field Agent',         tier:'agent',   mgr:'luke', level:'AG3 ($8K)',  goal:22000, color:'orange'},
+    joseph: {id:'joseph', name:'Joseph Henry',    initials:'JH', role:'Field Agent',         tier:'agent',   mgr:'nathan',level:'AG2 ($10K)', goal:28000, color:'purple'},
+    asher:  {id:'asher',  name:'Asher Johnson',   initials:'AJ', role:'Field Agent',         tier:'agent',   mgr:'nathan',level:'AG3 ($8K)',  goal:18000, color:'blue'},
+    paul:   {id:'paul',   name:'Paul Harris',     initials:'PH', role:'Field Agent',         tier:'agent',   mgr:'nathan',level:'AG3 ($8K)',  goal:20000, color:'red'},
+    darryl: {id:'darryl', name:'Darryl Turner',   initials:'DT', role:'Field Agent',         tier:'agent',   mgr:'ashton',level:'AG3 ($8K)',  goal:17000, color:'orange'}
+  },
+  policies: {
+    luke:[
+      {id:'l1',client:'Feldman Trust',carrier:'Corebridge SIWL Legacy Max',product:'SIWL Legacy Max',ap:4700,date:'Jun 28',status:'issued'},
+      {id:'l2',client:'A. Ruiz',carrier:'UOO Living Promise',product:'Living Promise Level',ap:2340,date:'Jun 20',status:'issued'}
+    ],
+    nathan:[
+      {id:'n1',client:'B. Ashworth',carrier:'Corebridge SIWL Legacy Max',product:'SIWL Legacy Max',ap:3100,date:'Jun 25',status:'issued'},
+      {id:'n2',client:'M. Tran',carrier:'UOO IULE',product:'IUL Express',ap:2890,date:'Jun 30',status:'requirements'},
+      {id:'n3',client:'O. Grant',carrier:'Americo HMS',product:'HMS Final Expense',ap:1180,date:'May 22',status:'issued'}
+    ],
+    ashton:[
+      {id:'a1',client:'I. Salazar',carrier:'AmAm Senior Choice',product:'Senior Choice WL',ap:1670,date:'Jun 12',status:'issued'},
+      {id:'a2',client:'Q. Meadows',carrier:'Liberty Bankers LBL Tier 2',product:'LBL Tier 2',ap:1450,date:'Jul 7',status:'pending'}
+    ],
+    dalton:[
+      {id:'da1',client:'R. Alvarez',carrier:'Corebridge SIWL Legacy Max',product:'SIWL Legacy Max',ap:1840,date:'May 29',status:'issued'},
+      {id:'da2',client:'M. Yoon',carrier:'Americo HMS',product:'HMS Final Expense',ap:1120,date:'Jul 4',status:'pending'},
+      {id:'da3',client:'T. Whitfield',carrier:'UOO Living Promise',product:'Living Promise Level',ap:1560,date:'Jun 28',status:'requirements'},
+      {id:'da4',client:'G. Boone',carrier:'AETNA Accendo/CVS F.E.',product:'Accendo Immediate',ap:780,date:'Jul 8',status:'submitted'}
+    ],
+    joseph:[
+      {id:'j1',client:'L. Park',carrier:'Transamerica FE Express',product:'FE Express Solutions',ap:1330,date:'May 15',status:'issued'},
+      {id:'j2',client:'D. Osei',carrier:'Americo Eagle Select 1',product:'Eagle Select 1',ap:2210,date:'Jun 10',status:'issued'},
+      {id:'j3',client:'S. Marsh',carrier:'Royal Neighbors',product:'Royal Neighbors WL',ap:940,date:'Jul 1',status:'requirements'},
+      {id:'j4',client:'A. Ferreira',carrier:'UOO CWL',product:'Omaha CWL',ap:1670,date:'Jul 6',status:'pending'},
+      {id:'j5',client:'K. Dunmore',carrier:'Corebridge SIWL Legacy',product:'SIWL Legacy',ap:1200,date:'Apr 6',status:'lapse'}
+    ],
+    asher:[
+      {id:'as1',client:'P. Nakamura',carrier:'AmAm Senior Choice',product:'Senior Choice WL',ap:1510,date:'Jun 19',status:'issued'},
+      {id:'as2',client:'V. Cortez',carrier:'UHL',product:'United Home Life FE',ap:810,date:'Jun 25',status:'requirements'},
+      {id:'as3',client:'H. Iwu',carrier:'Liberty Bankers LBL Tier 1',product:'LBL Tier 1',ap:1980,date:'Jul 9',status:'submitted'}
+    ],
+    paul:[
+      {id:'p1',client:'C. Reyes',carrier:'Foresters Final Expense',product:'Foresters FE',ap:1160,date:'May 10',status:'issued'},
+      {id:'p2',client:'N. Petrova',carrier:'Americo Eagle Select 2',product:'Eagle Select 2',ap:1390,date:'Jul 3',status:'pending'},
+      {id:'p3',client:'J. Okafor',carrier:'AFLAC (Level)',product:'AFLAC Level WL',ap:960,date:'Jun 22',status:'requirements'},
+      {id:'p4',client:'S. Chandler',carrier:'Gerber Life',product:'Gerber Grow-Up',ap:410,date:'Jun 7',status:'issued'}
+    ],
+    darryl:[
+      {id:'dr1',client:'F. Dubois',carrier:'Corebridge GIWL',product:'GIWL Guaranteed',ap:890,date:'May 31',status:'issued'},
+      {id:'dr2',client:'W. Blackfeather',carrier:'Royal Neighbors GI',product:'Royal Neighbors GI',ap:870,date:'Jun 30',status:'requirements'},
+      {id:'dr3',client:'E. Solheim',carrier:'NGL',product:'NGL Preferred',ap:1240,date:'Jul 5',status:'pending'},
+      {id:'dr4',client:'R. Castellano',carrier:'Transamerica Premier',product:'Transamerica Premier WL',ap:1080,date:'Mar 22',status:'lapse'}
+    ]
+  },
+  requirements: {
+    luke:[],
+    nathan:[
+      {id:'nr1',icon:'🩺',cls:'ri-or',title:'Paramed Exam Not Completed',client:'M. Tran — UOO IULE $2,890 AP',desc:'Paramedical exam has not yet been scheduled or completed with the client.',due:'⚠️ Due Jul 14 — urgent',dueCls:'due-u',docType:'med'}
+    ],
+    ashton:[],
+    dalton:[
+      {id:'dar1',icon:'🏥',cls:'ri-or',title:'APS Required',client:'T. Whitfield — UOO Living Promise $1,560 AP',desc:'Attending Physician Statement requested from provider — awaiting fax back.',due:'⏱ Due Jul 15',dueCls:'due-s',docType:'med'}
+    ],
+    joseph:[
+      {id:'jr1',icon:'✍️',cls:'ri-gr',title:'Signed Illustration Missing',client:'S. Marsh — Royal Neighbors $940 AP',desc:'Client signature needed on final illustration page 4.',due:'⚠️ Due Jul 12 — urgent',dueCls:'due-u',docType:'sign'}
+    ],
+    asher:[
+      {id:'ar1',icon:'🏦',cls:'ri-bl',title:'Voided Check Needed',client:'V. Cortez — UHL $810 AP',desc:'Bank draft form needs a voided check or bank letter attached.',due:'⏱ Due Jul 16',dueCls:'due-s',docType:'doc'}
+    ],
+    paul:[
+      {id:'pr1',icon:'📞',cls:'ri-or',title:'Telephone Interview Pending',client:'J. Okafor — AFLAC $960 AP',desc:'Carrier tele-app interview not yet completed with client.',due:'⚠️ Due Jul 11 — urgent',dueCls:'due-u',docType:'sign'}
+    ],
+    darryl:[
+      {id:'dtr1',icon:'👤',cls:'ri-re',title:'Beneficiary Clarification',client:'W. Blackfeather — Royal Neighbors GI $870 AP',desc:'Underwriter needs full legal name + DOB for contingent beneficiary.',due:'⏱ Due Jul 17',dueCls:'due-s',docType:'doc'}
+    ]
+  }
+}
+function agentVals(){var k=Object.keys(DB.agents),r=[];for(var i=0;i<k.length;i++)r.push(DB.agents[k[i]]);return r;}
+function objVals(obj){var k=Object.keys(obj),r=[];for(var i=0;i<k.length;i++)r.push(obj[k[i]]);return r;}
+
+// ═══════════════════════════════════
+// DEV/TEST ONLY — synthetic production history (Jan 2026 → present)
+// Backfills realistic pretend policies for every agent so WTD/MTD/QTD/YTD
+// have real data to show while the portal is in testing. Delete this block
+// once live production data replaces it.
+// ═══════════════════════════════════
+(function seedHistoricalPolicies(){
+  var FIRST = ['James','Maria','Robert','Linda','David','Susan','Michael','Karen','William','Betty','Richard','Nancy','Charles','Sandra','Joseph','Donna','Thomas','Carol','Christopher','Ruth','Daniel','Sharon','Paul','Michelle','Mark','Laura','Edward','Kimberly','Steven','Deborah','George','Dorothy','Kenneth','Amy','Frank','Angela','Raymond','Ashley','Gary','Brenda'];
+  var LAST  = ['Smith','Johnson','Williams','Brown','Jones','Garcia','Miller','Davis','Rodriguez','Martinez','Hernandez','Lopez','Wilson','Anderson','Thomas','Taylor','Moore','Jackson','Martin','Lee','Perez','Thompson','White','Harris','Sanchez','Clark','Ramirez','Lewis','Robinson','Walker','Young','Allen','King','Wright','Scott','Torres','Nguyen','Hill','Flores','Green'];
+  var STATUS_PAST = ['issued','issued','issued','issued','issued','issued','issued','lapse'];
+  var CARRIER_NAMES = Object.keys(CARRIERS);
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun'];
+  var DAYS_IN = {Jan:31,Feb:28,Mar:31,Apr:30,May:31,Jun:30};
+
+  // seeded PRNG — stable "random" data across page reloads
+  var seed = 42;
+  function rnd(){ seed = (seed*9301+49297) % 233280; return seed/233280; }
+  function pick(arr){ return arr[Math.floor(rnd()*arr.length)]; }
+  function randInt(min,max){ return Math.floor(rnd()*(max-min+1))+min; }
+  function randClient(){ return pick(FIRST).charAt(0)+'. '+pick(LAST); }
+  function shortProduct(carrier){ var w = carrier.split(' '); return w.slice(-2).join(' '); }
+
+  var AGENT_PROFILE = {
+    luke:   {perMonth:[2,4], apRange:[2200,5200]},
+    nathan: {perMonth:[2,4], apRange:[1500,3400]},
+    ashton: {perMonth:[2,3], apRange:[1100,2600]},
+    dalton: {perMonth:[2,4], apRange:[700,2000]},
+    joseph: {perMonth:[2,4], apRange:[800,2300]},
+    asher:  {perMonth:[2,3], apRange:[700,2000]},
+    paul:   {perMonth:[2,3], apRange:[700,1900]},
+    darryl: {perMonth:[1,3], apRange:[700,1500]}
+  };
+
+  var idc = 1;
+  Object.keys(AGENT_PROFILE).forEach(function(agentId){
+    var prof = AGENT_PROFILE[agentId];
+    if (!DB.policies[agentId]) DB.policies[agentId] = [];
+    // Jan–Jun 2026 backfill
+    MONTHS.forEach(function(mon){
+      var count = randInt(prof.perMonth[0], prof.perMonth[1]);
+      for (var i=0;i<count;i++) {
+        var day = randInt(1, DAYS_IN[mon]);
+        var carrier = pick(CARRIER_NAMES);
+        DB.policies[agentId].push({
+          id: agentId+'_h'+(idc++),
+          client: randClient(),
+          carrier: carrier,
+          product: shortProduct(carrier),
+          ap: randInt(prof.apRange[0], prof.apRange[1]),
+          date: mon+' '+day+', 2026',
+          status: pick(STATUS_PAST)
+        });
+      }
+    });
+    // guaranteed 1–2 policies THIS week (Jul 12–16, 2026) so WTD isn't empty
+    var wtdCount = randInt(1,2);
+    for (var w=0; w<wtdCount; w++) {
+      var carrier2 = pick(CARRIER_NAMES);
+      DB.policies[agentId].push({
+        id: agentId+'_h'+(idc++),
+        client: randClient(),
+        carrier: carrier2,
+        product: shortProduct(carrier2),
+        ap: randInt(prof.apRange[0], prof.apRange[1]),
+        date: 'Jul '+randInt(12,16)+', 2026',
+        status: 'issued'
+      });
+    }
+  });
+})();
+
+// ═══════════════════════════════════
+// PERIOD FILTERING — WTD / MTD / QTD / YTD
+// ═══════════════════════════════════
+function parsePolicyDate(s) {
+  if (!s) return null;
+  var str = /\d{4}/.test(s) ? s : (s + ', 2026'); // legacy dates have no year — all data is 2026
+  var d = new Date(str);
+  return isNaN(d.getTime()) ? null : d;
+}
+function periodRange(period) {
+  var now = new Date();
+  var start;
+  if (period === 'WTD') {
+    start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+  } else if (period === 'QTD') {
+    start = new Date(now.getFullYear(), Math.floor(now.getMonth()/3)*3, 1);
+  } else if (period === 'YTD') {
+    start = new Date(now.getFullYear(), 0, 1);
+  } else { // MTD (default)
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+  }
+  start.setHours(0,0,0,0);
+  var end = new Date(now); end.setHours(23,59,59,999);
+  return {start:start, end:end};
+}
+function inPeriod(dateStr, period) {
+  var d = parsePolicyDate(dateStr);
+  if (!d) return false;
+  var r = periodRange(period);
+  return d >= r.start && d <= r.end;
+}
+var PERIOD_LABELS = {WTD:'Week-to-Date', MTD:'Month-to-Date', QTD:'Quarter-to-Date', YTD:'Year-to-Date'};
+var DASH_PERIOD = 'MTD', AN_PERIOD = 'MTD', COMM_PERIOD = 'MTD';
+var MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// Converts an <input type="date"> value ('YYYY-MM-DD') to our display/storage format ('MMM D, YYYY')
+function isoToDisplayDate(iso) {
+  var parts = (iso||'').split('-');
+  if (parts.length !== 3) return null;
+  var y = parseInt(parts[0],10), m = parseInt(parts[1],10), d = parseInt(parts[2],10);
+  if (!y || !m || !d) return null;
+  return MONTH_ABBR[m-1] + ' ' + d + ', ' + y;
+}
+function todayISO() {
+  var n = new Date();
+  return n.getFullYear() + '-' + ('0'+(n.getMonth()+1)).slice(-2) + '-' + ('0'+n.getDate()).slice(-2);
+}
+
+
+var SB_FORMS_URL = 'https://wjqzjlauqcxktqtcdvlt.supabase.co/storage/v1/object/public/forms';
+
+var CARRIER_DOCS = {
+  'Transamerica': [
+    {id:'t1', name:'Beneficiary Change Form', type:'📋 Beneficiary',
+     file:'TRANSAMERICA_Beneficiary_Change_Form.pdf',
+     form_num:'BCFL2020',
+     notes:'Return to: 6400 C Street SW, Cedar Rapids IA 52499. Fax: 1-800-235-4782. All policy owners must sign and date.',
+     url: 'https://wjqzjlauqcxktqtcdvlt.supabase.co/storage/v1/object/public/TRANSAMERICA_Beneficiary_Change_Form.pdf/TRANSAMERICA%20Beneficiary%20Change%20Form.pdf'},
+    {id:'t2', name:'Transfer of Ownership Request', type:'🔄 Ownership',
+     file:'TRANSAMERICA_OWNER_CHANGE.pdf',
+     form_num:'OWNCHG2020',
+     notes:'Current AND New Owner signatures required. Faxed forms accepted. Not all policies allow joint owners — verify first.',
+     url: 'https://wjqzjlauqcxktqtcdvlt.supabase.co/storage/v1/object/public/TRANSAMERICA_OWNER_CHANGE.pdf/TRANSAMERICA%20OWNER%20CHANGE.pdf'}
+  ],
+  'Mutual of Omaha': [
+    {id:'m1', name:'Application for Change of Beneficiary', type:'📋 Beneficiary',
+     file:'MOO_BENEFICARY.pdf',
+     form_num:'L4237',
+     notes:'Mail to: Mutual of Omaha Plaza, Omaha NE 68175. Policy owner must sign. If irrevocable beneficiary named, they must also sign.',
+     url: 'https://wjqzjlauqcxktqtcdvlt.supabase.co/storage/v1/object/public/MOO_BENEFICARY.pdf/MOO%20BENEFICARY.pdf'},
+    {id:'m2', name:'Ownership Change Request', type:'🔄 Ownership',
+     file:'MOO_OWNER_CHANGE.pdf',
+     form_num:'MOO-OWN',
+     notes:'Notary recommended. Both current and new owners must sign. Community property states require spouse signature.',
+     url: 'https://wjqzjlauqcxktqtcdvlt.supabase.co/storage/v1/object/public/MOO_OWNER_CHANGE.pdf/MOO%20OWNER%20CHANGE.pdf'},
+    {id:'m3', name:'Address Change Form', type:'📍 Address',
+     file:'MOO_ADDRESS_CHANGE.pdf',
+     form_num:'MOO-ADDR',
+     notes:'Policyowner signature and date required. Include full city, state, and ZIP in new address field.',
+     url: 'https://wjqzjlauqcxktqtcdvlt.supabase.co/storage/v1/object/public/MOO_ADDRESS_CHANGE.pdf/MOO%20ADDRESS%20CHANGE.pdf'}
+  ],
+  'Americo': [
+    {id:'a1', name:'Beneficiary Change Request', type:'📋 Beneficiary',
+     file:'AMERICO_BENEFICIARY_CHANGE.pdf',
+     form_num:'18-164-1',
+     notes:'Notary highly recommended. Email: forms@americo.com | Fax: 800-395-9238 | Mail: PO Box 410288, Kansas City MO 64141.',
+     url: 'https://wjqzjlauqcxktqtcdvlt.supabase.co/storage/v1/object/public/AMERICO_BENEFICIARY_CHANGE.pdf/AMERICO%20BENEFICIARY%20CHANGE.pdf'},
+    {id:'a2', name:'Ownership Change Request', type:'🔄 Ownership',
+     file:'AMERICO_OWNER_CHANGE.pdf',
+     form_num:'18-162-2',
+     notes:'Notary required if signatures do not match. Community property states need spouse signature. Email: forms@americo.com.',
+     url: 'https://wjqzjlauqcxktqtcdvlt.supabase.co/storage/v1/object/public/AMERICO_OWNER_CHANGE.pdf/AMERICO%20OWNER%20CHANGE.pdf'},
+    {id:'a3', name:'Address Change Request Form', type:'📍 Address',
+     file:'AMERICO_ADDRESS_CHANGE_FORM.pdf',
+     form_num:'04-037-1',
+     notes:'Policyowner signature and date required. Email: forms@americo.com | Fax: 800-395-9238.',
+     url: 'https://wjqzjlauqcxktqtcdvlt.supabase.co/storage/v1/object/public/AMERICO_ADDRESS_CHANGE_FORM.pdf/AMERICO%20ADDRESS%20CHANGE%20FORM.pdf'},
+    {id:'a4', name:'Bank Draft Authorization', type:'🏦 Banking',
+     file:'Americo_Bank_Authorization_Form.pdf',
+     form_num:'AF55019',
+     notes:'Include voided check (checking) or deposit slip (savings). Agent signature required for new business. Draft date must be within 10 days of due date.',
+     url: 'https://wjqzjlauqcxktqtcdvlt.supabase.co/storage/v1/object/public/Americo_Bank_Authorization_Form.pdf/AMERICO%20BANK%20CHANGE%20FORM.pdf'},
+    {id:'a5', name:'Name Change Request Form', type:'✏️ Name Change',
+     file:'Americo_Name_Change_Request_Form.pdf',
+     form_num:'04-037-3',
+     notes:'Must include supporting document: marriage certificate, divorce decree, or government record. Also include a W-9 with new signature.',
+     url: SB_FORMS_URL+'/Americo_Name_Change_Request_Form.pdf'}
+  ],
+  'American Amicable': [
+    {id:'aa1', name:'Beneficiary Change Form', type:'📋 Beneficiary',
+     file:'AmAm_BENEFICIARY_CHANGE_Form.pdf',
+     form_num:'9878',
+     notes:'If new beneficiary is NOT a family member — MUST BE NOTARIZED or will not be processed. Mail: PO Box 2549, Waco TX 76702. Fax: 254-297-2105.',
+     url: SB_FORMS_URL+'/AmAm_BENEFICIARY_CHANGE_Form.pdf'},
+    {id:'aa2', name:'Ownership / Payor Change Request', type:'🔄 Ownership',
+     file:'AmAm_policy_ownership_payor_Change_Form.pdf',
+     form_num:'AmAm-OWN',
+     notes:'If new owner is NOT a family member — MUST BE NOTARIZED. Sections A, B, C, and D all required. Witness cannot be a relative or named owner.',
+     url: SB_FORMS_URL+'/AmAm_policy_ownership_payor_Change_Form.pdf'}
+  ],
+  'Corebridge / AIG': [],
+  'Foresters': [],
+  'Liberty Bankers': [],
+  'AFLAC': [],
+  'Gerber Life': [],
+  'NGL': [],
+  'Royal Neighbors': [],
+  'UHL': []
+};
+;
+
+// Manual policies added at runtime via Admin Portal accumulate here
+var manualPolicies = [];
+
+// ═══════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════
+var CU = null;
+
+function getDirects(id) {
+  return Object.keys(DB.agents).filter(function(k){ return DB.agents[k].mgr === id; });
+}
+function getAllBelow(id) {
+  var directs = getDirects(id);
+  var all = directs.slice();
+  directs.forEach(function(d){ getAllBelow(d).forEach(function(x){ all.push(x); }); });
+  return all;
+}
+function rawPolicies(id) {
+  return (DB.policies[id] || []).concat(manualPolicies.filter(function(p){ return p.agentId===id; }));
+}
+function getPolicies(id) {
+  var a = DB.agents[id];
+  if (a.tier === 'sp') { return Object.keys(DB.agents).reduce(function(arr,k){ return arr.concat(rawPolicies(k)); },[]); }
+  if (a.tier === 'manager') {
+    var ids = [id].concat(getDirects(id));
+    return ids.reduce(function(arr,k){ return arr.concat(rawPolicies(k)); },[]);
+  }
+  return rawPolicies(id);
+}
+function getPoliciesPersonal(id) { return rawPolicies(id); }
+function getReqs(id) {
+  var a = DB.agents[id];
+  if (a.tier === 'sp') { return Object.keys(DB.requirements).reduce(function(arr,k){ return arr.concat(DB.requirements[k]); },[]); }
+  if (a.tier === 'manager') {
+    var ids = [id].concat(getDirects(id));
+    return ids.reduce(function(arr,k){ return arr.concat(DB.requirements[k]||[]); },[]);
+  }
+  return DB.requirements[id] || [];
+}
+function getReqsPersonal(id) { return DB.requirements[id] || []; }
+function barColor(c) {
+  var map = {gold:'var(--gold)',blue:'var(--blue-lt)',green:'var(--green-lt)',purple:'var(--purple)',orange:'var(--orange)',red:'var(--red)'};
+  return map[c] || 'var(--gold)';
+}
+function fmt(n) { return '$' + Math.round(Number(n)).toLocaleString(); }
+
+// Commission for a single policy, based on the agent's CURRENT level (admin-editable)
+function policyCommission(agentId, pol) {
+  var a = DB.agents[agentId];
+  var rate = rateFor(a.level, pol.carrier);
+  return {rate: rate, amount: Math.round(pol.ap * rate / 100)};
+}
+// Aggregate commission totals for an agent's own written business (personal only)
+// Pass a period ('WTD'|'MTD'|'QTD'|'YTD') to scope to that window; omit for all-time.
+function commSummary(agentId, period) {
+  var pols = getPoliciesPersonal(agentId);
+  if (period) pols = pols.filter(function(p){ return inPeriod(p.date, period); });
+  var earned = 0, adv = 0;
+  pols.forEach(function(p){
+    var c = policyCommission(agentId, p);
+    if (p.status==='issued') { earned += c.amount; adv += Math.round(c.amount*0.75); }
+    else if (p.status==='pending' || p.status==='submitted') { earned += 0; }
+  });
+  return {total: earned, adv: Math.min(adv, earned), net: earned - Math.min(adv, earned)};
+}
+
+// ═══════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════
+function ql(key) {
+  document.getElementById('lg-em').value = key + '@nasb-agency.com';
+  document.getElementById('lg-pw').value = 'demo1234';
+  document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('sel'); });
+  if (event && event.currentTarget) event.currentTarget.classList.add('sel');
+  setTimeout(function(){ doLogin(); }, 120);
+}
+function doLogin() {
+  var em = document.getElementById('lg-em').value.trim().toLowerCase();
+  var pw = document.getElementById('lg-pw').value.trim();
+  var err = document.getElementById('lg-err');
+  if (!em || !pw) { err.textContent = 'Please enter email and password.'; return; }
+  if (pw !== 'demo1234') { err.textContent = 'Password is: demo1234'; return; }
+  var key = em.split('@')[0];
+  var agent = DB.agents[key];
+  if (!agent) {
+    var found = Object.keys(DB.agents).find(function(k){
+      return DB.agents[k].name.toLowerCase().split(' ')[0] === key;
+    });
+    agent = found ? DB.agents[found] : null;
+  }
+  if (!agent) { err.textContent = 'Agent not found. Tap your name above.'; return; }
+  err.textContent = '';
+  loginAs(agent);
+}
+function loginAs(a) {
+  CU = a;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('tb-un').textContent = a.name;
+  document.getElementById('tb-ur').textContent = a.role + ' · ' + a.level;
+  document.getElementById('tb-av').textContent = a.initials;
+  document.getElementById('mgr-nav').classList[a.tier==='manager'?'remove':'add']('hidden');
+  document.getElementById('sp-nav').classList[a.tier==='sp'?'remove':'add']('hidden');
+  document.getElementById('btn-admin').classList[a.tier==='sp'?'remove':'add']('hidden');
+  var cur = commSummary(a.id).total;
+  var pct = Math.min(100, Math.round(cur/a.goal*100));
+  document.getElementById('sb-fill').style.width = pct + '%';
+  document.getElementById('sb-cur').textContent = fmt(cur) + ' iss.';
+  document.getElementById('sb-tgt').textContent = '/ ' + fmt(a.goal);
+  var pols = getPoliciesPersonal(a.id);
+  var reqs = getReqsPersonal(a.id);
+  document.getElementById('nc-pipe').textContent = pols.length;
+  document.getElementById('nc-req').textContent = reqs.length || '';
+  loadDashboard();
+  sv('dashboard', document.querySelector('.nl'));
+}
+function logout() {
+  CU = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('mgr-nav').classList.add('hidden');
+  document.getElementById('sp-nav').classList.add('hidden');
+  document.getElementById('btn-admin').classList.add('hidden');
+}
+
+// ═══════════════════════════════════
+// VIEW SWITCH
+// ═══════════════════════════════════
+var VIEWS = ['dashboard','pipeline','requirements','commissions','documents','org','downline','analytics'];
+function sv(name, el) {
+  VIEWS.forEach(function(v){
+    var e = document.getElementById('v-' + v);
+    if (e) e.classList.add('hidden');
+  });
+  var t = document.getElementById('v-' + name);
+  if (t) t.classList.remove('hidden');
+  document.querySelectorAll('.nl').forEach(function(n){ n.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+  var loaders = {pipeline:function(){loadPipeline(null);},requirements:loadRequirements,commissions:loadCommissions,documents:loadDocuments,org:loadOrg,downline:loadDownline,analytics:loadAnalytics};
+  if (loaders[name]) loaders[name]();
+}
+function setPeriod(p, el, scope) {
+  var group = el ? el.parentElement : null;
+  if (group) { Array.prototype.forEach.call(group.querySelectorAll('.pt'), function(t){ t.classList.remove('active'); }); }
+  if (el) el.classList.add('active');
+  if (scope === 'analytics') { AN_PERIOD = p; loadAnalytics(); }
+  else if (scope === 'commissions') { COMM_PERIOD = p; loadCommissions(); }
+  else { DASH_PERIOD = p; loadDashboard(); }
+}
+
+// ═══════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════
+function loadDashboard() {
+  if (!CU) return;
+  var hr = new Date().getHours();
+  var gr = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('dash-title').textContent = gr + ', ' + CU.name.split(' ')[0];
+  document.getElementById('dash-sub').textContent = CU.role + ' · ' + CU.level + ' · ' + PERIOD_LABELS[DASH_PERIOD];
+  var pols = getPoliciesPersonal(CU.id).filter(function(p){ return inPeriod(p.date, DASH_PERIOD); });
+  var reqs = getReqsPersonal(CU.id);
+  var issued = pols.filter(function(p){ return p.status==='issued'; });
+  var pending = pols.filter(function(p){ return p.status==='pending'||p.status==='submitted'; });
+  var lapses = pols.filter(function(p){ return p.status==='lapse'; });
+  var issuedAP = issued.reduce(function(s,p){ return s+p.ap; },0);
+  var pendingAP = pending.reduce(function(s,p){ return s+p.ap; },0);
+  var lapseAP = lapses.reduce(function(s,p){ return s+p.ap; },0);
+  var comm = commSummary(CU.id, DASH_PERIOD);
+  document.getElementById('dash-kpis').innerHTML = [
+    {lbl:'Issued Premium',val:fmt(issuedAP),cls:'kc-gold',color:'gold',icon:'💰',note:issued.length+' policies issued'},
+    {lbl:'Pending',val:pending.length,cls:'kc-blue',color:'blue',icon:'📨',note:fmt(pendingAP)+' in pipeline'},
+    {lbl:'Needs Action',val:reqs.length,cls:'kc-orange',color:'orange',icon:'⚠️',note:'open requirements'},
+    {lbl:'Commissions '+DASH_PERIOD,val:fmt(comm.total),cls:'kc-green',color:'green',icon:'💳',note:fmt(comm.adv)+' advanced'},
+    {lbl:'Lapses / NTO',val:lapses.length,cls:'kc-red',color:'red',icon:'🔴',note:fmt(lapseAP)+' at risk'}
+  ].map(function(k){
+    return '<div class="kcard '+k.cls+'" onclick="sv(\'pipeline\',null)"><div class="kbg">'+k.icon+'</div><div class="klbl">'+k.lbl+'</div><div class="kval '+k.color+'">'+k.val+'</div><div class="knote">'+k.note+'</div></div>';
+  }).join('');
+  var clr = {issued:'var(--green-lt)',pending:'var(--blue-lt)',submitted:'var(--gold)',requirements:'var(--orange)',lapse:'var(--red)'};
+  var lbl = {issued:'ISSUED',pending:'PENDING',submitted:'SUBMITTED',requirements:'ACTION',lapse:'LAPSED'};
+  document.getElementById('dash-activity').innerHTML = pols.slice(0,6).map(function(p){
+    return '<div class="act-item" style="cursor:pointer" onclick="openPolModal(\''+p.id+'\')"><div class="act-dot" style="background:'+(clr[p.status]||'var(--muted)')+'"></div><div class="act-txt"><strong>'+p.client+'</strong> — '+p.carrier+' '+p.product+' ('+fmt(p.ap)+')</div><span class="sp sp-'+p.status+'">'+(lbl[p.status]||p.status)+'</span><div class="act-tm">'+p.date+'</div></div>';
+  }).join('') || '<div style="padding:16px;color:var(--muted);font-size:12px">No activity in this period</div>';
+  var urgent = reqs.filter(function(r){ return r.dueCls==='due-u'||r.dueCls==='due-s'; }).slice(0,3);
+  var rp = document.getElementById('dash-req-panel');
+  if (!urgent.length) { rp.classList.add('hidden'); }
+  else { rp.classList.remove('hidden'); document.getElementById('dash-reqs').innerHTML = urgent.map(function(r){ return reqHTML(r); }).join(''); }
+}
+
+// ═══════════════════════════════════
+// PIPELINE
+// ═══════════════════════════════════
+function loadPipeline(filter) {
+  if (!CU) return;
+  var pols = getPoliciesPersonal(CU.id);
+  if (filter) pols = pols.filter(function(p){ return p.status===filter; });
+  document.getElementById('pipe-sub').textContent = pols.length + ' applications';
+  var sLbl = {issued:'Issued',pending:'Pending',submitted:'Submitted',requirements:'Needs Action',lapse:'Lapsed'};
+  document.getElementById('pipe-tbody').innerHTML = pols.map(function(p){
+    var c = policyCommission(CU.id, p);
+    return '<tr><td><strong>'+p.client+'</strong></td><td style="color:var(--muted)">'+p.carrier+'</td><td style="color:var(--muted)">'+p.product+'</td><td style="font-family:var(--mono);color:var(--gold)">'+fmt(p.ap)+'</td><td style="font-family:var(--mono);color:var(--muted)">'+c.rate+'%</td><td style="font-family:var(--mono);color:var(--muted);font-size:10px">'+p.date+'</td><td><span class="sp sp-'+p.status+'">'+(sLbl[p.status]||p.status)+'</span></td><td><div style="display:flex;gap:4px"><button class="ab ab-v" onclick="openPolModal(\''+p.id+'\')">View</button>'+(p.status==='requirements'?'<button class="ab ab-a" onclick="openPolReq(\''+p.id+'\')">⚠️</button>':'')+(p.status==='pending'||p.status==='submitted'?'<button class="ab ab-d" onclick="toast(\'📄 Opening carrier portal...\')">Docs</button>':'')+'</div></td></tr>';
+  }).join('') || '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted)">No applications found</td></tr>';
+}
+function fp(f, el) {
+  document.querySelectorAll('#v-pipeline .ph-r .btn-gh').forEach(function(b){ b.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  loadPipeline(f);
+}
+
+// ═══════════════════════════════════
+// REQUIREMENTS
+// ═══════════════════════════════════
+function reqHTML(r) {
+  return '<div class="req-item" onclick="openReqModal(\''+r.id+'\')"><div class="req-ic '+r.cls+'">'+r.icon+'</div><div class="req-b"><div class="req-t">'+r.title+'</div><div class="req-c">'+r.client+'</div><div class="req-d">'+r.desc+'</div><div class="req-due '+r.dueCls+'">'+r.due+'</div></div><div><button class="ab ab-a" onclick="event.stopPropagation();openReqModal(\''+r.id+'\')">Action</button></div></div>';
+}
+function loadRequirements() {
+  if (!CU) return;
+  var reqs = getReqsPersonal(CU.id);
+  document.getElementById('req-list').innerHTML = reqs.length ? reqs.map(function(r){ return reqHTML(r); }).join('') : '<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px">✅ No outstanding requirements!</div>';
+}
+
+// ═══════════════════════════════════
+// COMMISSIONS
+// ═══════════════════════════════════
+function loadCommissions() {
+  if (!CU) return;
+  document.getElementById('comm-sub').textContent = 'Calculated live from the 2025 carrier comp guide · ' + PERIOD_LABELS[COMM_PERIOD];
+  document.getElementById('c-total-lbl').textContent = 'Total Earned ' + COMM_PERIOD;
+  var c = commSummary(CU.id, COMM_PERIOD);
+  document.getElementById('c-total').textContent = fmt(c.total);
+  document.getElementById('c-adv').textContent = fmt(c.adv);
+  document.getElementById('c-net').textContent = fmt(c.net);
+  var pols = getPoliciesPersonal(CU.id).filter(function(p){ return p.status==='issued' && inPeriod(p.date, COMM_PERIOD); });
+  document.getElementById('comm-ledger').innerHTML = pols.map(function(p){
+    var cm = policyCommission(CU.id, p);
+    var advAmt = Math.round(cm.amount*0.75), netAmt = cm.amount - advAmt;
+    return '<div class="comm-row"><div><div style="font-size:12px;font-weight:600">'+p.carrier+'</div><div style="font-size:10px;color:var(--muted)">'+p.client+' · '+p.product+'</div></div><div style="font-family:var(--mono);color:var(--muted)">'+cm.rate+'%</div><div style="font-family:var(--mono);color:var(--gold)">'+fmt(cm.amount)+'</div><div style="font-family:var(--mono);color:var(--muted)">'+fmt(advAmt)+'</div><div style="font-family:var(--mono);color:var(--green-lt)">'+fmt(netAmt)+'</div></div>';
+  }).join('') || '<div style="padding:20px;color:var(--muted);font-size:12px;text-align:center">No issued policies yet this cycle</div>';
+  document.getElementById('comm-level-note').textContent = 'Rates shown for your current level: ' + CU.level;
+  document.getElementById('comm-rate-tbody').innerHTML = Object.keys(CARRIERS).map(function(name){
+    var c = CARRIERS[name];
+    var r = rateFor(CU.level, name);
+    return '<tr><td>'+name+'</td><td style="color:var(--muted);font-size:11px">'+c.group+'</td><td style="text-align:right;font-family:var(--mono);color:var(--gold);font-weight:700">'+r+'%</td></tr>';
+  }).join('');
+}
+
+// ═══════════════════════════════════
+// DOCUMENTS
+// ═══════════════════════════════════
+var FORMS_LIB = [
+  {icon:'🏥',name:'APS Request Letter',desc:'Attending Physician Statement request — send to provider',msg:'⬇️ Downloading APS request...'},
+  {icon:'✍️',name:'Signed Illustration — Resend',desc:'Resend final illustration for client wet/e-signature',msg:'✉️ Illustration resent!'},
+  {icon:'🏦',name:'Voided Check / Bank Letter Form',desc:'Bank draft authorization requiring voided check',msg:'⬇️ Downloading bank form...'},
+  {icon:'📋',name:'Replacement Notice',desc:'State-required replacement notice for existing coverage',msg:'⬇️ Downloading replacement notice...'},
+  {icon:'👤',name:'Beneficiary Clarification Form',desc:'Full legal name + DOB for contingent beneficiary',msg:'⬇️ Downloading beneficiary form...'},
+  {icon:'📞',name:'Telephone Interview Scheduler',desc:'Schedule carrier tele-app interview with client',msg:'📞 Opening scheduler...'},
+  {icon:'🩺',name:'Paramed Exam Scheduler',desc:'Schedule paramedical exam with local examiner',msg:'🩺 Opening scheduler...'},
+  {icon:'✍️',name:'Send E-Signature (DocuSign)',desc:'Client signs on phone or email',msg:'✉️ DocuSign sent to client!'}
+];
+function loadDocuments() {
+  var carriers = Object.keys(CARRIER_DOCS);
+  var html = '';
+  var hasAny = false;
+  for (var ci=0; ci<carriers.length; ci++) {
+    var ca = carriers[ci];
+    var docs = CARRIER_DOCS[ca];
+    if (!docs || !docs.length) continue;
+    hasAny = true;
+    html += '<div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;padding:10px 2px 6px">'+ca+'</div>';
+    for (var di=0; di<docs.length; di++) {
+      var d = docs[di];
+      var typeIcon = d.type ? d.type.split(' ')[0] : '📄';
+      var dl = d.url
+        ? '<a href="'+d.url+'" target="_blank" class="doc-btn db-dl" style="text-decoration:none;text-align:center">Download</a>'
+        : '<button class="doc-btn db-dl" disabled style="opacity:.5">No URL</button>';
+      html += '<div class="doc-action"><div class="doc-ic">'+typeIcon+'</div><div class="doc-inf"><div class="doc-n">'+d.name+'</div><div class="doc-d">'+(d.form_num?d.form_num+' — ':'')+(d.notes||'')+'</div></div>'+dl+'</div>';
+    }
+  }
+  if (!hasAny) html += '<div style="padding:20px;color:var(--muted);font-size:12px;text-align:center">No carrier forms available yet.</div>';
+  html += '<div style="font-size:11px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;padding:16px 2px 6px;border-top:1px solid var(--border2);margin-top:8px">General Action Forms</div>';
+  html += FORMS_LIB.map(function(f){
+    return '<div class="doc-action"><div class="doc-ic">'+f.icon+'</div><div class="doc-inf"><div class="doc-n">'+f.name+'</div><div class="doc-d">'+f.desc+'</div></div><button class="doc-btn db-dl" onclick="toast(\''+f.msg+'\')">Get</button></div>';
+  }).join('');
+  document.getElementById('doc-forms').innerHTML = html;
+}
+
+// ═══════════════════════════════════
+// ORG CHART
+// ═══════════════════════════════════
+function orgNodeHTML(a) {
+  var pols = getPoliciesPersonal(a.id);
+  var issued = pols.filter(function(p){ return p.status==='issued'; });
+  var reqs = getReqsPersonal(a.id);
+  var cur = commSummary(a.id).total;
+  var pct = Math.min(100, Math.round(cur/a.goal*100));
+  var bc = barColor(a.color);
+  return '<div class="org-node on-'+a.color+'" onclick="openAgentModal(\''+a.id+'\')">'
+    +'<div class="on-top"><div class="on-av av-'+a.color+'">'+a.initials+'</div><div><div class="on-name">'+a.name+'</div><div class="on-role">'+a.role+'</div></div></div>'
+    +'<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:8px">'+a.level+'</div>'
+    +'<div class="on-stats"><div class="on-stat"><div class="on-sv" style="color:var(--green-lt)">'+issued.length+'</div><div class="on-sl">Issued</div></div><div class="on-stat"><div class="on-sv" style="color:var(--orange)">'+reqs.length+'</div><div class="on-sl">Action</div></div><div class="on-stat"><div class="on-sv" style="color:var(--gold)">'+fmt(cur)+'</div><div class="on-sl">Comm.</div></div></div>'
+    +'<div class="on-bar-w"><div class="on-bar" style="width:'+pct+'%;background:'+bc+'"></div></div>'
+    +'<div class="on-pct">'+pct+'% of '+fmt(a.goal)+' goal</div>'
+    +'</div>';
+}
+function orgLevel(label, agents, gridCls) {
+  if (!agents.length) return '';
+  return '<div class="org-level"><div class="org-lbl">'+label+'</div><div class="org-nodes '+gridCls+'">'+agents.map(orgNodeHTML).join('')+'</div></div>';
+}
+function loadOrg() {
+  if (!CU) return;
+  var html = '';
+  if (CU.tier === 'sp') {
+    document.getElementById('org-sub').textContent = 'Full agency hierarchy — ' + (Object.keys(DB.agents).length) + ' people';
+    html += orgLevel('👑 High Archie', [CU], 'on1');
+    var mgrs = agentVals().filter(function(a){ return a.tier==='manager' && a.mgr===CU.id; });
+    html += orgLevel('🏛️ Team Managers', mgrs, mgrs.length>2?'on3':'on2');
+    mgrs.forEach(function(m){
+      var directs = agentVals().filter(function(a){ return a.mgr===m.id; });
+      if (directs.length) html += orgLevel(m.name + "'s Team", directs, directs.length>=3?'on3':'on2');
+    });
+    var soloAgents = agentVals().filter(function(a){ return a.tier==='agent' && a.mgr===CU.id; });
+    if (soloAgents.length) html += orgLevel('Direct Agents', soloAgents, soloAgents.length>=3?'on3':'on2');
+  } else if (CU.tier === 'manager') {
+    document.getElementById('org-sub').textContent = 'Your reporting line';
+    html += orgLevel('You', [CU], 'on1');
+    var directs2 = agentVals().filter(function(a){ return a.mgr===CU.id; });
+    html += orgLevel('Your Team', directs2, directs2.length>=3?'on3':'on2');
+  } else {
+    document.getElementById('org-sub').textContent = 'Your position in the org';
+    var mgr = CU.mgr ? DB.agents[CU.mgr] : null;
+    if (mgr) html += orgLevel('Reports To', [mgr], 'on1');
+    html += orgLevel('You', [CU], 'on1');
+  }
+  document.getElementById('org-content').innerHTML = html;
+}
+
+// ═══════════════════════════════════
+// DOWNLINE / MY TEAM  — Personal vs Team Overall tabs
+// ═══════════════════════════════════
+var dlTab = 'personal';
+function setDlTab(t) {
+  dlTab = t;
+  document.getElementById('dl-tab-personal').classList.toggle('active', t==='personal');
+  document.getElementById('dl-tab-team').classList.toggle('active', t==='team');
+  loadDownline();
+}
+function statBlock(agentId, period) {
+  var pols = getPoliciesPersonal(agentId);
+  if (period) pols = pols.filter(function(p){ return inPeriod(p.date, period); });
+  var issued = pols.filter(function(p){ return p.status==='issued'; });
+  var pending = pols.filter(function(p){ return p.status==='pending'||p.status==='submitted'; });
+  var reqs = getReqsPersonal(agentId);
+  var lapses = pols.filter(function(p){ return p.status==='lapse'; });
+  var comm = commSummary(agentId, period);
+  var a = DB.agents[agentId];
+  var pct = Math.min(100, Math.round(comm.total/a.goal*100));
+  return {issued:issued.length, issuedAP:issued.reduce(function(s,p){return s+p.ap;},0), pending:pending.length, req:reqs.length, lapse:lapses.length, comm:comm, pct:pct, submitted:pols.length};
+}
+function loadDownline() {
+  if (!CU) return;
+  document.getElementById('dl-sub').textContent = CU.name + ' — ' + (dlTab==='personal' ? 'Personal Production' : 'Full Downline');
+  if (dlTab === 'personal') {
+    var s = statBlock(CU.id);
+    document.getElementById('dl-content').innerHTML =
+      '<div class="kgrid kg4">'
+      + kcard('Submitted','kc-gold','gold','📨',s.submitted,'total applications')
+      + kcard('Issued','kc-green','green','✅',s.issued,fmt(s.issuedAP)+' premium')
+      + kcard('Pending','kc-blue','blue','⏳',s.pending,'in underwriting')
+      + kcard('Outstanding Req.','kc-orange','orange','⚠️',s.req,'need action')
+      + kcard('Lapsed','kc-red','red','🔴',s.lapse,'at risk')
+      + kcard('Net Commission','kc-gold','gold','💰',fmt(s.comm.net),'after advances')
+      + kcard('Total Earned','kc-green','green','💳',fmt(s.comm.total),'MTD issued')
+      + kcard('Goal Attainment','kc-blue','blue','🎯',s.pct+'%',fmt(CU.goal)+' target')
+      + '</div>';
+  } else {
+    var directs = agentVals().filter(function(a){ return a.mgr===CU.id; });
+    var allBelowIds = [CU.id].concat(getAllBelow(CU.id));
+    var teamPols = allBelowIds.reduce(function(arr,id){ return arr.concat(getPoliciesPersonal(id)); },[]);
+    var teamIssued = teamPols.filter(function(p){ return p.status==='issued'; });
+    var teamPending = teamPols.filter(function(p){ return p.status==='pending'||p.status==='submitted'; });
+    var teamLapse = teamPols.filter(function(p){ return p.status==='lapse'; });
+    var teamReqs = allBelowIds.reduce(function(arr,id){ return arr.concat(getReqsPersonal(id)); },[]);
+    var teamCommNet = 0, teamCommTotal = 0;
+    allBelowIds.forEach(function(id){ var c = commSummary(id); teamCommNet += c.net; teamCommTotal += c.total; });
+    var html = '<div class="kgrid kg4">'
+      + kcard('Team Submitted','kc-gold','gold','📨',teamPols.length,directs.length+' direct reports')
+      + kcard('Team Issued','kc-green','green','✅',teamIssued.length,fmt(teamIssued.reduce(function(s,p){return s+p.ap;},0))+' premium')
+      + kcard('Team Pending','kc-blue','blue','⏳',teamPending.length,'in underwriting')
+      + kcard('Team Outstanding','kc-orange','orange','⚠️',teamReqs.length,'need action')
+      + kcard('Team Lapsed','kc-red','red','🔴',teamLapse.length,'at risk')
+      + kcard('Team Net Commission','kc-gold','gold','💰',fmt(teamCommNet),'after advances')
+      + kcard('Team Total Earned','kc-green','green','💳',fmt(teamCommTotal),'MTD issued')
+      + kcard('Downline Size','kc-blue','blue','👥',allBelowIds.length-1,'agents below you')
+      + '</div>';
+    html += '<div class="panel"><div class="panel-hd"><div class="panel-t">Downline Breakdown</div></div><div class="tbl-scroll"><table class="tbl"><thead><tr><th>Agent</th><th>Level</th><th style="text-align:right">Submitted</th><th style="text-align:right">Pending</th><th style="text-align:right">Outstanding</th><th style="text-align:right">Issued</th><th style="text-align:right">Lapsed</th><th style="text-align:right">Net Comm.</th><th style="text-align:right">Goal %</th></tr></thead><tbody>';
+    agentVals().filter(function(a){ return allBelowIds.indexOf(a.id)!==-1 && a.id!==CU.id; }).forEach(function(a){
+      var s = statBlock(a.id);
+      html += '<tr onclick="openAgentModal(\''+a.id+'\')" style="cursor:pointer"><td><div style="display:flex;align-items:center;gap:7px"><div class="on-av av-'+a.color+'" style="width:22px;height:22px;font-size:9px">'+a.initials+'</div><strong>'+a.name+'</strong></div></td><td style="font-family:var(--mono);font-size:10px;color:var(--muted)">'+a.level+'</td><td style="text-align:right;font-family:var(--mono)">'+s.submitted+'</td><td style="text-align:right;font-family:var(--mono)">'+s.pending+'</td><td style="text-align:right;font-family:var(--mono);color:'+(s.req?'var(--orange)':'var(--muted)')+'">'+s.req+'</td><td style="text-align:right;font-family:var(--mono);color:var(--green-lt)">'+s.issued+'</td><td style="text-align:right;font-family:var(--mono);color:'+(s.lapse?'var(--red)':'var(--muted)')+'">'+s.lapse+'</td><td style="text-align:right;font-family:var(--mono);color:var(--gold);font-weight:700">'+fmt(s.comm.net)+'</td><td style="text-align:right;font-family:var(--mono)">'+s.pct+'%</td></tr>';
+    });
+    html += '</tbody></table></div></div>';
+    document.getElementById('dl-content').innerHTML = html;
+  }
+}
+function kcard(lbl,cls,color,icon,val,note) {
+  return '<div class="kcard '+cls+'"><div class="kbg">'+icon+'</div><div class="klbl">'+lbl+'</div><div class="kval '+color+'">'+val+'</div><div class="knote">'+note+'</div></div>';
+}
+
+// ═══════════════════════════════════
+// ANALYTICS
+// ═══════════════════════════════════
+function loadAnalytics() {
+  if (!CU) return;
+  var scopeIds = CU.tier==='sp' ? Object.keys(DB.agents) : [CU.id].concat(getAllBelow(CU.id));
+  document.getElementById('an-sub').textContent = (CU.tier==='sp'?'Full agency':'Your downline') + ' — ' + scopeIds.length + ' agents · ' + PERIOD_LABELS[AN_PERIOD];
+  var allPols = scopeIds.reduce(function(arr,id){ return arr.concat(getPoliciesPersonal(id)); },[]).filter(function(p){ return inPeriod(p.date, AN_PERIOD); });
+  var issued = allPols.filter(function(p){ return p.status==='issued'; });
+  var pending = allPols.filter(function(p){ return p.status==='pending'||p.status==='submitted'; });
+  var lapse = allPols.filter(function(p){ return p.status==='lapse'; });
+  var totalComm = scopeIds.reduce(function(s,id){ return s+commSummary(id, AN_PERIOD).total; },0);
+  document.getElementById('an-kpis').innerHTML =
+    kcard('Total Issued Premium','kc-gold','gold','💰',fmt(issued.reduce(function(s,p){return s+p.ap;},0)),issued.length+' policies')
+    + kcard('In Pipeline','kc-blue','blue','📨',pending.length,fmt(pending.reduce(function(s,p){return s+p.ap;},0))+' premium')
+    + kcard('Total Commission','kc-green','green','💳',fmt(totalComm),'across scope')
+    + kcard('At-Risk (Lapsed)','kc-red','red','🔴',lapse.length,fmt(lapse.reduce(function(s,p){return s+p.ap;},0))+' exposure');
+  // Leaderboard
+  var lb = scopeIds.map(function(id){
+    var a = DB.agents[id];
+    var s = statBlock(id, AN_PERIOD);
+    return {a:a, s:s};
+  }).sort(function(x,y){ return y.s.issuedAP - x.s.issuedAP; });
+  document.querySelector('#v-analytics .panel-t').textContent = '🏆 Agent Leaderboard — ' + AN_PERIOD + ' Issued Premium';
+  document.getElementById('an-lb').innerHTML = lb.map(function(row,i){
+    var pct = row.s.pct;
+    var bc = barColor(row.a.color);
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border2)">'
+      +'<div style="font-family:var(--mono);font-size:13px;color:var(--gold-dk);width:20px">'+(i+1)+'</div>'
+      +'<div class="on-av av-'+row.a.color+'" style="width:28px;height:28px;font-size:10px">'+row.a.initials+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700">'+row.a.name+'</div><div style="font-size:9px;color:var(--muted);font-family:var(--mono)">'+row.a.level+'</div></div>'
+      +'<div style="width:120px"><div class="on-bar-w"><div class="on-bar" style="width:'+pct+'%;background:'+bc+'"></div></div></div>'
+      +'<div style="font-family:var(--mono);font-size:12px;color:var(--gold);width:75px;text-align:right">'+fmt(row.s.issuedAP)+'</div>'
+      +'</div>';
+  }).join('');
+  // Carrier mix
+  var carrierTotals = {};
+  allPols.forEach(function(p){ carrierTotals[p.carrier] = (carrierTotals[p.carrier]||0) + p.ap; });
+  var totalAP = objVals(carrierTotals).reduce(function(s,v){return s+v;},0) || 1;
+  var carrierColors = ['var(--gold)','var(--blue-lt)','var(--green-lt)','var(--purple)','var(--orange)','var(--red)','#8CE99A','#74C0FC'];
+  document.getElementById('an-carrier').innerHTML = Object.keys(carrierTotals).sort(function(a,b){return carrierTotals[b]-carrierTotals[a];}).slice(0,8).map(function(name,i){
+    var ap = carrierTotals[name];
+    var pct = Math.round(ap/totalAP*100);
+    var color = carrierColors[i%carrierColors.length];
+    return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border2)">'
+      +'<div style="font-size:11px;font-weight:600;width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+name+'</div>'
+      +'<div style="flex:1;height:6px;background:var(--slate3);border-radius:3px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+color+';border-radius:3px"></div></div>'
+      +'<div style="font-family:var(--mono);font-size:11px;color:'+color+';width:55px;text-align:right">'+fmt(ap)+'</div>'
+      +'</div>';
+  }).join('');
+  // Pipeline stages
+  var stages = [
+    {lbl:'Submitted',status:'submitted',color:'var(--gold)'},
+    {lbl:'Pending',status:'pending',color:'var(--blue-lt)'},
+    {lbl:'Needs Action',status:'requirements',color:'var(--orange)'},
+    {lbl:'Issued ✓',status:'issued',color:'var(--green-lt)'},
+    {lbl:'Lapsed',status:'lapse',color:'var(--red)'}
+  ];
+  var maxCt = Math.max.apply(null, stages.map(function(s){ return allPols.filter(function(p){ return p.status===s.status; }).length; })) || 1;
+  document.getElementById('an-stages').innerHTML = stages.map(function(s){
+    var ct = allPols.filter(function(p){ return p.status===s.status; }).length;
+    var pct = Math.round(ct/maxCt*100);
+    return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0">'
+      +'<div style="font-size:11px;color:var(--muted);width:90px">'+s.lbl+'</div>'
+      +'<div style="flex:1;height:18px;background:var(--slate3);border-radius:4px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+s.color+';border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:5px"><span style="font-size:10px;font-weight:800;color:rgba(255,255,255,.9)">'+ct+'</span></div></div>'
+      +'</div>';
+  }).join('');
+}
+
+// ═══════════════════════════════════
+// MODALS
+// ═══════════════════════════════════
+function openAgentModal(id) {
+  var a = DB.agents[id];
+  if (!a) return;
+  var s = statBlock(id);
+  var pols = getPoliciesPersonal(a.id);
+  var reqs = getReqsPersonal(a.id);
+  var bc = barColor(a.color);
+  var mgr = a.mgr ? DB.agents[a.mgr] : null;
+  document.getElementById('modal-body').innerHTML =
+    '<div class="modal-ey">Agent Detail</div>'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><div class="on-av av-'+a.color+'" style="width:40px;height:40px;border-radius:50%;font-size:14px">'+a.initials+'</div><div><div class="modal-t">'+a.name+'</div><div style="font-size:11px;color:var(--muted)">'+a.role+' · '+a.level+(mgr?' · Reports to '+mgr.name:'')+'</div></div></div>'
+    +'<div class="modal-sec">MTD Performance</div>'
+    +'<div class="info-grid">'
+    +'<div><div class="info-k">Issued Premium</div><div class="info-v gold">'+fmt(s.issuedAP)+'</div></div>'
+    +'<div><div class="info-k">Monthly Goal</div><div class="info-v">'+fmt(a.goal)+' ('+s.pct+'%)</div></div>'
+    +'<div><div class="info-k">Pending</div><div class="info-v blue">'+s.pending+' apps</div></div>'
+    +'<div><div class="info-k">Requirements</div><div class="info-v orange">'+s.req+'</div></div>'
+    +'<div><div class="info-k">Lapses</div><div class="info-v red">'+s.lapse+'</div></div>'
+    +'<div><div class="info-k">Net Commission</div><div class="info-v green">'+fmt(s.comm.net)+'</div></div>'
+    +'</div>'
+    +'<div style="height:5px;background:var(--slate3);border-radius:3px;overflow:hidden;margin:12px 0 4px"><div style="width:'+s.pct+'%;height:100%;background:'+bc+'"></div></div>'
+    +'<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:14px">'+s.pct+'% of '+fmt(a.goal)+' monthly goal</div>'
+    +'<div class="modal-sec">Pipeline ('+pols.length+' apps)</div>'
+    + pols.map(function(p){ return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border2);cursor:pointer" onclick="closeM();openPolModal(\''+p.id+'\')"><span class="sp sp-'+p.status+'">'+p.status+'</span><div style="flex:1;font-size:11px">'+p.client+' — '+p.carrier+'</div><div style="font-family:var(--mono);font-size:11px;color:var(--gold)">'+fmt(p.ap)+'</div></div>'; }).join('')
+    +(reqs.length ? '<div class="modal-sec">Requirements ('+reqs.length+')</div>'+reqs.map(function(r){ return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border2)"><div class="req-ic '+r.cls+'" style="width:26px;height:26px">'+r.icon+'</div><div style="flex:1"><div style="font-size:12px;font-weight:600">'+r.title+'</div><div class="req-due '+r.dueCls+'" style="font-size:10px">'+r.due+'</div></div><button class="ab ab-a" onclick="closeM();openReqModal(\''+r.id+'\')">Action</button></div>'; }).join('') : '')
+    +'<div style="display:flex;gap:7px;margin-top:16px">'
+    +'<button class="btn-s btn-gh" style="flex:1" onclick="toast(\'📞 Calling '+a.name+'...\')">📞 Call</button>'
+    +'<button class="btn-s btn-gh" style="flex:1" onclick="toast(\'💬 Message sent!\')">💬 Message</button>'
+    +'<button class="btn-s btn-pr" style="flex:1" onclick="toast(\'📊 Generating report...\')">Export</button>'
+    +'</div>';
+  openM();
+}
+
+function openPolModal(polId) {
+  var pol = getPoliciesPersonal(CU.id).find(function(p){ return p.id===polId; }) || getPolicies(CU.id).find(function(p){ return p.id===polId; });
+  if (!pol) return;
+  var ownerId = Object.keys(DB.agents).find(function(id){ return rawPolicies(id).some(function(p){return p.id===polId;}); }) || CU.id;
+  var c = policyCommission(ownerId, pol);
+  var steps = ['Submitted','Under Review','Approved','Commission Released'];
+  var flags = {issued:[true,true,true,true],pending:[true,true,false,false],submitted:[true,false,false,false],requirements:[true,true,false,false],lapse:[true,true,false,false]};
+  var f = flags[pol.status] || [true,false,false,false];
+  var relReqs = getReqsPersonal(ownerId).filter(function(r){ return r.client.indexOf(pol.client) !== -1; });
+  document.getElementById('modal-body').innerHTML =
+    '<div class="modal-ey">'+pol.carrier+' · '+pol.product+'</div>'
+    +'<div class="modal-t">'+pol.client+'</div>'
+    +'<div class="modal-s">Annual Premium: <span style="color:var(--gold);font-family:var(--mono)">'+fmt(pol.ap)+'</span> · Submitted '+pol.date+'</div>'
+    +'<div class="modal-sec">Status Timeline</div>'
+    +'<div class="tl">'+steps.map(function(s,i){ var done=f[i]; return '<div class="tl-it"><div class="tl-dot '+(done?'tl-done':(i===f.filter(Boolean).length?'tl-active':'tl-future'))+'">'+(done?'✓':'')+'</div><div class="tl-txt">'+s+'<span>'+(done?'Complete':(pol.status==='requirements'&&i===2?'⚠️ Requirements pending':'Pending'))+'</span></div></div>'; }).join('')+'</div>'
+    +'<div class="modal-sec">Policy Details</div>'
+    +'<div class="info-grid">'
+    +'<div><div class="info-k">Carrier</div><div class="info-v">'+pol.carrier+'</div></div>'
+    +'<div><div class="info-k">Product</div><div class="info-v">'+pol.product+'</div></div>'
+    +'<div><div class="info-k">Annual Premium</div><div class="info-v gold">'+fmt(pol.ap)+'</div></div>'
+    +'<div><div class="info-k">Comp Rate</div><div class="info-v gold">'+c.rate+'% → '+fmt(c.amount)+'</div></div>'
+    +'<div><div class="info-k">Status</div><div class="info-v '+(pol.status==='issued'?'green':pol.status==='lapse'?'red':'orange')+'">'+pol.status.toUpperCase()+'</div></div>'
+    +'</div>'
+    +(relReqs.length ? '<div class="modal-sec">⚠️ Requirements</div>'+relReqs.map(function(r){ return '<div style="background:rgba(230,126,34,.07);border:1px solid rgba(230,126,34,.16);border-radius:7px;padding:10px;margin-bottom:6px"><div style="font-size:12px;font-weight:700">'+r.icon+' '+r.title+'</div><div style="font-size:10px;color:var(--muted);margin-top:3px">'+r.desc+'</div><div class="req-due '+r.dueCls+'" style="font-size:10px;margin-top:5px">'+r.due+'</div></div>'; }).join('') : '')
+    +'<div class="modal-sec">Documents</div>'
+    +'<div class="doc-action"><div class="doc-ic">📄</div><div class="doc-inf"><div class="doc-n">Application Copy</div><div class="doc-d">Submitted application PDF</div></div><button class="doc-btn db-vw" onclick="toast(\'📄 Opening...\')">View</button></div>'
+    +(pol.status!=='issued'?'<div class="doc-action"><div class="doc-ic">✍️</div><div class="doc-inf"><div class="doc-n">Resend E-Signature</div><div class="doc-d">Resend DocuSign link to client</div></div><button class="doc-btn db-sg" onclick="toast(\'✉️ DocuSign resent!\')">Resend</button></div>':'')
+    +(pol.status==='issued'?'<div class="doc-action"><div class="doc-ic">📜</div><div class="doc-inf"><div class="doc-n">Policy Certificate</div><div class="doc-d">Issued policy — ready to deliver</div></div><button class="doc-btn db-dl" onclick="toast(\'⬇️ Downloading...\')">Download</button></div>':'');
+  openM();
+}
+
+function openReqModal(reqId) {
+  var r = null;
+  Object.keys(DB.requirements).forEach(function(k){ DB.requirements[k].forEach(function(x){ if(x.id===reqId) r=x; }); });
+  if (!r) return;
+  var docSets = {
+    doc:  [{icon:'📥',name:'Download Required Form',desc:'Pre-filled carrier form',btn:'Download',cls:'db-dl',msg:'⬇️ Downloading form...'},{icon:'📤',name:'Upload Completed Document',desc:'Submit the completed form back',btn:'Upload',cls:'db-up',msg:'Opening upload...'}],
+    med:  [{icon:'📥',name:'Download Medical Release',desc:'HIPAA authorization for records',btn:'Download',cls:'db-dl',msg:'⬇️ Downloading HIPAA...'},{icon:'📤',name:'Upload Records',desc:'Upload records from provider',btn:'Upload',cls:'db-up',msg:'Opening upload...'}],
+    id:   [{icon:'📤',name:'Upload Clear Photo ID',desc:'Front and back of state-issued ID',btn:'Upload',cls:'db-up',msg:'Opening upload...'}],
+    sign: [{icon:'✍️',name:'Resend E-Signature Link',desc:'Send DocuSign via email and SMS',btn:'Resend',cls:'db-sg',msg:'✉️ DocuSign resent!'},{icon:'📞',name:'Call Client to Complete',desc:'Walk client through signing on phone',btn:'Dial',cls:'db-cl',msg:'📞 Dialing client...'}]
+  };
+  var docs = docSets[r.docType] || docSets['doc'];
+  document.getElementById('modal-body').innerHTML =
+    '<div class="modal-ey">Outstanding Requirement</div>'
+    +'<div class="modal-t">'+r.icon+' '+r.title+'</div>'
+    +'<div class="modal-s">'+r.client+'</div>'
+    +'<div style="background:rgba(230,126,34,.07);border:1px solid rgba(230,126,34,.16);border-radius:8px;padding:12px;margin-bottom:14px">'
+    +'<div style="font-size:12px;line-height:1.6">'+r.desc+'</div>'
+    +'<div class="req-due '+r.dueCls+'" style="font-size:10px;margin-top:6px">'+r.due+'</div>'
+    +'</div>'
+    +'<div class="modal-sec">Actions & Documents</div>'
+    + docs.map(function(d){ return '<div class="doc-action"><div class="doc-ic">'+d.icon+'</div><div class="doc-inf"><div class="doc-n">'+d.name+'</div><div class="doc-d">'+d.desc+'</div></div><button class="doc-btn '+d.cls+'" onclick="toast(\''+d.msg+'\')">'+d.btn+'</button></div>'; }).join('')
+    +'<div class="doc-action"><div class="doc-ic">💬</div><div class="doc-inf"><div class="doc-n">Message Manager</div><div class="doc-d">Flag this requirement to your manager</div></div><button class="doc-btn db-cl" onclick="toast(\'📨 Manager notified!\')">Message</button></div>'
+    +'<button class="btn-s btn-pr" style="width:100%;padding:12px;font-size:13px;margin-top:12px" onclick="toast(\'✅ Requirement marked complete!\');closeM()">✅ Mark Complete</button>';
+  openM();
+}
+
+function openPolReq(polId) {
+  var pol = getPoliciesPersonal(CU.id).find(function(p){ return p.id===polId; });
+  if (!pol) return;
+  var r = getReqsPersonal(CU.id).find(function(req){ return req.client.indexOf(pol.client) !== -1; });
+  if (r) openReqModal(r.id);
+  else toast('No specific requirement — check Action Center');
+}
+
+function openM() { document.getElementById('modal').classList.add('open'); }
+function closeM() { document.getElementById('modal').classList.remove('open'); }
+function closeMBG(e) { if (e.target === document.getElementById('modal')) closeM(); }
+
+// ═══════════════════════════════════
+// ADMIN PORTAL — High Archie only. Edits cascade to DB live.
+// ═══════════════════════════════════
+var adminTab = 'goals';
+var CONNECTED_TOOLS = [
+  {name:'DocuSign — Carrier Applications', status:'connected', detail:'Envelope templates synced nightly'},
+  {name:'DocuSign — Agent Onboarding Packet', status:'connected', detail:'3 templates linked'},
+  {name:'Carrier Portal SSO — Corebridge', status:'connected', detail:'Single sign-on live'},
+  {name:'Carrier Portal SSO — Mutual of Omaha', status:'not connected', detail:'Pending API key'},
+  {name:'AgencyBloc AMS', status:'not connected', detail:'Available in tools directory'},
+  {name:'QuotIt Quoting Engine', status:'connected', detail:'Rate table auto-sync'}
+];
+
+function openAdmin() {
+  if (!CU || CU.tier !== 'sp') { toast('🔒 Admin access is limited to the High Archie.'); return; }
+  document.getElementById('admin-ov').classList.add('open');
+  renderAdminTab();
+}
+function closeAdmin() { document.getElementById('admin-ov').classList.remove('open'); }
+function setAdminTab(t, el) {
+  adminTab = t;
+  document.querySelectorAll('.admin-tab').forEach(function(x){ x.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  renderAdminTab();
+}
+function renderAdminTab() {
+  var fns = {
+    goals: renderAdminGoals,
+    levels: renderAdminLevels,
+    orgedit: renderAdminOrgEdit,
+    manualpolicy: renderAdminManualPolicy,
+    access: renderAdminAccess,
+    formslib: renderAdminForms,
+    carrierdocs: renderAdminCarrierDocs,
+    tools: renderAdminTools
+  };
+  document.getElementById('admin-content').innerHTML = '';
+  fns[adminTab]();
+}
+
+function renderAdminGoals() {
+  var html = '<div class="admin-sec-t">Monthly Goals</div><div class="admin-sec-s">Edit any agent\'s MTD premium target. Saves push live to their sidebar goal bar instantly.</div>';
+  html += '<div class="cascade-note">🛡️ You are the only person who can edit this. Changes apply the moment you click Save.</div>';
+  html += '<table class="tbl"><thead><tr><th>Agent</th><th>Level</th><th>Monthly Goal</th></tr></thead><tbody>';
+  agentVals().forEach(function(a){
+    html += '<tr><td><strong>'+a.name+'</strong></td><td style="color:var(--muted);font-family:var(--mono);font-size:10px">'+a.level+'</td><td><input class="admin-input" style="width:120px" id="goal-'+a.id+'" value="'+a.goal+'"></td></tr>';
+  });
+  html += '</tbody></table>';
+  html += '<button class="btn-s btn-pr" style="margin-top:14px" onclick="saveAdminGoals()">💾 Save & Publish to All Portals</button>';
+  document.getElementById('admin-content').innerHTML = html;
+}
+function saveAdminGoals() {
+  Object.keys(DB.agents).forEach(function(id){
+    var el = document.getElementById('goal-'+id);
+    if (el) { var v = parseInt(el.value.replace(/[^0-9]/g,''),10); if (!isNaN(v)) DB.agents[id].goal = v; }
+  });
+  toast('✅ Goals saved — live for every agent now');
+  if (CU) loginAs(CU);
+}
+
+function renderAdminLevels() {
+  var html = '<div class="admin-sec-t">Agent Levels & Promotions</div><div class="admin-sec-s">Changing a level here immediately re-calculates that agent\'s commission rate on every carrier in the comp guide.</div>';
+  html += '<div class="cascade-note">🛡️ Promotions cascade instantly — commission ledgers, comp-rate tables, and org chart colors all recompute.</div>';
+  html += '<table class="tbl"><thead><tr><th>Agent</th><th>Current Level</th><th>Role</th></tr></thead><tbody>';
+  agentVals().forEach(function(a){
+    var opts = LEVELS.map(function(l){ return '<option value="'+l+'"'+(l===a.level?' selected':'')+'>'+l+'</option>'; }).join('');
+    var roleOpts = ['agent','manager','sp'].map(function(r){ var lbl = r==='sp'?'High Archie':r==='manager'?'Manager':'Agent'; return '<option value="'+r+'"'+(r===a.tier?' selected':'')+(r==='sp'&&a.id!=='luke'?' disabled':'')+'>'+lbl+'</option>'; }).join('');
+    html += '<tr><td><strong>'+a.name+'</strong></td><td><select class="admin-select" id="level-'+a.id+'">'+opts+'</select></td><td><select class="admin-select" id="tier-'+a.id+'" '+(a.id==='luke'?'disabled':'')+'>'+roleOpts+'</select></td></tr>';
+  });
+  html += '</tbody></table>';
+  html += '<button class="btn-s btn-pr" style="margin-top:14px" onclick="saveAdminLevels()">💾 Save & Publish to All Portals</button>';
+  document.getElementById('admin-content').innerHTML = html;
+}
+function saveAdminLevels() {
+  Object.keys(DB.agents).forEach(function(id){
+    var lv = document.getElementById('level-'+id);
+    var tr = document.getElementById('tier-'+id);
+    if (lv) DB.agents[id].level = lv.value;
+    if (tr && id!=='luke') DB.agents[id].tier = tr.value;
+  });
+  toast('✅ Levels updated — commissions recalculated agency-wide');
+  if (CU) loginAs(CU);
+}
+
+function renderAdminOrgEdit() {
+  var html = '<div class="admin-sec-t">Team Layout</div><div class="admin-sec-s">Re-assign any agent\'s direct manager to restructure downlines. Only the High Archie can edit this.</div>';
+  html += '<div class="cascade-note">🛡️ Reassigning a manager instantly moves that agent (and their downline) into the new team\'s analytics, org chart, and rollups.</div>';
+  html += '<table class="tbl"><thead><tr><th>Agent</th><th>Reports To</th></tr></thead><tbody>';
+  agentVals().filter(function(a){ return a.id!=='luke'; }).forEach(function(a){
+    var opts = agentVals().filter(function(m){ return m.id!==a.id; }).map(function(m){ return '<option value="'+m.id+'"'+(m.id===a.mgr?' selected':'')+'>'+m.name+'</option>'; }).join('');
+    html += '<tr><td><strong>'+a.name+'</strong></td><td><select class="admin-select" id="mgr-'+a.id+'">'+opts+'</select></td></tr>';
+  });
+  html += '</tbody></table>';
+  html += '<button class="btn-s btn-pr" style="margin-top:14px" onclick="saveAdminOrg()">💾 Save & Restructure</button>';
+  document.getElementById('admin-content').innerHTML = html;
+}
+function saveAdminOrg() {
+  Object.keys(DB.agents).forEach(function(id){
+    if (id==='luke') return;
+    var el = document.getElementById('mgr-'+id);
+    if (el) DB.agents[id].mgr = el.value;
+  });
+  toast('✅ Team layout updated — org chart & rollups restructured');
+  if (CU) loginAs(CU);
+}
+
+function renderAdminManualPolicy() {
+  var html = '<div class="admin-sec-t">Manual Policy Entry</div><div class="admin-sec-s">Add a policy directly to any agent\'s ledger — commission auto-calculates from their current level and the selected carrier.</div>';
+  html += '<div class="admin-field"><label>Agent</label><select class="admin-select" style="width:100%" id="mp-agent" onchange="updateMpPreview()">'+agentVals().map(function(a){return '<option value="'+a.id+'">'+a.name+'</option>';}).join('')+'</select></div>';
+  html += '<div class="admin-field"><label>Carrier / Product</label><select class="admin-select" style="width:100%" id="mp-carrier" onchange="updateMpPreview()">'+Object.keys(CARRIERS).map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('')+'</select></div>';
+  html += '<div class="admin-field"><label>Client Name</label><input class="admin-input" id="mp-client" placeholder="Jane Doe" style="font-family:var(--sans)"></div>';
+  html += '<div class="admin-field"><label>Status</label><select class="admin-select" style="width:100%" id="mp-status"><option value="submitted">Submitted</option><option value="pending">Pending</option><option value="requirements">Outstanding Requirement</option><option value="issued">Issued</option><option value="lapse">Lapsed</option></select></div>';
+  html += '<div class="admin-field"><label>Annual Premium ($)</label><input class="admin-input" id="mp-ap" value="1200" oninput="updateMpPreview()"></div>';
+  html += '<div class="admin-field"><label>Policy Date</label><input type="date" class="admin-input" id="mp-date" style="font-family:var(--mono)"></div>';
+  html += '<div class="admin-field" id="mp-preview" style="background:var(--navy2);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:11px;color:var(--gold)"></div>';
+  html += '<button class="btn-s btn-pr" style="margin-top:6px" onclick="saveManualPolicy()">➕ Add Policy to Ledger</button>';
+  document.getElementById('admin-content').innerHTML = html;
+  document.getElementById('mp-date').value = todayISO();
+  updateMpPreview();
+}
+function updateMpPreview() {
+  var agentId = document.getElementById('mp-agent').value;
+  var carrier = document.getElementById('mp-carrier').value;
+  var ap = parseFloat(document.getElementById('mp-ap').value) || 0;
+  var rate = rateFor(DB.agents[agentId].level, carrier);
+  var amt = Math.round(ap*rate/100);
+  document.getElementById('mp-preview').textContent = 'Rate for ' + DB.agents[agentId].name + ' (' + DB.agents[agentId].level + '): ' + rate + '% → est. commission ' + fmt(amt);
+}
+function saveManualPolicy() {
+  var agentId = document.getElementById('mp-agent').value;
+  var carrier = document.getElementById('mp-carrier').value;
+  var client = document.getElementById('mp-client').value || 'New Client';
+  var status = document.getElementById('mp-status').value;
+  var ap = parseFloat(document.getElementById('mp-ap').value) || 0;
+  var dateIso = document.getElementById('mp-date').value || todayISO();
+  var dateDisplay = isoToDisplayDate(dateIso) || isoToDisplayDate(todayISO());
+  var id = 'mp' + Date.now();
+  manualPolicies.push({id:id, agentId:agentId, client:client, carrier:carrier, product:carrier, ap:ap, date:dateDisplay, status:status});
+  toast('✅ Policy added to ' + DB.agents[agentId].name + '\'s ledger — ' + dateDisplay);
+  if (CU) loginAs(CU);
+  renderAdminManualPolicy();
+}
+
+function renderAdminAccess() {
+  var html = '<div class="admin-sec-t">Agent Access & Passwords</div><div class="admin-sec-s">Set or reset login credentials. Agents only ever see their own portal, plus their own downline if they manage one.</div>';
+  agentVals().forEach(function(a){
+    html += '<div class="admin-row">'
+      + '<div style="width:140px;font-weight:700;font-size:12px">'+a.name+'</div>'
+      + '<div style="width:200px;font-family:var(--mono);font-size:10px;color:var(--muted)">'+a.name.toLowerCase().split(' ')[0]+'@nasb-agency.com</div>'
+      + '<input class="admin-input" type="password" placeholder="Set new password" style="flex:1;min-width:140px;font-family:var(--sans)">'
+      + '<button class="btn-s btn-pr" onclick="toast(\'🔑 Password set for '+a.name+'\')">Set</button>'
+      + '<button class="btn-s btn-gh" style="color:var(--red)" onclick="toast(\'🔁 Reset link sent to '+a.name+'\')">Force Reset</button>'
+      + '</div>';
+  });
+  document.getElementById('admin-content').innerHTML = html;
+}
+
+var FORMS_LIB_ADMIN = null;
+function renderAdminForms() {
+  if (!FORMS_LIB_ADMIN) FORMS_LIB_ADMIN = FORMS_LIB.slice();
+  var html = '<div class="admin-sec-t">Forms Library</div><div class="admin-sec-s">Add or edit the requirement documents agents see in their Action Center and Forms & Docs tab.</div>';
+  FORMS_LIB_ADMIN.forEach(function(f,i){
+    html += '<div class="admin-row"><div style="font-size:16px">'+f.icon+'</div><div style="flex:1"><div style="font-size:12px;font-weight:700">'+f.name+'</div><div style="font-size:10px;color:var(--muted)">'+f.desc+'</div></div><button class="btn-s btn-gh" onclick="toast(\'✏️ Editing '+f.name+'...\')">Edit</button></div>';
+  });
+  html += '<div class="admin-sec-t" style="font-size:13px;margin-top:20px">Add New Form</div>';
+  html += '<div class="admin-field"><label>Form Name</label><input class="admin-input" id="nf-name" style="font-family:var(--sans)" placeholder="e.g. HIV Consent Form"></div>';
+  html += '<div class="admin-field"><label>Instructions</label><input class="admin-input" id="nf-desc" style="font-family:var(--sans)" placeholder="What the agent needs to do"></div>';
+  html += '<button class="btn-s btn-pr" onclick="addAdminForm()">➕ Add Form</button>';
+  document.getElementById('admin-content').innerHTML = html;
+}
+function addAdminForm() {
+  var name = document.getElementById('nf-name').value;
+  var desc = document.getElementById('nf-desc').value;
+  if (!name) { toast('Enter a form name first'); return; }
+  FORMS_LIB_ADMIN.push({icon:'📄', name:name, desc:desc||'—', msg:'⬇️ Downloading ' + name + '...'});
+  FORMS_LIB = FORMS_LIB_ADMIN.slice();
+  toast('✅ Form added to library');
+  renderAdminForms();
+}
+
+function renderAdminTools() {
+  var html = '<div class="admin-sec-t">Connected Tools</div><div class="admin-sec-s">Link DocuSign, carrier SSOs, and other agency tools. Connected tools surface inside every agent\'s requirement workflow.</div>';
+  CONNECTED_TOOLS.forEach(function(t,i){
+    var on = t.status==='connected';
+    html += '<div class="admin-row"><div style="font-size:14px">🔗</div><div style="flex:1"><div style="font-size:12px;font-weight:700">'+t.name+'</div><div style="font-size:10px;color:var(--muted)">'+t.detail+'</div></div><span class="toggle-pill '+(on?'tp-on':'tp-off')+'">'+(on?'Connected':'Not Connected')+'</span><button class="btn-s btn-gh" onclick="toggleTool('+i+')">'+(on?'Disconnect':'Connect')+'</button></div>';
+  });
+  html += '<div style="display:flex;gap:8px;margin-top:16px"><input class="admin-input" style="flex:1;font-family:var(--sans)" placeholder="Add a new tool by name or URL…" id="nt-name"><button class="btn-s btn-pr" onclick="addTool()">➕ Link Tool</button></div>';
+  document.getElementById('admin-content').innerHTML = html;
+}
+function toggleTool(i) {
+  CONNECTED_TOOLS[i].status = CONNECTED_TOOLS[i].status==='connected' ? 'not connected' : 'connected';
+  renderAdminTools();
+}
+function addTool() {
+  var name = document.getElementById('nt-name').value;
+  if (!name) return;
+  CONNECTED_TOOLS.push({name:name, status:'connected', detail:'Linked by High Archie'});
+  toast('✅ ' + name + ' connected');
+  renderAdminTools();
+}
+
+// ═══════════════════════════════════
+// TOAST
+// ═══════════════════════════════════
+var toastT;
+function toast(msg) {
+  var el = document.getElementById('toast-el');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(function(){ el.classList.remove('show'); }, 3000);
+}
+
+// ═══════════════════════════════════
+// RESPONSIVE HAMBURGER
+// ═══════════════════════════════════
+function checkHamburger() {
+  document.getElementById('hamburger').style.display = window.innerWidth<=700 ? 'inline-block' : 'none';
+}
+window.addEventListener('resize', checkHamburger);
+checkHamburger();
+
+
+function renderAdminCarrierDocs() {
+  var carriers = Object.keys(CARRIER_DOCS);
+  var html = '<div class="admin-sec-t">Carrier Forms Library</div>';
+  html += '<div class="admin-sec-s">All carrier forms ready to download. Tap Download to open the PDF. Agents also see these in their Forms & Docs tab filtered by carrier.</div>';
+  html += '<div style="background:var(--navy2);border:1px solid rgba(201,168,76,.15);border-radius:9px;padding:13px 16px;margin-bottom:20px;font-size:11px;color:var(--muted);line-height:1.6">';
+  html += '📦 <strong style="color:var(--gold)">12 forms loaded</strong> from Supabase Storage. ';
+  html += 'Forms are live once you complete the Supabase Storage upload (Step 2 in the setup guide).';
+  html += '</div>';
+
+  // Add new form
+  html += '<div style="background:var(--navy2);border:1px solid var(--border2);border-radius:10px;padding:18px;margin-bottom:22px">';
+  html += '<div style="font-size:13px;font-weight:700;margin-bottom:12px">Add a Form</div>';
+  html += '<div class="admin-field"><label>Carrier</label><select class="admin-select" style="width:100%" id="cdf-carrier">';
+  for(var ci=0;ci<carriers.length;ci++) html += '<option value="'+carriers[ci]+'">'+carriers[ci]+'</option>';
+  html += '</select></div>';
+  html += '<div class="admin-field"><label>Form Name</label><input class="admin-input" id="cdf-name" placeholder="e.g. APS Request Letter" style="font-family:var(--sans)"></div>';
+  html += '<div class="admin-field"><label>Type</label><select class="admin-select" style="width:100%" id="cdf-type">';
+  html += '<option value="📋 Beneficiary">📋 Beneficiary</option><option value="🔄 Ownership">🔄 Ownership</option>';
+  html += '<option value="📍 Address">📍 Address</option><option value="🏦 Banking">🏦 Banking</option>';
+  html += '<option value="✏️ Name Change">✏️ Name Change</option><option value="📄 Application">📄 Application</option>';
+  html += '<option value="📎 Other">📎 Other</option></select></div>';
+  html += '<div class="admin-field"><label>Form # (optional)</label><input class="admin-input" id="cdf-num" placeholder="e.g. BCFL2020" style="font-family:var(--mono)"></div>';
+  html += '<div class="admin-field"><label>Direct URL to PDF</label><input class="admin-input" id="cdf-url" placeholder="https://... or leave blank" style="font-family:var(--mono);font-size:11px"></div>';
+  html += '<div class="admin-field"><label>Notes / Instructions</label><textarea class="admin-input" id="cdf-notes" placeholder="Submission address, notary requirements..." style="font-family:var(--sans);height:60px;resize:vertical"></textarea></div>';
+  html += '<button class="btn-s btn-pr" style="width:100%;margin-top:8px" onclick="addCarrierDoc()">➕ Add Form</button>';
+  html += '</div>';
+
+  // Forms by carrier
+  var hasAny = false;
+  for(var ci=0;ci<carriers.length;ci++) {
+    var ca = carriers[ci];
+    var docs = CARRIER_DOCS[ca];
+    if (!docs || !docs.length) continue;
+    hasAny = true;
+    html += '<div style="margin-bottom:26px">';
+    html += '<div style="font-size:15px;font-weight:800;color:var(--gold);padding-bottom:10px;border-bottom:1px solid var(--border2);margin-bottom:12px">';
+    html += ca + '<span style="font-size:10px;font-weight:400;color:var(--muted);margin-left:8px">'+docs.length+' form'+(docs.length>1?'s':'')+'</span></div>';
+
+    for(var di=0;di<docs.length;di++) {
+      var d = docs[di];
+      var typeIcon = d.type ? d.type.split(' ')[0] : '📄';
+      html += '<div style="background:var(--navy2);border:1px solid var(--border2);border-radius:9px;padding:14px 16px;margin-bottom:8px">';
+      html += '<div style="display:flex;align-items:flex-start;gap:12px">';
+      html += '<div style="font-size:22px;flex-shrink:0;margin-top:2px">'+typeIcon+'</div>';
+      html += '<div style="flex:1">';
+      html += '<div style="font-size:13px;font-weight:700">'+d.name+'</div>';
+      html += '<div style="display:flex;gap:7px;align-items:center;margin-top:4px;flex-wrap:wrap">';
+      html += '<span style="font-size:10px;background:rgba(201,168,76,.1);color:var(--gold);padding:2px 7px;border-radius:4px;font-weight:600">'+d.type+'</span>';
+      if (d.form_num) html += '<span style="font-size:10px;color:var(--muted);font-family:var(--mono)">'+d.form_num+'</span>';
+      html += '</div>';
+      if (d.notes) html += '<div style="font-size:11px;color:var(--muted);margin-top:7px;line-height:1.6">'+d.notes+'</div>';
+      html += '</div>';
+      html += '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;margin-left:8px">';
+      if (d.url) {
+        html += '<a href="'+d.url+'" target="_blank" class="btn-s btn-pr" style="font-size:10px;text-decoration:none;text-align:center;display:block;padding:6px 12px">⬇ Download</a>';
+      } else {
+        html += '<button class="btn-s btn-gh" style="font-size:10px;opacity:.5" disabled>No URL</button>';
+      }
+      html += '<button class="btn-s btn-gh" style="font-size:10px;color:var(--red-lt)" data-ca="'+ca+'" data-id="'+d.id+'" onclick="removeCarrierDoc(this.dataset.ca,this.dataset.id)">✕ Remove</button>';
+      html += '</div></div></div>';
+    }
+    html += '</div>';
+  }
+
+  if (!hasAny) {
+    html += '<div style="text-align:center;padding:40px;color:var(--muted)">No forms yet — add one above.</div>';
+  }
+  document.getElementById('admin-content').innerHTML = html;
+}
+
+function addCarrierDoc() {
+  var ca    = document.getElementById('cdf-carrier').value;
+  var name  = document.getElementById('cdf-name').value.trim();
+  var type  = document.getElementById('cdf-type').value;
+  var num   = document.getElementById('cdf-num').value.trim();
+  var url   = document.getElementById('cdf-url').value.trim();
+  var notes = document.getElementById('cdf-notes').value.trim();
+  if (!name) { toast('Enter a form name'); return; }
+  if (!CARRIER_DOCS[ca]) CARRIER_DOCS[ca] = [];
+  CARRIER_DOCS[ca].push({id:'cdf'+Date.now(), name:name, type:type, form_num:num, url:url||null, notes:notes});
+  document.getElementById('cdf-name').value='';
+  document.getElementById('cdf-url').value='';
+  document.getElementById('cdf-notes').value='';
+  toast('Form added to '+ca);
+  renderAdminCarrierDocs();
+}
+
+function removeCarrierDoc(ca, id) {
+  if (!CARRIER_DOCS[ca]) return;
+  CARRIER_DOCS[ca] = CARRIER_DOCS[ca].filter(function(d){ return d.id!==id; });
+  toast('Form removed');
+  renderAdminCarrierDocs();
+}
+
+document.addEventListener('keydown', function(e){ if (e.key==='Escape') { closeM(); closeAdmin(); } });
+document.getElementById('lg-pw').addEventListener('keydown', function(e){ if (e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>
